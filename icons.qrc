@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/icons/qlion.png</file>
+    </qresource>
+</RCC>
