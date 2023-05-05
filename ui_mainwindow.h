@@ -13,10 +13,13 @@
 #include <QtGui/QAction>
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QDockWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -39,17 +42,25 @@ public:
     QAction *action_find;
     QAction *action_replace;
     QAction *action_denote;
+    QAction *action_show_shotcut;
+    QAction *action_info;
+    QAction *action_tool_tree_view;
     QWidget *centralwidget;
+    QTabWidget *tabWidget;
+    QWidget *tab;
     QMenuBar *menubar;
     QMenu *menu_F;
     QMenu *menu_E;
     QStatusBar *statusbar;
+    QToolBar *toolBar;
+    QDockWidget *sideDock;
+    QWidget *dockWidgetContents;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(400, 300);
+        MainWindow->resize(800, 479);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/resources/icons/qlion.png"), QSize(), QIcon::Normal, QIcon::Off);
         MainWindow->setWindowIcon(icon);
@@ -83,12 +94,28 @@ public:
         action_replace->setObjectName("action_replace");
         action_denote = new QAction(MainWindow);
         action_denote->setObjectName("action_denote");
+        action_show_shotcut = new QAction(MainWindow);
+        action_show_shotcut->setObjectName("action_show_shotcut");
+        action_info = new QAction(MainWindow);
+        action_info->setObjectName("action_info");
+        action_tool_tree_view = new QAction(MainWindow);
+        action_tool_tree_view->setObjectName("action_tool_tree_view");
+        QIcon icon1;
+        icon1.addFile(QString::fromUtf8(":/resources/icons/folder.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QString::fromUtf8("resources/icons/folder.png"), QSize(), QIcon::Normal, QIcon::On);
+        action_tool_tree_view->setIcon(icon1);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
+        tabWidget = new QTabWidget(centralwidget);
+        tabWidget->setObjectName("tabWidget");
+        tabWidget->setGeometry(QRect(170, 90, 127, 80));
+        tab = new QWidget();
+        tab->setObjectName("tab");
+        tabWidget->addTab(tab, QString());
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 400, 21));
+        menubar->setGeometry(QRect(0, 0, 800, 21));
         menu_F = new QMenu(menubar);
         menu_F->setObjectName("menu_F");
         menu_E = new QMenu(menubar);
@@ -97,6 +124,16 @@ public:
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
         MainWindow->setStatusBar(statusbar);
+        toolBar = new QToolBar(MainWindow);
+        toolBar->setObjectName("toolBar");
+        MainWindow->addToolBar(Qt::LeftToolBarArea, toolBar);
+        sideDock = new QDockWidget(MainWindow);
+        sideDock->setObjectName("sideDock");
+        sideDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+        dockWidgetContents = new QWidget();
+        dockWidgetContents->setObjectName("dockWidgetContents");
+        sideDock->setWidget(dockWidgetContents);
+        MainWindow->addDockWidget(Qt::LeftDockWidgetArea, sideDock);
 
         menubar->addAction(menu_F->menuAction());
         menubar->addAction(menu_E->menuAction());
@@ -120,8 +157,12 @@ public:
         menu_E->addAction(action_find);
         menu_E->addAction(action_replace);
         menu_E->addAction(action_denote);
+        toolBar->addAction(action_tool_tree_view);
 
         retranslateUi(MainWindow);
+
+        tabWidget->setCurrentIndex(0);
+
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -189,8 +230,22 @@ public:
 #if QT_CONFIG(shortcut)
         action_denote->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+/", nullptr));
 #endif // QT_CONFIG(shortcut)
+        action_show_shotcut->setText(QCoreApplication::translate("MainWindow", "\345\277\253\346\215\267\351\224\256", nullptr));
+#if QT_CONFIG(shortcut)
+        action_show_shotcut->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+K", nullptr));
+#endif // QT_CONFIG(shortcut)
+        action_info->setText(QCoreApplication::translate("MainWindow", "\345\205\263\344\272\216", nullptr));
+#if QT_CONFIG(shortcut)
+        action_info->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+I", nullptr));
+#endif // QT_CONFIG(shortcut)
+        action_tool_tree_view->setText(QCoreApplication::translate("MainWindow", "\350\265\204\346\272\220\347\256\241\347\220\206\345\231\250", nullptr));
+#if QT_CONFIG(shortcut)
+        action_tool_tree_view->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+E", nullptr));
+#endif // QT_CONFIG(shortcut)
+        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("MainWindow", "Tab 1", nullptr));
         menu_F->setTitle(QCoreApplication::translate("MainWindow", "\346\226\207\344\273\266(&F)", nullptr));
         menu_E->setTitle(QCoreApplication::translate("MainWindow", "\347\274\226\350\276\221(&E)", nullptr));
+        toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 
 };

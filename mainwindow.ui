@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>551</width>
+    <width>800</width>
     <height>479</height>
    </rect>
   </property>
@@ -17,13 +17,32 @@
    <iconset resource="icons.qrc">
     <normaloff>:/resources/icons/qlion.png</normaloff>:/resources/icons/qlion.png</iconset>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>90</y>
+      <width>127</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Tab 1</string>
+     </attribute>
+    </widget>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>551</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
@@ -71,6 +90,16 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="action_tool_tree_view"/>
+  </widget>
+  <widget class="QDockWidget" name="sideDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents"/>
   </widget>
   <action name="action_new_file">
    <property name="text">
@@ -206,6 +235,19 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="action_tool_tree_view">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/icons/folder.png</normaloff>
+     <normalon>resources/icons/folder.png</normalon>:/resources/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>资源管理器</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+E</string>
    </property>
   </action>
  </widget>

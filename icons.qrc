@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/icons/qlion.png</file>
+        <file>resources/icons/folder.svg</file>
+        <file>resources/icons/folder.png</file>
     </qresource>
 </RCC>

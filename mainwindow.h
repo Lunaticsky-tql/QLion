@@ -6,6 +6,7 @@
 #define QLION_MAINWINDOW_H
 
 #include <QMainWindow>
+#include<QStackedWidget>
 
 
 QT_BEGIN_NAMESPACE
@@ -20,8 +21,16 @@ public:
 
     ~MainWindow() override;
 
+private slots:
+    void on_act_tool_tree_view_triggered();
+
 private:
     Ui::MainWindow *ui;
+
+    void setUpSideDock();
+
+    void setUpConnection();
+    QStackedWidget *stackedWidget;
 };
 
 
