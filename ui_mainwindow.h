@@ -18,9 +18,10 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "QLionTabWidget.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -45,9 +46,10 @@ public:
     QAction *action_show_shotcut;
     QAction *action_info;
     QAction *action_tool_tree_view;
+    QAction *action_exit;
     QWidget *centralwidget;
-    QTabWidget *tabWidget;
-    QWidget *tab;
+    QVBoxLayout *verticalLayout;
+    QLionTabWidget *tabWidget;
     QMenuBar *menubar;
     QMenu *menu_F;
     QMenu *menu_E;
@@ -100,18 +102,22 @@ public:
         action_info->setObjectName("action_info");
         action_tool_tree_view = new QAction(MainWindow);
         action_tool_tree_view->setObjectName("action_tool_tree_view");
+        action_tool_tree_view->setCheckable(true);
         QIcon icon1;
         icon1.addFile(QString::fromUtf8(":/resources/icons/folder.png"), QSize(), QIcon::Normal, QIcon::Off);
         icon1.addFile(QString::fromUtf8("resources/icons/folder.png"), QSize(), QIcon::Normal, QIcon::On);
         action_tool_tree_view->setIcon(icon1);
+        action_exit = new QAction(MainWindow);
+        action_exit->setObjectName("action_exit");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
-        tabWidget = new QTabWidget(centralwidget);
+        verticalLayout = new QVBoxLayout(centralwidget);
+        verticalLayout->setObjectName("verticalLayout");
+        tabWidget = new QLionTabWidget(centralwidget);
         tabWidget->setObjectName("tabWidget");
-        tabWidget->setGeometry(QRect(170, 90, 127, 80));
-        tab = new QWidget();
-        tab->setObjectName("tab");
-        tabWidget->addTab(tab, QString());
+
+        verticalLayout->addWidget(tabWidget);
+
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -147,6 +153,8 @@ public:
         menu_F->addAction(action_save_as);
         menu_F->addSeparator();
         menu_F->addAction(action_setting);
+        menu_F->addSeparator();
+        menu_F->addAction(action_exit);
         menu_E->addAction(action_undo);
         menu_E->addAction(action_redo);
         menu_E->addSeparator();
@@ -161,7 +169,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(-1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -242,7 +250,7 @@ public:
 #if QT_CONFIG(shortcut)
         action_tool_tree_view->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+E", nullptr));
 #endif // QT_CONFIG(shortcut)
-        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("MainWindow", "Tab 1", nullptr));
+        action_exit->setText(QCoreApplication::translate("MainWindow", "\351\200\200\345\207\272", nullptr));
         menu_F->setTitle(QCoreApplication::translate("MainWindow", "\346\226\207\344\273\266(&F)", nullptr));
         menu_E->setTitle(QCoreApplication::translate("MainWindow", "\347\274\226\350\276\221(&E)", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));

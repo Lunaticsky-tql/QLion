@@ -14,7 +14,7 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(QLion main.cpp mainwindow.cpp mainwindow.h mainwindow.ui icons.qrc)
+add_executable(QLion main.cpp mainwindow.cpp mainwindow.h mainwindow.ui icons.qrc QLionTabWidget.cpp QLionTabWidget.h QLionCodePage.cpp QLionCodePage.h)
 target_link_libraries(QLion
         Qt::Core
         Qt::Gui

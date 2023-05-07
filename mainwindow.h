@@ -21,8 +21,6 @@ public:
 
     ~MainWindow() override;
 
-private slots:
-    void on_act_tool_tree_view_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -30,7 +28,16 @@ private:
     void setUpSideDock();
 
     void setUpConnection();
-    QStackedWidget *stackedWidget;
+    QStackedWidget *stackedWidget{};
+
+private slots:
+    void do_act_tool_tree_view_triggered();
+    void on_action_new_window_triggered();
+    void on_action_exit_triggered();
+    void on_action_new_file_triggered();
+    void on_action_open_file_triggered();
+
+
 };
 
 

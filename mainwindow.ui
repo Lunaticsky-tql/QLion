@@ -18,24 +18,15 @@
     <normaloff>:/resources/icons/qlion.png</normaloff>:/resources/icons/qlion.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>90</y>
-      <width>127</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="tab">
-     <attribute name="title">
-      <string>Tab 1</string>
-     </attribute>
-    </widget>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLionTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -60,6 +51,8 @@
     <addaction name="action_save_as"/>
     <addaction name="separator"/>
     <addaction name="action_setting"/>
+    <addaction name="separator"/>
+    <addaction name="action_exit"/>
    </widget>
    <widget class="QMenu" name="menu_E">
     <property name="title">
@@ -238,6 +231,9 @@
    </property>
   </action>
   <action name="action_tool_tree_view">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/resources/icons/folder.png</normaloff>
@@ -250,7 +246,20 @@
     <string>Ctrl+Shift+E</string>
    </property>
   </action>
+  <action name="action_exit">
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QLionTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>QLionTabWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>

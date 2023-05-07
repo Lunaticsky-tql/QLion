@@ -10,10 +10,12 @@
 #include <QVBoxLayout>
 #include "mainwindow.h"
 #include "ui_MainWindow.h"
+#include "QLionCodePage.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    show();
     setUpSideDock();
     setUpConnection();
 
@@ -44,10 +46,10 @@ void MainWindow::setUpSideDock() {
 
 void MainWindow::setUpConnection() {
 
-    connect(ui->action_tool_tree_view, SIGNAL(triggered()),this, SLOT(on_act_tool_tree_view_triggered()));
+    connect(ui->action_tool_tree_view, SIGNAL(triggered()),this, SLOT(do_act_tool_tree_view_triggered()));
 }
 
-void MainWindow::on_act_tool_tree_view_triggered(){
+void MainWindow::do_act_tool_tree_view_triggered(){
     if(ui->sideDock->isHidden()){
         ui->sideDock->show();
         stackedWidget->setCurrentIndex(0);
@@ -56,4 +58,22 @@ void MainWindow::on_act_tool_tree_view_triggered(){
     {
         ui->sideDock->hide();
     }
+}
+
+void MainWindow::on_action_new_window_triggered() {
+    qDebug()<<"new window";
+    new MainWindow();
+}
+void MainWindow::on_action_exit_triggered() {
+    this->close();
+}
+
+void MainWindow::on_action_new_file_triggered() {
+    ui->tabWidget->addNewTab();
+}
+
+void MainWindow::on_action_open_file_triggered() {
+    auto *codePage=new QLionCodePage(ui->tabWidget);
+    ui->tabWidget->addTab(codePage,"new file");
+    ui->tabWidget->setCurrentWidget(codePage);
 }
