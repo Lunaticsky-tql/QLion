@@ -60,19 +60,41 @@ void MyHighlighter::addCommentFormat() {
     highlightRules.append(rule);
 }
 
-
+//notice: it was called line by line
 void MyHighlighter::addMultiLineCommentFormat(const QString &text) {
     //mark the start of the comment
     setCurrentBlockState(0);
     QRegularExpression startExpression(R"(/\*)");
     QRegularExpression endExpression(R"(\*/)");
     QColor color(128, 128, 128);
-
+    QTextCharFormat multiLineCommentFormat;
+    multiLineCommentFormat.setForeground(color);
+    multiLineCommentFormat.setFont(QFont(mFontFamily, mFontSize));
+    long long startIndex = 0;
+    // that is, if the previous line is not a comment
+    if (previousBlockState() != 1)
+        startIndex = startExpression.match(text).capturedStart();
+    //if the previous line is a comment, we should start from the beginning of the line (startIndex=0)
+    while (startIndex >= 0) {
+        QRegularExpressionMatch endMatch = endExpression.match(text, startIndex);
+        long long endIndex = endMatch.capturedStart();
+        long long commentLength=0;
+        if (endIndex == -1) {
+            // we still in a comment
+            setCurrentBlockState(1);
+            commentLength = text.length() - startIndex;
+        } else {
+            // we find the end of the comment
+            commentLength = endIndex - startIndex + endMatch.capturedLength();
+        }
+        setFormat(startIndex, commentLength, multiLineCommentFormat);
+        startIndex = startExpression.match(text, startIndex + commentLength).capturedStart();
+    }
 }
 
-
+//notice: it was called line by line
 void MyHighlighter::highlightBlock(const QString &text) {
-    for(HighlightRule &rule: highlightRules) {
+    for (HighlightRule &rule: highlightRules) {
         rule.format.setFont(QFont(mFontFamily, mFontSize));
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
@@ -80,6 +102,7 @@ void MyHighlighter::highlightBlock(const QString &text) {
             setFormat(match.capturedStart(), match.capturedLength(), rule.format);
         }
     }
+    addMultiLineCommentFormat(text);
 }
 
 void MyHighlighter::initFormat() {
