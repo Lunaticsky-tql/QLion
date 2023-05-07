@@ -89,5 +89,6 @@ void MainWindow::on_action_open_file_triggered() {
     QTextStream in(&file);
     QString text = in.readAll();
     file.close();
+    //let the tab widget to handle the new tab adding event
     ui->tabWidget->addNewTab(text, filePath);
 }

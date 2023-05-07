@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QTextBrowser>
 #include <QPlainTextEdit>
+#include "MyHighlighter.h"
 
 class LineNumberArea;
 class QLionCodePage :public QPlainTextEdit
@@ -23,6 +24,7 @@ private:
     LineNumberArea *lineNumberArea;
     QString filePath;
     int lineNumberFontWidth=0;
+    MyHighlighter * mHighlighter;
     void initConnections();
     void initFont();
     void initHighlighter();
@@ -57,6 +59,7 @@ protected:
     }
 private:
     QLionCodePage *codeEditor;
+
 };
 
 #endif //QLION_QLIONCODEPAGE_H

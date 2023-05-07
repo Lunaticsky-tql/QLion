@@ -14,6 +14,7 @@ QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
     setFrameShape(QPlainTextEdit::NoFrame);
     filePath=QString();
     initConnections();
+    initHighlighter();
     initFont();
     highlightCurrentLine();
     updateLineNumberAreaWidth();
@@ -86,6 +87,7 @@ void QLionCodePage::highlightCurrentLine() {
 }
 
 void QLionCodePage::initHighlighter() {
+    mHighlighter = new MyHighlighter(this->document());
 
 }
 
