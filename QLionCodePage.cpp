@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <QPainter>
 #include <QTextBlock>
-
+#include<QScrollBar>
 #include "QLionCodePage.h"
 
 QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
@@ -14,6 +14,9 @@ QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
     initFont();
     highlightCurrentLine();
     updateLineNumberAreaWidth();
+    setLineWrapMode(QPlainTextEdit::NoWrap);
+    setFrameShape(QPlainTextEdit::NoFrame);
+
 }
 
 void QLionCodePage::initFont() {
@@ -21,6 +24,7 @@ void QLionCodePage::initFont() {
     font.setFamily("Consolas");
     font.setPointSize(12);
     this->setFont(font);
+    lineNumberFontWidth=fontMetrics().horizontalAdvance(QChar('0'));
 
 }
 
@@ -29,28 +33,34 @@ void QLionCodePage::initConnections() {
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
     // update lineNumberArea paint event
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    // update lineNumber width change
+    connect(this,SIGNAL(blockCountChanged(int)),this,SLOT(updateLineNumberAreaWidth()));
 
 }
 void QLionCodePage::resizeEvent(QResizeEvent *event) {
     QPlainTextEdit::resizeEvent(event);
     QRect cr = contentsRect();
-    lineNumberArea->setGeometry(0,0, 25, cr.height());
+    lineNumberArea->setGeometry(0,0, getLineNumberAreaWidth(), cr.height());
 
 }
 
 void QLionCodePage::lineNumberAreaPaintEvent(QPaintEvent *pEvent) {
     QPainter painter(lineNumberArea);
-    QColor lineNumberColor = QColor(49, 51, 53);
-    painter.fillRect(pEvent->rect(), lineNumberColor);
+    QColor lineNumberAreaColor = QColor(49, 51, 53);
+    QColor lineNumberColor = QColor(96,99,102);
+    QColor currentLineNumberColor=QColor(164, 163, 163);
+    painter.fillRect(pEvent->rect(), lineNumberAreaColor);
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
+    int currentCursorTop=(int)blockBoundingGeometry(textCursor().block()).translated(contentOffset()).top();
+
     int bottom = top + (int) blockBoundingRect(block).height();
     while (block.isValid() && top <= pEvent->rect().bottom()) {
         if (block.isVisible() && bottom >= pEvent->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(QColor(255, 255, 255));
-            painter.drawText(0, top, getLineNumberAreaWidth(), fontMetrics().height(),
+            painter.setPen(currentCursorTop==top ? currentLineNumberColor : lineNumberColor);
+            painter.drawText(0, top, getLineNumberAreaWidth()-lineNumberFontWidth/3, fontMetrics().height(),
                              Qt::AlignRight, number);
         }
         block = block.next();
@@ -79,9 +89,10 @@ void QLionCodePage::initHighlighter() {
 }
 
 int QLionCodePage::getLineNumberAreaWidth() {
-    return 25;
+    return QString::number(blockCount()+1).length()*lineNumberFontWidth+lineNumberFontWidth;
 
 }
+
 
 void QLionCodePage::updateLineNumberArea(const QRect &, int dy) {
     // for scroll: https://doc.qt.io/qt-6/qwidget.html#scroll
@@ -96,6 +107,21 @@ void QLionCodePage::updateLineNumberArea(const QRect &, int dy) {
 
 void QLionCodePage::updateLineNumberAreaWidth() {
     setViewportMargins(getLineNumberAreaWidth(),0,0,0);
+}
+
+void QLionCodePage::lineNumberAreaMousePressEvent(QMouseEvent *mEvent) {
+    // select the current line and jump the cursor to the beginning of the next line
+    int clickedLineNumber=qRound(mEvent->position().y())/fontMetrics().height()+verticalScrollBar()->value();
+//    qDebug()<<clickedLineNumber;
+    QTextBlock clickedBlock=document()->findBlockByLineNumber(clickedLineNumber);
+    QTextCursor cursor(clickedBlock);
+       cursor.movePosition(QTextCursor::QTextCursor::NextBlock,QTextCursor::KeepAnchor);
+    setTextCursor(cursor);
+}
+
+void QLionCodePage::lineNumberAreaWheelEvent(QWheelEvent *wEvent) {
+    // scroll the text area
+    QPlainTextEdit::wheelEvent(wEvent);
 }
 
 

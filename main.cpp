@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QStyle>
 #include "mainwindow.h"
 
 void setUpStyle(QApplication &a)
@@ -29,13 +30,14 @@ void setUpStyle(QApplication &a)
     darkPalette.setColor(QPalette::Disabled, QPalette::Light, darkGray);
     QApplication::setPalette(darkPalette); 
     a.setStyleSheet("QToolTip { color: #ffffff; background-color: #46484a; border: none; }");
-
 }
+
 
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    setUpStyle(a);
+
     MainWindow w;
+    setUpStyle(a);
     return QApplication::exec();
 }

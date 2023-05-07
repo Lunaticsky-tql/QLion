@@ -16,8 +16,11 @@ class QLionCodePage :public QPlainTextEdit
 public:
     explicit QLionCodePage(QWidget *parent = nullptr);
     void lineNumberAreaPaintEvent(QPaintEvent *pEvent);
+    void lineNumberAreaMousePressEvent(QMouseEvent *mEvent);
+    void lineNumberAreaWheelEvent(QWheelEvent *wEvent);
 private:
     LineNumberArea *lineNumberArea;
+    int lineNumberFontWidth;
     void initConnections();
     void initFont();
     void initHighlighter();
@@ -31,9 +34,7 @@ private slots:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
-//    void keyPressEvent(QKeyEvent *event) override;
-//    void focusInEvent(QFocusEvent *event) override;
-//    void focusOutEvent(QFocusEvent *event) override;
+
 
 };
 
@@ -45,6 +46,12 @@ public :
 protected:
     void paintEvent(QPaintEvent *event) override{
         codeEditor->lineNumberAreaPaintEvent(event);
+    }
+    void mousePressEvent(QMouseEvent *event) override{
+        codeEditor->lineNumberAreaMousePressEvent(event);
+    }
+    void wheelEvent(QWheelEvent *event) override{
+        codeEditor->lineNumberAreaWheelEvent(event);
     }
 private:
     QLionCodePage *codeEditor;
