@@ -15,6 +15,10 @@ public:
     QLionTabWidget(QWidget *parent);
 
     void addNewTab();
+
+    void addNewTab(const QString& qString, const QString& filePath);
+
+    void initConnections();
 };
 
 

@@ -10,12 +10,13 @@
 
 QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
+    setLineWrapMode(QPlainTextEdit::NoWrap);
+    setFrameShape(QPlainTextEdit::NoFrame);
+    filePath=QString();
     initConnections();
     initFont();
     highlightCurrentLine();
     updateLineNumberAreaWidth();
-    setLineWrapMode(QPlainTextEdit::NoWrap);
-    setFrameShape(QPlainTextEdit::NoFrame);
 
 }
 
@@ -122,6 +123,16 @@ void QLionCodePage::lineNumberAreaMousePressEvent(QMouseEvent *mEvent) {
 void QLionCodePage::lineNumberAreaWheelEvent(QWheelEvent *wEvent) {
     // scroll the text area
     QPlainTextEdit::wheelEvent(wEvent);
+}
+
+
+
+QString QLionCodePage::getFilePath() {
+    return filePath;
+}
+
+void QLionCodePage::setFilePath(const QString &filePath) {
+    QLionCodePage::filePath = filePath;
 }
 
 

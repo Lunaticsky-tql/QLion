@@ -24,6 +24,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QString lastFilePath;
+    QString lastDirPath;
 
     void setUpSideDock();
 

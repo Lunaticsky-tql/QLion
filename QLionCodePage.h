@@ -12,15 +12,17 @@ class LineNumberArea;
 class QLionCodePage :public QPlainTextEdit
 {
     Q_OBJECT
-
 public:
     explicit QLionCodePage(QWidget *parent = nullptr);
     void lineNumberAreaPaintEvent(QPaintEvent *pEvent);
     void lineNumberAreaMousePressEvent(QMouseEvent *mEvent);
     void lineNumberAreaWheelEvent(QWheelEvent *wEvent);
+    QString getFilePath();
+    void setFilePath(const QString &filePath);
 private:
     LineNumberArea *lineNumberArea;
-    int lineNumberFontWidth;
+    QString filePath;
+    int lineNumberFontWidth=0;
     void initConnections();
     void initFont();
     void initHighlighter();
