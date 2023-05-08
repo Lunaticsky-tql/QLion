@@ -9,7 +9,9 @@
 QLionTabWidget::QLionTabWidget(QWidget *parent) : QTabWidget(parent) {
     setTabsClosable(true);
     setMovable(true);
+    mainWindow = dynamic_cast<MainWindow *>(parent);
     initConnections();
+
 
 
 }
@@ -26,7 +28,7 @@ void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
     QString fileName = QFileInfo(filePath).fileName();
     for (int i = 0; i < count(); i++) {
         //get the widget of the tab and get the file path
-        QString filePathOfCurrentTab = ((QLionCodePage *) widget(i))->getFilePath();
+        QString filePathOfCurrentTab = getCodePage(i)->getFilePath();
         if (filePathOfCurrentTab == filePath) {
             setCurrentIndex(i);
             return;
@@ -48,6 +50,19 @@ void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
 void QLionTabWidget::initConnections() {
     connect(this, &QLionTabWidget::tabCloseRequested, this, [this](int index) {
         removeTab(index);
+        if(count()==0){
+            mainWindow->setActions(false);
+        }
     });
+}
+
+QLionCodePage *QLionTabWidget::getCurrentCodePage() {
+    //thin wrapper for preventing explicit type cast in other places
+    return (QLionCodePage *) currentWidget();
+}
+
+QLionCodePage *QLionTabWidget::getCodePage(int index) {
+    //thin wrapper for preventing explicit type cast in other places
+    return (QLionCodePage *) widget(index);
 }
 

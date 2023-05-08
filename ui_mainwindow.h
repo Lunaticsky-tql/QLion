@@ -31,8 +31,8 @@ public:
     QAction *action_new_file;
     QAction *action_open_file;
     QAction *action_open_folder;
-    QAction *action_save;
-    QAction *action_save_as;
+    QAction *action_save_file;
+    QAction *action_save_as_file;
     QAction *action_setting;
     QAction *action_new_window;
     QAction *action_undo;
@@ -72,10 +72,10 @@ public:
         action_open_file->setObjectName("action_open_file");
         action_open_folder = new QAction(MainWindow);
         action_open_folder->setObjectName("action_open_folder");
-        action_save = new QAction(MainWindow);
-        action_save->setObjectName("action_save");
-        action_save_as = new QAction(MainWindow);
-        action_save_as->setObjectName("action_save_as");
+        action_save_file = new QAction(MainWindow);
+        action_save_file->setObjectName("action_save_file");
+        action_save_as_file = new QAction(MainWindow);
+        action_save_as_file->setObjectName("action_save_as_file");
         action_setting = new QAction(MainWindow);
         action_setting->setObjectName("action_setting");
         action_new_window = new QAction(MainWindow);
@@ -149,8 +149,8 @@ public:
         menu_F->addAction(action_open_file);
         menu_F->addAction(action_open_folder);
         menu_F->addSeparator();
-        menu_F->addAction(action_save);
-        menu_F->addAction(action_save_as);
+        menu_F->addAction(action_save_file);
+        menu_F->addAction(action_save_as_file);
         menu_F->addSeparator();
         menu_F->addAction(action_setting);
         menu_F->addSeparator();
@@ -190,13 +190,13 @@ public:
 #if QT_CONFIG(shortcut)
         action_open_folder->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+O", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_save->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230", nullptr));
+        action_save_file->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230", nullptr));
 #if QT_CONFIG(shortcut)
-        action_save->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+S", nullptr));
+        action_save_file->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+S", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_save_as->setText(QCoreApplication::translate("MainWindow", "\345\217\246\345\255\230\344\270\272", nullptr));
+        action_save_as_file->setText(QCoreApplication::translate("MainWindow", "\345\217\246\345\255\230\344\270\272", nullptr));
 #if QT_CONFIG(shortcut)
-        action_save_as->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+S", nullptr));
+        action_save_as_file->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+S", nullptr));
 #endif // QT_CONFIG(shortcut)
         action_setting->setText(QCoreApplication::translate("MainWindow", "\350\256\276\347\275\256", nullptr));
 #if QT_CONFIG(shortcut)

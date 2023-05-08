@@ -140,4 +140,39 @@ void QLionCodePage::setFilePath(const QString &filePath) {
     QLionCodePage::filePath = filePath;
 }
 
+void QLionCodePage::copyAction() {
+    // copy the current line and do not change the cursor position
+    QTextCursor cursor=this->textCursor();
+    if(cursor.hasSelection()){
+        // if user select some text, copy the selected text
+        copy();
+    }
+    else{
+        //get the content of the current line and set the clipboard
+        QTextBlock block=cursor.block();
+        QString text=block.text();
+        QApplication::clipboard()->setText(text);
+    }
+
+}
+
+void QLionCodePage::cutAction() {
+    // cut the current line and do not change the cursor position
+    QTextCursor cursor=this->textCursor();
+    if(cursor.hasSelection()){
+        // if user select some text, cut the selected text
+        cut();
+    }
+    else{
+        //get the content of the current line and set the clipboard
+        QTextBlock block=cursor.block();
+        QString text=block.text();
+        QApplication::clipboard()->setText(text);
+        // delete the current line
+        cursor.select(QTextCursor::LineUnderCursor);
+        cursor.removeSelectedText();
+    }
+
+}
+
 

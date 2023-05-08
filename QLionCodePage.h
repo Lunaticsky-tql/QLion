@@ -7,6 +7,8 @@
 #include <QWidget>
 #include <QTextBrowser>
 #include <QPlainTextEdit>
+#include <QClipboard>
+#include <QApplication>
 #include "MyHighlighter.h"
 
 class LineNumberArea;
@@ -20,6 +22,8 @@ public:
     void lineNumberAreaWheelEvent(QWheelEvent *wEvent);
     QString getFilePath();
     void setFilePath(const QString &filePath);
+    void copyAction();
+    void cutAction();
 private:
     LineNumberArea *lineNumberArea;
     QString filePath;

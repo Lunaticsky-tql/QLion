@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     show();
     setUpSideDock();
     setUpConnection();
+    setActions(false);
     this->setCentralWidget(ui->tabWidget);
     lastDirPath = QDir::currentPath();
     lastFilePath = QString();
@@ -72,6 +73,7 @@ void MainWindow::on_action_exit_triggered() {
 
 void MainWindow::on_action_new_file_triggered() {
     ui->tabWidget->addNewTab();
+    setActions(true);
 }
 
 void MainWindow::on_action_open_file_triggered() {
@@ -91,4 +93,42 @@ void MainWindow::on_action_open_file_triggered() {
     file.close();
     //let the tab widget to handle the new tab adding event
     ui->tabWidget->addNewTab(text, filePath);
+    setActions(true);
 }
+
+void MainWindow::on_action_save_file_triggered() {
+
+
+}
+
+void MainWindow::on_action_copy_triggered() {
+    QLionCodePage* currentPage=ui->tabWidget->getCurrentCodePage();
+    if(currentPage!= nullptr){
+        currentPage->copyAction();
+    }
+}
+void MainWindow::on_action_cut_triggered() {
+    QLionCodePage* currentPage=ui->tabWidget->getCurrentCodePage();
+    if(currentPage!= nullptr){
+        currentPage->cutAction();
+    }
+}
+void MainWindow::on_action_paste_triggered() {
+    QLionCodePage* currentPage=ui->tabWidget->getCurrentCodePage();
+    if(currentPage!= nullptr){
+        currentPage->paste();
+    }
+}
+
+void MainWindow::on_action_save_as_file_triggered() {
+
+}
+
+void MainWindow::setActions(bool isEnable) {
+    ui->action_save_file->setEnabled(isEnable);
+    ui->action_save_as_file->setEnabled(isEnable);
+    ui->action_copy->setEnabled(isEnable);
+    ui->action_cut->setEnabled(isEnable);
+    ui->action_paste->setEnabled(isEnable);
+}
+

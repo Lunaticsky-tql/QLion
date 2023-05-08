@@ -7,6 +7,8 @@
 
 
 #include <QTabWidget>
+#include "QLionCodePage.h"
+#include "mainwindow.h"
 
 class QLionTabWidget: public  QTabWidget{
     Q_OBJECT
@@ -17,8 +19,12 @@ public:
     void addNewTab();
 
     void addNewTab(const QString& qString, const QString& filePath);
+    QLionCodePage* getCurrentCodePage();
+    QLionCodePage* getCodePage(int index);
 
     void initConnections();
+private:
+    MainWindow *mainWindow;
 };
 
 

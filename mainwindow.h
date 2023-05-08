@@ -18,6 +18,7 @@ Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    void setActions(bool isEnable);
 
     ~MainWindow() override;
 
@@ -38,6 +39,11 @@ private slots:
     void on_action_exit_triggered();
     void on_action_new_file_triggered();
     void on_action_open_file_triggered();
+    void on_action_save_file_triggered();
+    void on_action_save_as_file_triggered();
+    void on_action_copy_triggered();
+    void on_action_cut_triggered();
+    void on_action_paste_triggered();
 
 
 };
