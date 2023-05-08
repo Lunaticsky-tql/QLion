@@ -27,18 +27,21 @@ public:
     void lineNumberAreaWheelEvent(QWheelEvent *wEvent);
     void setParentTabWidget(QLionTabWidget *pWidget);
     QString getFilePath();
-    bool getChangesUnsavedStatus() const;
+    bool areChangesUnsaved() const;
     void setFilePath(const QString &filePath);
     void copyAction();
     void cutAction();
-    void saveFile(bool isSaveAs);
+    bool saveFile(bool isSaveAs);
+    int getUntitledID() const;
+    void setUntitledID(int id);
 private:
     LineNumberArea *lineNumberArea;
     QLionTabWidget *myTabWidget;
     QString filePath;
     int lineNumberFontWidth=0;
     Highlighter * mHighlighter;
-    bool areChangesUnsaved;
+    bool unsaved;
+    int untitledID=-1;
     void initConnections();
     void initFont();
     void initHighlighter();

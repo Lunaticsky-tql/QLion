@@ -145,3 +145,22 @@ QString MainWindow::getLastFilePath() {
     return lastFilePath;
 }
 
+bool MainWindow::showSaveDialog(QLionCodePage *pPage) {
+    QString tabTitle=ui->tabWidget->tabText(ui->tabWidget->indexOf(pPage));
+    QString msg = "是否保存对\"" + tabTitle + "\"的更改？";
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::warning(this, "保存文件", msg,
+                                  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,QMessageBox::Yes);
+    if (reply == QMessageBox::Yes) {
+        //if not saved successfully,cancel the close event
+        return !(pPage->saveFile(false));
+    } else if (reply == QMessageBox::No) {
+        //do nothing
+        return false;
+    } else {
+        //cancel
+        return true;
+    }
+
+}
+

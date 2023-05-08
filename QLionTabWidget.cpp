@@ -15,11 +15,19 @@ QLionTabWidget::QLionTabWidget(QWidget *parent) : QTabWidget(parent) {
 
 void QLionTabWidget::addNewTab() {
     if(mainWindow){
-        untitledCount++;
-        QString title = "Untitled-"+QString::number(untitledCount);
+        // get the minimum unused untitledID from the set
+        int newID = 1;
+        // it will iterate at most size() times
+        while(usedUntitledID.count(newID)){
+            newID++;
+        }
+        usedUntitledID.insert(newID);
+        QString title = "Untitled-"+QString::number(newID);
         addTab(new QLionCodePage(this), title);
         setCurrentIndex(count() - 1);
-        getCurrentCodePage()->setParentTabWidget(this);
+        QLionCodePage *currentCodePage = getCurrentCodePage();
+        currentCodePage->setParentTabWidget(this);
+        currentCodePage->setUntitledID(newID);
     }
 }
 bool QLionTabWidget::distinguishFileName(const QString &filePath) {
@@ -74,6 +82,19 @@ void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
 
 void QLionTabWidget::initConnections() {
     connect(this, &QLionTabWidget::tabCloseRequested, this, [this](int index) {
+        QLionCodePage *codePage = getCodePage(index);
+        bool canceled = false;
+        if(codePage->areChangesUnsaved()){
+            canceled=mainWindow->showSaveDialog(codePage);
+        }
+        if(canceled){
+            return;
+        }
+        // do not forget to update the untitledCount
+        if(codePage->getFilePath().isEmpty())
+        {
+            usedUntitledID.erase(codePage->getUntitledID());
+        }
         removeTab(index);
         if(count()==0){
             mainWindow->setActions(false);

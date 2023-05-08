@@ -177,8 +177,8 @@ void QLionCodePage::cutAction() {
     }
 }
 
-bool QLionCodePage::getChangesUnsavedStatus() const {
-    return areChangesUnsaved;
+bool QLionCodePage::areChangesUnsaved() const {
+    return unsaved;
 }
 
 
@@ -194,9 +194,9 @@ int QLionCodePage::getMyCurrentIndex() {
 }
 
 void QLionCodePage::setUnsaved() {
-    if (!areChangesUnsaved) {
+    if (!unsaved) {
         setMyTabWidgetIcon(QIcon(":/resources/icons/unsaved.png"));
-        areChangesUnsaved = true;
+        unsaved = true;
     }
 }
 
@@ -204,17 +204,19 @@ void QLionCodePage::setParentTabWidget(QLionTabWidget *pWidget) {
     myTabWidget=pWidget;
 }
 
-void QLionCodePage::saveFile(bool isSaveAs) {
+bool QLionCodePage::saveFile(bool isSaveAs) {
     QString newFilePath;
     if (isSaveAs || filePath.isEmpty()) {
-        // if the file is not saved before or user want to save as
+        // if the file is not saved before or user want to "save as"
         newFilePath = QFileDialog::getSaveFileName(this, "保存文件", myTabWidget->getLastFilePath(),
                                                         tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
+        qDebug()<<newFilePath;
         if (newFilePath.isEmpty()) {
-            return;
+            return false;
         }
         else if(newFilePath==filePath)
         {
+            // if reached here, it means user want to save the file with the same name and path (so we actually do "save" rather than "save as")
             // gap the distinguishFileName function (it will close the tab with old file path) and act as "save"
             isSaveAs=false;
         }
@@ -225,11 +227,18 @@ void QLionCodePage::saveFile(bool isSaveAs) {
     QFile file(newFilePath);
     if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::information(this, "无法打开文件", file.errorString());
-        return;
+        return false;
     }
     QTextStream out(&file);
     out << toPlainText();
     file.close();
+    // we saved the file successfully but still have a lot of things to do...
+    // save a file with a new name may need to distinguish the file with the same name and different path
+    if(filePath.isEmpty()){
+        // the untitled file will turn to a normal file after saving
+        // so we need to remove the untitledID from the untitledIDSet
+        myTabWidget->usedUntitledID.erase(untitledID);
+    }
     if(isSaveAs || filePath.isEmpty())
     {
         if(myTabWidget->distinguishFileName(newFilePath)){
@@ -242,8 +251,18 @@ void QLionCodePage::saveFile(bool isSaveAs) {
         }
         filePath = newFilePath;
     }
+
     setMyTabWidgetIcon(QIcon());
-    areChangesUnsaved = false;
+    unsaved = false;
+    return true;
+}
+
+void QLionCodePage::setUntitledID(int id) {
+    untitledID=id;
+}
+
+int QLionCodePage::getUntitledID() const {
+    return untitledID;
 }
 
 

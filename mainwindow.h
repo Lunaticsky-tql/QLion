@@ -7,6 +7,7 @@
 
 #include <QMainWindow>
 #include<QStackedWidget>
+#include "QLionCodePage.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -23,6 +24,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     void setActions(bool isEnable);
     QString getLastFilePath();
+    bool showSaveDialog(QLionCodePage *pPage);
     ~MainWindow() override;
 
 
