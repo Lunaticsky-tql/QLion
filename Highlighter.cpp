@@ -3,14 +3,14 @@
 //
 
 #include <QFile>
-#include "MyHighlighter.h"
+#include "Highlighter.h"
 
-MyHighlighter::MyHighlighter(QTextDocument *parent, const QString &fontFamily, int fontSize) : QSyntaxHighlighter(
+Highlighter::Highlighter(QTextDocument *parent, const QString &fontFamily, int fontSize) : QSyntaxHighlighter(
         parent) {
     initBatchHighlightFormat();
 }
 
-void MyHighlighter::addVarFormat(const QString &text) {
+void Highlighter::addVarFormat(const QString &text) {
     HighlightRule normalVarRole;
     normalVarRole.pattern = QRegularExpression("[a-zA-Z0-9_]+");
     QColor color(169, 183, 198);
@@ -23,7 +23,7 @@ void MyHighlighter::addVarFormat(const QString &text) {
     }
 }
 
-void MyHighlighter::addNumberFormat() {
+void Highlighter::addNumberFormat() {
     HighlightRule intRule;
     intRule.pattern = QRegularExpression(R"(\b[0-9]+\b)");
     HighlightRule hexIntRule;
@@ -41,32 +41,43 @@ void MyHighlighter::addNumberFormat() {
     highlightRules.append(floatRule);
 }
 
-void MyHighlighter::addStringFormat() {
-
+void Highlighter::addStringFormat(const QString &text) {
+    QVector<HighlightRule> stringHighlightRules;
     QColor color(106, 135, 89);
     HighlightRule rule1;
     //"xxx"
     rule1.pattern = QRegularExpression(R"("[^"]*")");
     rule1.format.setForeground(color);
-    highlightRules.append(rule1);
+    stringHighlightRules.append(rule1);
     HighlightRule rule2;
     //'xxx'
     rule2.pattern = QRegularExpression(R"('[^']*')");
     rule2.format.setForeground(color);
-    highlightRules.append(rule2);
-
+    stringHighlightRules.append(rule2);
+    for(auto &rule:stringHighlightRules){
+        QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+        while (matchIterator.hasNext()) {
+            QRegularExpressionMatch match = matchIterator.next();
+            setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+        }
+    }
 }
 
-void MyHighlighter::addCommentFormat() {
+void Highlighter::addCommentFormat(const QString &text) {
     HighlightRule rule;
     rule.pattern = QRegularExpression(R"(//[^\n]*)");
     QColor color(128, 128, 128);
     rule.format.setForeground(color);
-    highlightRules.append(rule);
+    rule.format.setFont(QFont(mFontFamily, mFontSize));
+    QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+    while (matchIterator.hasNext()) {
+        QRegularExpressionMatch match = matchIterator.next();
+        setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+    }
 }
 
 //notice: it was called line by line
-void MyHighlighter::addMultiLineCommentFormat(const QString &text) {
+void Highlighter::addMultiLineCommentFormat(const QString &text) {
     //mark the start of the comment
     setCurrentBlockState(0);
     QRegularExpression startExpression(R"(/\*)");
@@ -97,7 +108,7 @@ void MyHighlighter::addMultiLineCommentFormat(const QString &text) {
     }
 }
 
-void MyHighlighter::addVarMemberFormat(const QString &text) {
+void Highlighter::addVarMemberFormat(const QString &text) {
     HighlightRule varMemberRole;
     // we assume that the var member is like this: .varMember ('.' implies the var is a member of a class)
     varMemberRole.pattern = QRegularExpression(R"([.][a-zA-Z_][a-zA-Z0-9_]*)");
@@ -118,8 +129,24 @@ void MyHighlighter::addVarMemberFormat(const QString &text) {
     }
 }
 
+void Highlighter::addIncludeFormat(const QString &text) {
+    HighlightRule rule;
+    rule.pattern = QRegularExpression(R"(#include\s*[<"][a-zA-Z0-9_./\\]*[>"])");
+    QColor stringColor(106, 135, 89);
+    QColor includeColor(255, 198, 109);
+    rule.format.setForeground(stringColor);
+    rule.format.setFont(QFont(mFontFamily, mFontSize));
+    QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+    while (matchIterator.hasNext()) {
+        QRegularExpressionMatch match = matchIterator.next();
+        // set the "#include" to includeColor and others to stringColor
+        setFormat(match.capturedStart(), 8, includeColor);
+        setFormat(match.capturedStart() + 8, match.capturedLength() - 8, rule.format);
+    }
+}
+
 //notice: it was called line by line
-void MyHighlighter::highlightBlock(const QString &text) {
+void Highlighter::highlightBlock(const QString &text) {
     addVarFormat(text);
     for (HighlightRule &rule: highlightRules) {
         rule.format.setFont(QFont(mFontFamily, mFontSize));
@@ -129,12 +156,17 @@ void MyHighlighter::highlightBlock(const QString &text) {
             setFormat(match.capturedStart(), match.capturedLength(), rule.format);
         }
     }
-    addMultiLineCommentFormat(text);
     addFunctionFormat(text);
     addVarMemberFormat(text);
+    addIncludeFormat(text);
+    addStringFormat(text);
+    // comments should be highlighted after all the other formats
+    // or the comment will be highlighted by other formats like keywords
+    addCommentFormat(text);
+    addMultiLineCommentFormat(text);
 }
 
-void MyHighlighter::addKeywordsFormat() {
+void Highlighter::addKeywordsFormat() {
     QString keywords0Path = ":/resources/keywords/0.txt";
     QString keywords1Path = ":/resources/keywords/1.txt";
     QString keywords2Path = ":/resources/keywords/2.txt";
@@ -174,7 +206,7 @@ void MyHighlighter::addKeywordsFormat() {
 }
 
 
-void MyHighlighter::addClassNameFormat() {
+void Highlighter::addClassNameFormat() {
     HighlightRule rule;
     rule.pattern = QRegularExpression(R"(\b[A-Z][a-zA-Z0-9_]*\b)");
     QColor color(181, 182, 227);
@@ -182,7 +214,7 @@ void MyHighlighter::addClassNameFormat() {
     highlightRules.append(rule);
 }
 
-void MyHighlighter::addFunctionFormat(const QString &text) {
+void Highlighter::addFunctionFormat(const QString &text) {
     HighlightRule rule;
     rule.pattern = QRegularExpression(R"(\b[a-zA-Z0-9_]+\s*\()");
     QColor color(255, 198, 109);
@@ -198,13 +230,13 @@ void MyHighlighter::addFunctionFormat(const QString &text) {
 }
 
 
-void MyHighlighter::initBatchHighlightFormat() {
+void Highlighter::initBatchHighlightFormat() {
     addNumberFormat();
-    addStringFormat();
-    addCommentFormat();
     addKeywordsFormat();
     addClassNameFormat();
 }
+
+
 
 
 

@@ -2,16 +2,16 @@
 // Created by LENOVO on 2023/5/7.
 //
 
-#ifndef QLION_MYHIGHLIGHTER_H
-#define QLION_MYHIGHLIGHTER_H
+#ifndef QLION_HIGHLIGHTER_H
+#define QLION_HIGHLIGHTER_H
 
 
 #include <QSyntaxHighlighter>
 #include <QRegularExpression>
 
-class MyHighlighter : public QSyntaxHighlighter {
+class Highlighter : public QSyntaxHighlighter {
 public:
-    explicit MyHighlighter(QTextDocument *parent = nullptr,const QString& fontFamily="Consolas",int fontSize=14);
+    explicit Highlighter(QTextDocument *parent = nullptr, const QString& fontFamily="Consolas", int fontSize=14);
 protected:
     void highlightBlock(const QString &text) override;
 private:
@@ -25,14 +25,15 @@ private:
     void initBatchHighlightFormat();
     void addVarFormat(const QString &text);
     void addNumberFormat();
-    void addStringFormat();
-    void addCommentFormat();
+    void addStringFormat(const QString &text);
+    void addCommentFormat(const QString &text);
     void addMultiLineCommentFormat(const QString &text);
     void addKeywordsFormat();
     void addClassNameFormat();
     void addFunctionFormat(const QString &text);
     void addVarMemberFormat(const QString &text);
+    void addIncludeFormat(const QString &text);
 };
 
 
-#endif //QLION_MYHIGHLIGHTER_H
+#endif //QLION_HIGHLIGHTER_H

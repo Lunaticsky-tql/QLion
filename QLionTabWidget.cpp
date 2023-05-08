@@ -9,42 +9,67 @@
 QLionTabWidget::QLionTabWidget(QWidget *parent) : QTabWidget(parent) {
     setTabsClosable(true);
     setMovable(true);
-    mainWindow = dynamic_cast<MainWindow *>(parent);
     initConnections();
-
-
 
 }
 
 void QLionTabWidget::addNewTab() {
-    addTab(new QLionCodePage(), "Untitled");
-    setCurrentIndex(count() - 1);
+    if(mainWindow){
+        untitledCount++;
+        QString title = "Untitled-"+QString::number(untitledCount);
+        addTab(new QLionCodePage(this), title);
+        setCurrentIndex(count() - 1);
+        getCurrentCodePage()->setParentTabWidget(this);
+    }
 }
-
-void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
-    //check if the file is already opened
-    //else if the opened file has the same name, but different path, change the tabText to distinguish them
-    bool needToDistinguish = false;
+bool QLionTabWidget::distinguishFileName(const QString &filePath) {
     QString fileName = QFileInfo(filePath).fileName();
     for (int i = 0; i < count(); i++) {
         //get the widget of the tab and get the file path
         QString filePathOfCurrentTab = getCodePage(i)->getFilePath();
-        if (filePathOfCurrentTab == filePath) {
-            setCurrentIndex(i);
-            return;
+        if(filePathOfCurrentTab.isEmpty())
+        {
+            continue;
+        }else if (filePathOfCurrentTab == filePath) {
+            // if the function is called by saveAs, it saves the text in file in the opened tab, close the tab
+            // because the code page calls this function will change the file path of the code page to the new file path
+            removeTab(i);
+            return false;
         } else if (QFileInfo(filePathOfCurrentTab).fileName() == fileName) {
             setTabText(i, filePathOfCurrentTab);
-            needToDistinguish = true;
+            return true;
         }
     }
-    if(needToDistinguish){
-        fileName = filePath;
+    return false;
+}
+void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
+    //check if the file is already opened
+    //else if the opened file has the same name, but different path, change the tabText to distinguish them
+    if(mainWindow) {
+        bool needToDistinguish = false;
+        QString fileName = QFileInfo(filePath).fileName();
+        for (int i = 0; i < count(); i++) {
+            //get the widget of the tab and get the file path
+            QString filePathOfCurrentTab = getCodePage(i)->getFilePath();
+            if (filePathOfCurrentTab == filePath) {
+                setCurrentIndex(i);
+                return;
+            } else if (QFileInfo(filePathOfCurrentTab).fileName() == fileName) {
+                setTabText(i, filePathOfCurrentTab);
+                needToDistinguish = true;
+            }
+        }
+        if (needToDistinguish) {
+            fileName = filePath;
+        }
+        addTab(new QLionCodePage(this), fileName);
+        setCurrentIndex(count() - 1);
+        auto *codePage = getCurrentCodePage();
+        // do not forget to set the parentTabWidget
+        getCurrentCodePage()->setParentTabWidget(this);
+        codePage->setFilePath(filePath);
+        codePage->setPlainText(text);
     }
-    addTab(new QLionCodePage(), fileName);
-    setCurrentIndex(count() - 1);
-    auto *codePage = (QLionCodePage *) widget(count() - 1);
-    codePage->setFilePath(filePath);
-    codePage->setPlainText(text);
 }
 
 void QLionTabWidget::initConnections() {
@@ -65,4 +90,14 @@ QLionCodePage *QLionTabWidget::getCodePage(int index) {
     //thin wrapper for preventing explicit type cast in other places
     return (QLionCodePage *) widget(index);
 }
+
+void QLionTabWidget::setMainWindow(MainWindow *pWindow) {
+    mainWindow = pWindow;
+}
+
+QString QLionTabWidget::getLastFilePath() {
+    return mainWindow->getLastFilePath();
+}
+
+
 

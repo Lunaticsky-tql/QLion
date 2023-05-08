@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     show();
+    ui->tabWidget->setMainWindow(this);
     setUpSideDock();
     setUpConnection();
     setActions(false);
@@ -44,7 +45,7 @@ void MainWindow::setUpSideDock() {
     layout->addWidget(stackedWidget);
     auto *treeWidget = new QTreeWidget(ui->dockWidgetContents);
     layout->addWidget(treeWidget);
-    qDebug() << stackedWidget->count();
+//    qDebug() << stackedWidget->count();
     stackedWidget->setCurrentIndex(1);
 }
 
@@ -97,10 +98,20 @@ void MainWindow::on_action_open_file_triggered() {
 }
 
 void MainWindow::on_action_save_file_triggered() {
-
+    QLionCodePage* currentPage=ui->tabWidget->getCurrentCodePage();
+    if(currentPage!= nullptr){
+        //is not "save as file"
+        currentPage->saveFile(false);
+    }
+}
+void MainWindow::on_action_save_as_file_triggered() {
+    QLionCodePage* currentPage=ui->tabWidget->getCurrentCodePage();
+    if(currentPage!= nullptr){
+        //is "save as file"
+        currentPage->saveFile(true);
+    }
 
 }
-
 void MainWindow::on_action_copy_triggered() {
     QLionCodePage* currentPage=ui->tabWidget->getCurrentCodePage();
     if(currentPage!= nullptr){
@@ -120,9 +131,7 @@ void MainWindow::on_action_paste_triggered() {
     }
 }
 
-void MainWindow::on_action_save_as_file_triggered() {
 
-}
 
 void MainWindow::setActions(bool isEnable) {
     ui->action_save_file->setEnabled(isEnable);
@@ -130,5 +139,9 @@ void MainWindow::setActions(bool isEnable) {
     ui->action_copy->setEnabled(isEnable);
     ui->action_cut->setEnabled(isEnable);
     ui->action_paste->setEnabled(isEnable);
+}
+
+QString MainWindow::getLastFilePath() {
+    return lastFilePath;
 }
 

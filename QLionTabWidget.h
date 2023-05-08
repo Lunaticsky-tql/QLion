@@ -13,6 +13,8 @@
 class QLionTabWidget: public  QTabWidget{
     Q_OBJECT
 
+
+
 public:
     QLionTabWidget(QWidget *parent);
 
@@ -21,10 +23,14 @@ public:
     void addNewTab(const QString& qString, const QString& filePath);
     QLionCodePage* getCurrentCodePage();
     QLionCodePage* getCodePage(int index);
+    void setMainWindow(MainWindow *pWindow);
+    QString getLastFilePath();
+    bool distinguishFileName(const QString &fileName);
 
     void initConnections();
 private:
     MainWindow *mainWindow;
+    int untitledCount=0;
 };
 
 

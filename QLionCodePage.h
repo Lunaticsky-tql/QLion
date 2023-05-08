@@ -9,41 +9,52 @@
 #include <QPlainTextEdit>
 #include <QClipboard>
 #include <QApplication>
-#include "MyHighlighter.h"
+#include "Highlighter.h"
+
 
 class LineNumberArea;
+class QLionTabWidget;
 class QLionCodePage :public QPlainTextEdit
 {
     Q_OBJECT
+
+
+
 public:
     explicit QLionCodePage(QWidget *parent = nullptr);
     void lineNumberAreaPaintEvent(QPaintEvent *pEvent);
     void lineNumberAreaMousePressEvent(QMouseEvent *mEvent);
     void lineNumberAreaWheelEvent(QWheelEvent *wEvent);
+    void setParentTabWidget(QLionTabWidget *pWidget);
     QString getFilePath();
+    bool getChangesUnsavedStatus() const;
     void setFilePath(const QString &filePath);
     void copyAction();
     void cutAction();
+    void saveFile(bool isSaveAs);
 private:
     LineNumberArea *lineNumberArea;
+    QLionTabWidget *myTabWidget;
     QString filePath;
     int lineNumberFontWidth=0;
-    MyHighlighter * mHighlighter;
+    Highlighter * mHighlighter;
+    bool areChangesUnsaved;
     void initConnections();
     void initFont();
     void initHighlighter();
     int getLineNumberAreaWidth();
+    int getMyCurrentIndex();
+    void setMyTabWidgetIcon(const QIcon &icon);
 
 
 private slots:
     void highlightCurrentLine();
     void updateLineNumberArea(const QRect &, int dy);
     void updateLineNumberAreaWidth();
+    void setUnsaved();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
-
-
 };
 
 class LineNumberArea:public QWidget{

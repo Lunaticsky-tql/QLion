@@ -6,7 +6,11 @@
 #include <QPainter>
 #include <QTextBlock>
 #include<QScrollBar>
+#include <QTabWidget>
+#include <QFileDialog>
+#include <QMessageBox>
 #include "QLionCodePage.h"
+#include "QLionTabWidget.h"
 
 QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
@@ -21,7 +25,6 @@ QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
     initFont();
     highlightCurrentLine();
     updateLineNumberAreaWidth();
-
 }
 
 void QLionCodePage::initFont() {
@@ -40,6 +43,8 @@ void QLionCodePage::initConnections() {
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
     // update lineNumber width change
     connect(this,SIGNAL(blockCountChanged(int)),this,SLOT(updateLineNumberAreaWidth()));
+    // update unsaved changes status
+    connect(document(), SIGNAL(undoCommandAdded()), this,SLOT(setUnsaved()));
 
 }
 void QLionCodePage::resizeEvent(QResizeEvent *event) {
@@ -90,7 +95,7 @@ void QLionCodePage::highlightCurrentLine() {
 }
 
 void QLionCodePage::initHighlighter() {
-    mHighlighter = new MyHighlighter(this->document());
+    mHighlighter = new Highlighter(this->document());
 
 }
 
@@ -129,8 +134,6 @@ void QLionCodePage::lineNumberAreaWheelEvent(QWheelEvent *wEvent) {
     // scroll the text area
     QPlainTextEdit::wheelEvent(wEvent);
 }
-
-
 
 QString QLionCodePage::getFilePath() {
     return filePath;
@@ -172,7 +175,76 @@ void QLionCodePage::cutAction() {
         cursor.select(QTextCursor::LineUnderCursor);
         cursor.removeSelectedText();
     }
-
 }
+
+bool QLionCodePage::getChangesUnsavedStatus() const {
+    return areChangesUnsaved;
+}
+
+
+void QLionCodePage::setMyTabWidgetIcon(const QIcon &icon) {
+    myTabWidget->setTabIcon(getMyCurrentIndex(),icon);
+}
+
+
+
+int QLionCodePage::getMyCurrentIndex() {
+//    qDebug()<<myTabWidget->indexOf(this);
+    return myTabWidget->indexOf(this);
+}
+
+void QLionCodePage::setUnsaved() {
+    if (!areChangesUnsaved) {
+        setMyTabWidgetIcon(QIcon(":/resources/icons/unsaved.png"));
+        areChangesUnsaved = true;
+    }
+}
+
+void QLionCodePage::setParentTabWidget(QLionTabWidget *pWidget) {
+    myTabWidget=pWidget;
+}
+
+void QLionCodePage::saveFile(bool isSaveAs) {
+    QString newFilePath;
+    if (isSaveAs || filePath.isEmpty()) {
+        // if the file is not saved before or user want to save as
+        newFilePath = QFileDialog::getSaveFileName(this, "保存文件", myTabWidget->getLastFilePath(),
+                                                        tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
+        if (newFilePath.isEmpty()) {
+            return;
+        }
+        else if(newFilePath==filePath)
+        {
+            // gap the distinguishFileName function (it will close the tab with old file path) and act as "save"
+            isSaveAs=false;
+        }
+    }
+    else{
+        newFilePath=filePath;
+    }
+    QFile file(newFilePath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::information(this, "无法打开文件", file.errorString());
+        return;
+    }
+    QTextStream out(&file);
+    out << toPlainText();
+    file.close();
+    if(isSaveAs || filePath.isEmpty())
+    {
+        if(myTabWidget->distinguishFileName(newFilePath)){
+            // distinguish the file name and set the tab text
+            myTabWidget->setTabText(getMyCurrentIndex(),newFilePath);
+        }
+        else{
+            QString fileName=QFileInfo(newFilePath).fileName();
+            myTabWidget->setTabText(getMyCurrentIndex(),fileName);
+        }
+        filePath = newFilePath;
+    }
+    setMyTabWidgetIcon(QIcon());
+    areChangesUnsaved = false;
+}
+
 
 
