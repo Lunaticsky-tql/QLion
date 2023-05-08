@@ -12,6 +12,9 @@ QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setFrameShape(QPlainTextEdit::NoFrame);
+    QColor textColor = QColor(187, 187, 187);
+    setStyleSheet("color:rgb(" + QString::number(textColor.red()) + "," + QString::number(textColor.green()) + "," +
+                  QString::number(textColor.blue()) + ");");
     filePath=QString();
     initConnections();
     initHighlighter();

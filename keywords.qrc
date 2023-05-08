@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/keywords/0.txt</file>
+        <file>resources/keywords/1.txt</file>
+        <file>resources/keywords/2.txt</file>
+        <file>resources/keywords/punctuations.txt</file>
+    </qresource>
+</RCC>
