@@ -7,7 +7,9 @@
 
 #include <QMainWindow>
 #include<QStackedWidget>
+#include <QFileSystemModel>
 #include "QLionCodePage.h"
+#include "FolderTreeView.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -26,16 +28,19 @@ public:
     QString getLastFilePath();
     bool showSaveDialog(QLionCodePage *pPage);
     ~MainWindow() override;
+    FolderTreeView *getFolderTreeView();
 
 
 private:
     Ui::MainWindow *ui;
     QString lastFilePath;
     QString lastDirPath;
+    QFileSystemModel* model;
+
 
     void setUpSideDock();
-
     void setUpConnection();
+    void setUpFolderTreeView();
     QStackedWidget *stackedWidget{};
 
 private slots:

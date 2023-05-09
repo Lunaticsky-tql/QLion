@@ -13,6 +13,7 @@
 #include "mainwindow.h"
 #include "ui_MainWindow.h"
 #include "QLionCodePage.h"
+#include "FolderTreeView.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -38,13 +39,12 @@ void MainWindow::setUpSideDock() {
     auto *layout2 = new QVBoxLayout(stackWidget1);
     auto *test_pushbutton1 = new QPushButton("Toggle Push Button1", stackWidget1);
     layout2->addWidget(test_pushbutton1);
-    auto *stackWidget2 = new QTreeWidget(ui->dockWidgetContents);
+    auto *folderTreeView = new FolderTreeView(this);
     stackedWidget = new QStackedWidget(ui->dockWidgetContents);
     stackedWidget->addWidget(stackWidget1);
-    stackedWidget->addWidget(stackWidget2);
+    stackedWidget->addWidget(folderTreeView);
+    setUpFolderTreeView();
     layout->addWidget(stackedWidget);
-    auto *treeWidget = new QTreeWidget(ui->dockWidgetContents);
-    layout->addWidget(treeWidget);
 //    qDebug() << stackedWidget->count();
     stackedWidget->setCurrentIndex(1);
 }
@@ -162,5 +162,23 @@ bool MainWindow::showSaveDialog(QLionCodePage *pPage) {
         return true;
     }
 
+}
+
+FolderTreeView *MainWindow::getFolderTreeView() {
+    return (FolderTreeView *) stackedWidget->widget(1);
+}
+
+void MainWindow::setUpFolderTreeView() {
+    model = new QFileSystemModel(this);
+    model->setRootPath(lastDirPath);
+    FolderTreeView *folderTreeView = getFolderTreeView();
+    if(folderTreeView!= nullptr){
+        folderTreeView->setModel(model);
+        folderTreeView->setRootIndex(model->index(lastDirPath));
+        //only show the file name
+        folderTreeView->setColumnHidden(1, true);
+        folderTreeView->setColumnHidden(2, true);
+        folderTreeView->setColumnHidden(3, true);
+    }
 }
 

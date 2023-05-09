@@ -17,9 +17,6 @@ class QLionTabWidget;
 class QLionCodePage :public QPlainTextEdit
 {
     Q_OBJECT
-
-
-
 public:
     explicit QLionCodePage(QWidget *parent = nullptr);
     void lineNumberAreaPaintEvent(QPaintEvent *pEvent);
