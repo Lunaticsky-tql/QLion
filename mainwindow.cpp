@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setCentralWidget(ui->tabWidget);
     lastDirPath = QDir::currentPath();
     lastFilePath = QString();
+
 }
 
 MainWindow::~MainWindow() {
@@ -33,7 +34,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::setUpSideDock() {
-    ui->sideDock->setWindowTitle("资源管理器");
+    ui->sideDock->setWindowTitle("File Explorer");
     auto *layout = new QVBoxLayout(ui->dockWidgetContents);
     auto *stackWidget1 = new QWidget();
     auto *layout2 = new QVBoxLayout(stackWidget1);
@@ -81,7 +82,7 @@ void MainWindow::on_action_new_file_triggered() {
 void MainWindow::openFile(const QString &filePath, bool changeLastFilePath = false) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "警告", "无法打开文件: " + file.errorString());
+        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
         return;
     }
     if (changeLastFilePath) {
@@ -99,8 +100,8 @@ void MainWindow::openFile(const QString &filePath, bool changeLastFilePath = fal
 }
 
 void MainWindow::on_action_open_file_triggered() {
-    QString filePath = QFileDialog::getOpenFileName(this, "打开文件", lastFilePath,
-                                                    tr("All Files (*.*);;C++ Files (*.cpp *.h)"));
+    QString filePath = QFileDialog::getOpenFileName(this, "Open File", lastFilePath,
+                                                    tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
     if (filePath.isEmpty()) {
         return;
     }
@@ -160,9 +161,9 @@ QString MainWindow::getLastFilePath() {
 
 bool MainWindow::showSaveDialog(QLionCodePage *pPage) {
     QString tabTitle = ui->tabWidget->tabText(ui->tabWidget->indexOf(pPage));
-    QString msg = "是否保存对\"" + tabTitle + "\"的更改？";
+    QString msg = "Do you want to save the changes to \"" + tabTitle + "\"?";
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::warning(this, "保存文件", msg,
+    reply = QMessageBox::warning(this, "Save File", msg,
                                  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
     if (reply == QMessageBox::Yes) {
         //if not saved successfully,cancel the close event
@@ -213,9 +214,26 @@ QFileSystemModel *MainWindow::getFileSystemModel() {
     return model;
 }
 
-void MainWindow::updateTabWidget(const QString& oldFilePath, const QString& newFilePath) {
+void MainWindow::updateTabWidget(const QString &oldFilePath, const QString &newFilePath, bool isDir) {
     //let the tab widget to handle the file path change event
-    ui->tabWidget->updateTabWidget(oldFilePath, newFilePath);
+    if (isDir) {
+        // update all files in the dir
+        //traverse dir
+        // the dir has been renamed, so we need to use the new file path to traverse
+        QDir dir(newFilePath);
+        if (!dir.exists()) {
+            qDebug() << "dir not exist";
+            return;
+        }
+        QStringList fileList;
+        traverseDir(newFilePath, fileList);
+        for (auto filePath: fileList) {
+            ui->tabWidget->updateTabWidget(filePath.replace(newFilePath, oldFilePath), filePath);
+        }
+    } else {
+        ui->tabWidget->updateTabWidget(oldFilePath, newFilePath);
+    }
+
 
 }
 
@@ -225,5 +243,21 @@ bool MainWindow::isOnTab(const QString &filePath) {
 
 bool MainWindow::saveFile(const QString &filePath) {
     return ui->tabWidget->saveFile(filePath);
+}
+
+void MainWindow::traverseDir(const QString &dirPath, QStringList &fileList) {
+    QDir dir(dirPath);
+    QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    for (auto fileInfo: infoList) {
+        if (fileInfo.isDir()) {
+            traverseDir(fileInfo.filePath(), fileList);
+        } else {
+            // ends with .txt or .cpp or .h
+            if (fileInfo.filePath().endsWith(".txt") || fileInfo.filePath().endsWith(".cpp") ||
+                fileInfo.filePath().endsWith(".h")) {
+                fileList.append(fileInfo.filePath());
+            }
+        }
+    }
 }
 

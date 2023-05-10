@@ -7,21 +7,22 @@ void setUpStyle(QApplication &a)
     QApplication::setStyle("fusion");
     QColor darkGray(53, 53, 53);
     QColor gray(128, 128, 128);
-    QColor black(25, 25, 25);
     QColor blue(42, 130, 218);
-
+    QColor lightBlue(75, 110, 175);
+    QColor textColor = QColor(187, 187, 187);
+    QColor baseGray = QColor(60, 63, 65);
     QPalette darkPalette;
     darkPalette.setColor(QPalette::Window, darkGray);
-    darkPalette.setColor(QPalette::WindowText, Qt::white);
-    darkPalette.setColor(QPalette::Base, black);
+    darkPalette.setColor(QPalette::WindowText, textColor);
+    darkPalette.setColor(QPalette::Base, baseGray);
     darkPalette.setColor(QPalette::AlternateBase, darkGray);
-    darkPalette.setColor(QPalette::ToolTipBase, blue);
-    darkPalette.setColor(QPalette::ToolTipText, Qt::white);
-    darkPalette.setColor(QPalette::Text, Qt::white);
+    darkPalette.setColor(QPalette::ToolTipBase, lightBlue);
+    darkPalette.setColor(QPalette::ToolTipText, textColor);
+    darkPalette.setColor(QPalette::Text, textColor);
     darkPalette.setColor(QPalette::Button, darkGray);
     darkPalette.setColor(QPalette::ButtonText, Qt::white);
     darkPalette.setColor(QPalette::Link, blue);
-    darkPalette.setColor(QPalette::Highlight, blue);
+    darkPalette.setColor(QPalette::Highlight, lightBlue);
     darkPalette.setColor(QPalette::HighlightedText, Qt::black);
     darkPalette.setColor(QPalette::Active, QPalette::Button, gray.darker());
     darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, gray);
@@ -29,7 +30,9 @@ void setUpStyle(QApplication &a)
     darkPalette.setColor(QPalette::Disabled, QPalette::Text, gray);
     darkPalette.setColor(QPalette::Disabled, QPalette::Light, darkGray);
     QApplication::setPalette(darkPalette); 
-    a.setStyleSheet("QToolTip { color: #ffffff; background-color: #46484a; border: none; }");
+    a.setStyleSheet("QToolTip { color: #ffffff; background-color: #46484a; border: none; }"
+                        "QPlainTextEdit { background-color: #2b2b2b; }"
+    );
 }
 
 

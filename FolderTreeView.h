@@ -18,7 +18,7 @@ class FolderTreeView : public QTreeView{
 
 public:
     explicit FolderTreeView(MainWindow *parent = nullptr);
-    void renameFile(const QString& oldFilePath, QString newFilePath);
+    void renameFile(const QString& oldFilePath, const QString& newFilePath);
 protected:
     MainWindow* mainWindow;
     void mouseReleaseEvent(QMouseEvent* e) override;
