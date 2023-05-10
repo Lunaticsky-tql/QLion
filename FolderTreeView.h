@@ -7,13 +7,21 @@
 
 
 #include <QTreeView>
-
 class MainWindow;
+
+
+
 class FolderTreeView : public QTreeView{
     Q_OBJECT
+
+
+
 public:
     explicit FolderTreeView(MainWindow *parent = nullptr);
-
+    void renameFile(const QString& oldFilePath, QString newFilePath);
+protected:
+    MainWindow* mainWindow;
+    void mouseReleaseEvent(QMouseEvent* e) override;
 
 };
 

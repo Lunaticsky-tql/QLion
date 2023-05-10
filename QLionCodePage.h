@@ -18,12 +18,13 @@ class QLionCodePage :public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    explicit QLionCodePage(QWidget *parent = nullptr);
+    explicit QLionCodePage(QWidget *parent = nullptr,bool isInitHighLighter=true);
     void lineNumberAreaPaintEvent(QPaintEvent *pEvent);
     void lineNumberAreaMousePressEvent(QMouseEvent *mEvent);
     void lineNumberAreaWheelEvent(QWheelEvent *wEvent);
     void setParentTabWidget(QLionTabWidget *pWidget);
     QString getFilePath();
+    void changeFilePath(const QString &filePath);
     bool areChangesUnsaved() const;
     void setFilePath(const QString &filePath);
     void copyAction();
@@ -45,6 +46,7 @@ private:
     int getLineNumberAreaWidth();
     int getMyCurrentIndex();
     void setMyTabWidgetIcon(const QIcon &icon);
+    void setSaved();
 
 
 private slots:
@@ -52,6 +54,7 @@ private slots:
     void updateLineNumberArea(const QRect &, int dy);
     void updateLineNumberAreaWidth();
     void setUnsaved();
+
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

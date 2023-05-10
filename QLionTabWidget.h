@@ -10,8 +10,11 @@
 #include "QLionCodePage.h"
 #include "mainwindow.h"
 #include <unordered_set>
+#include <unordered_map>
 class QLionTabWidget: public  QTabWidget{
     Q_OBJECT
+
+
 
 public:
     QLionTabWidget(QWidget *parent);
@@ -19,12 +22,19 @@ public:
     void addNewTab(const QString& qString, const QString& filePath);
     QLionCodePage* getCurrentCodePage();
     QLionCodePage* getCodePage(int index);
+    QLionCodePage* getCodePage(const QString& filePath);
     void setMainWindow(MainWindow *pWindow);
     QString getLastFilePath();
-    bool distinguishFileName(const QString &fileName);
+    bool distinguishFileName(const QString &filePath);
     void initConnections();
+    void closeTab(int index);
+    void closeTabWithoutSaving(int index);
+    bool isOnTab(const QString& filePath) const;
+    bool saveFile(const QString& filePath);
+    void updateTabWidget(const QString &oldFilePath,const QString &newFilePath);
     // public for QLionCodePage to remove the untitledID from the set
-    std::unordered_set<int> usedUntitledID;
+    std::unordered_set<int> usingUntitledID;
+    std::unordered_map<QString, int> usingFilePath;
 private:
     MainWindow *mainWindow;
 };

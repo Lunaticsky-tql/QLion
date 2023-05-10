@@ -28,7 +28,11 @@ public:
     QString getLastFilePath();
     bool showSaveDialog(QLionCodePage *pPage);
     ~MainWindow() override;
+    QFileSystemModel* getFileSystemModel();
     FolderTreeView *getFolderTreeView();
+    bool isOnTab(const QString& filePath);
+    void updateTabWidget(const QString& oldFilePath, const QString& newFilePath);
+    bool saveFile(const QString& filePath);
 
 
 private:
@@ -36,11 +40,14 @@ private:
     QString lastFilePath;
     QString lastDirPath;
     QFileSystemModel* model;
+    FolderTreeView *folderTreeView;
 
 
     void setUpSideDock();
     void setUpConnection();
+    void setUpFolderTreeViewConnections();
     void setUpFolderTreeView();
+    void openFile(const QString& filePath, bool changeLastFilePath);
     QStackedWidget *stackedWidget{};
 
 private slots:
@@ -54,6 +61,7 @@ private slots:
     void on_action_copy_triggered();
     void on_action_cut_triggered();
     void on_action_paste_triggered();
+    void do_folderTreeView_doubleClicked(const QModelIndex &index);
 
 
 };

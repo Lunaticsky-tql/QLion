@@ -12,7 +12,7 @@
 #include "QLionCodePage.h"
 #include "QLionTabWidget.h"
 
-QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
+QLionCodePage::QLionCodePage(QWidget *parent,bool isInitHighlighter) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setFrameShape(QPlainTextEdit::NoFrame);
@@ -21,7 +21,10 @@ QLionCodePage::QLionCodePage(QWidget *parent) : QPlainTextEdit(parent) {
                   QString::number(textColor.blue()) + ");");
     filePath=QString();
     initConnections();
-    initHighlighter();
+    if(isInitHighlighter)
+    {
+        initHighlighter();
+    }
     initFont();
     highlightCurrentLine();
     updateLineNumberAreaWidth();
@@ -96,7 +99,6 @@ void QLionCodePage::highlightCurrentLine() {
 
 void QLionCodePage::initHighlighter() {
     mHighlighter = new Highlighter(this->document());
-
 }
 
 int QLionCodePage::getLineNumberAreaWidth() {
@@ -237,23 +239,13 @@ bool QLionCodePage::saveFile(bool isSaveAs) {
     if(filePath.isEmpty()){
         // the untitled file will turn to a normal file after saving
         // so we need to remove the untitledID from the untitledIDSet
-        myTabWidget->usedUntitledID.erase(untitledID);
+        myTabWidget->usingUntitledID.erase(untitledID);
     }
     if(isSaveAs || filePath.isEmpty())
     {
-        if(myTabWidget->distinguishFileName(newFilePath)){
-            // distinguish the file name and set the tab text
-            myTabWidget->setTabText(getMyCurrentIndex(),newFilePath);
-        }
-        else{
-            QString fileName=QFileInfo(newFilePath).fileName();
-            myTabWidget->setTabText(getMyCurrentIndex(),fileName);
-        }
-        filePath = newFilePath;
+        changeFilePath(newFilePath);
     }
-
-    setMyTabWidgetIcon(QIcon());
-    unsaved = false;
+    setSaved();
     return true;
 }
 
@@ -263,6 +255,27 @@ void QLionCodePage::setUntitledID(int id) {
 
 int QLionCodePage::getUntitledID() const {
     return untitledID;
+}
+
+void QLionCodePage::changeFilePath(const QString &newFilePath) {
+    // things to do when the file path is changed
+    if(myTabWidget->distinguishFileName(newFilePath)){
+        // distinguish the file name and set the tab text
+        myTabWidget->setTabText(getMyCurrentIndex(),newFilePath);
+    }
+    else{
+        QString fileName=QFileInfo(newFilePath).fileName();
+        myTabWidget->setTabText(getMyCurrentIndex(),fileName);
+    }
+    // update the file path map
+    myTabWidget->usingFilePath.erase(filePath);
+    myTabWidget->usingFilePath[newFilePath]=getMyCurrentIndex();
+    filePath = newFilePath;
+}
+
+void QLionCodePage::setSaved() {
+    setMyTabWidgetIcon(QIcon());
+    unsaved = false;
 }
 
 
