@@ -28,10 +28,11 @@ public:
     bool distinguishFileName(const QString &filePath);
     void initConnections();
     void closeTab(int index);
+    void closeTabByFilePath(const QString& filePath);
     void closeTabWithoutSaving(int index);
     bool isOnTab(const QString& filePath) const;
     bool saveFile(const QString& filePath);
-    void updateTabWidget(const QString &oldFilePath,const QString &newFilePath);
+    void updateTabWidgetForRename(const QString &oldFilePath, const QString &newFilePath);
     // public for QLionCodePage to remove the untitledID from the set
     std::unordered_set<int> usingUntitledID;
     std::unordered_map<QString, int> usingFilePath;

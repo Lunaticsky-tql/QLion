@@ -8,20 +8,32 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <fstream>
+#include <QMessageBox>
 #include "FolderTreeView.h"
 #include "mainwindow.h"
 
 class NewFileWidget : public QWidget {
 public:
-    NewFileWidget(MainWindow *parent, QString &folderPath) : QWidget(parent), folderPath(folderPath) {
+    NewFileWidget(MainWindow *parent, QString &folderPath, bool isDir = false) : QWidget(parent),
+                                                                                 folderPath(folderPath) {
         mainWindow = parent;
+        isDirFlag = isDir;
         initWidgetUI();
         auto *layout = new QVBoxLayout(this);
-        auto *label = new QLabel("New File", this);
+        QLabel *label;
+        if (isDir) {
+            label = new QLabel("New Folder", this);
+        } else {
+            label = new QLabel("New File", this);
+        }
         layout->addWidget(label);
         lineEdit = new QLineEdit(this);
         layout->addWidget(lineEdit);
-        fileExistedLabel = new QLabel("File already exists", this);
+        if (isDir) {
+            fileExistedLabel = new QLabel("Folder already exists", this);
+        } else {
+            fileExistedLabel = new QLabel("File already exists", this);
+        }
         fileExistedLabel->hide();
         connect(lineEdit, &QLineEdit::textChanged, this, &NewFileWidget::fileExisted);
         layout->addWidget(fileExistedLabel);
@@ -32,12 +44,19 @@ protected:
     // press enter to create a new file
     void keyPressEvent(QKeyEvent *event) override {
         if (((event->key() == Qt::Key_Enter) || (event->key() == Qt::Key_Return)) && !fileExistedFlag) {
-            // create a new file using std::ofstream
             QString newFilePath = folderPath + "/" + lineEdit->text();
-            // if the file already exists, do nothing
-            if (!QFile::exists(newFilePath)) {
-                std::ofstream file(folderPath.toStdString() + "/" + lineEdit->text().toStdString());
-                file.close();
+            if (isDirFlag) {
+                QDir dir(folderPath);
+                // if the folder already exists, do nothing
+                if (!dir.exists(newFilePath)) {
+                    dir.mkdir(newFilePath);
+                }
+            } else {
+                // if the file already exists, do nothing
+                if (!QFile::exists(newFilePath)) {
+                    std::ofstream file(folderPath.toStdString() + "/" + lineEdit->text().toStdString());
+                    file.close();
+                }
             }
             close();
         } else if (event->key() == Qt::Key_Escape)
@@ -47,14 +66,13 @@ protected:
     }
 
     void fileExisted(const QString &text) {
-        if(text.isEmpty())
-        {
+        if (text.isEmpty()) {
             // cannot create a file with empty name but do not show the file existed label
             fileExistedFlag = true;
             return;
         }
         QString newFilePath = folderPath + "/" + text;
-        qDebug() << newFilePath;
+//        qDebug() << newFilePath;
         if (QFile::exists(newFilePath)) {
             fileExistedLabel->show();
             fileExistedFlag = true;
@@ -70,6 +88,7 @@ private:
     QLineEdit *lineEdit;
     QLabel *fileExistedLabel;
     bool fileExistedFlag = true;
+    bool isDirFlag = false;
 
     void initWidgetUI() {
         setWindowFlags(Qt::Popup);
@@ -142,37 +161,68 @@ void FolderTreeView::mouseReleaseEvent(QMouseEvent *e) {
             QString filePath = mainWindow->getFileSystemModel()->filePath(idx);
             //check is directory
             if (QFileInfo(filePath).isDir()) {
-                m.addAction("New File(&F)");
+                auto *openSubMenu = new QMenu("New(&N)", &m);
+                openSubMenu->addAction("New File(&F)");
+                openSubMenu->addAction("New Folder(&D)");
+                m.addMenu(openSubMenu);
                 m.addAction("Rename(&R)");
                 m.addAction("Delete(&D)");
+#if defined(Q_OS_WIN)
+                m.addAction("Open in Explorer(&O)");
+#elif defined(Q_OS_MACOS)
+                m.addAction("Open in Finder(&O)");
+#else
+                m.addAction("Open in File Manager(&O)");
+#endif
                 QAction *selected = m.exec(mapToGlobal(e->pos()));
                 if (selected) {
-
-                    if (selected->text() == "Rename(&R)") {
+                    QString selectedText = selected->text();
+                    if (selectedText== "Rename(&R)") {
                         new RenameEditRect(visualRect(idx), filePath, this);
-                    } else if (selected->text() == "New File(&F)") {
-                        // add new file to the directory
-                        // pop up a dialog to get the name of the file
-                        // add the file to the directory
+                    } else if (selectedText== "New File(&F)") {
                         new NewFileWidget(mainWindow, filePath);
 
-                    } else if (selected->text() == "Delete(&D)") {
+                    } else if (selectedText== "New Folder(&D)") {
+                        new NewFileWidget(mainWindow, filePath, true);
+                    } else if (selectedText== "Delete(&D)") {
+                        QMessageBox::StandardButton reply;
+                        reply = QMessageBox::question(this, "Delete File",
+                                                      "Are you sure to delete the dir? You may not be able to recover it.",
+                                                      QMessageBox::Yes | QMessageBox::No);
+                        if (reply == QMessageBox::Yes) {
+                            mainWindow->removeFile(filePath, true);
+                        }
+                    }
+                    else if (selectedText== "Open in Explorer(&O)"||selectedText== "Open in Finder(&O)") {
+                        mainWindow->revealFileInOS(filePath);
                     }
                 }
             } else if (QFileInfo(filePath).isFile()) {
                 m.addAction("Rename(&R)");
                 m.addAction("Delete(&D)");
+#if defined(Q_OS_WIN)
+                m.addAction("Open in Explorer(&O)");
+#elif defined(Q_OS_MACOS)
+                m.addAction("Open in Finder(&O)");
+#else
+                m.addAction("Open in File Manager(&O)");
+#endif
                 QAction *selected = m.exec(mapToGlobal(e->pos()));
                 if (selected) {
-
                     if (selected->text() == "Rename(&R)") {
                         new RenameEditRect(visualRect(idx), filePath, this);
+                    } else if (selected->text() == "Delete(&D)") {
+                        QMessageBox::StandardButton reply;
+                        reply = QMessageBox::question(this, "Delete File",
+                                                      "Are you sure to delete the file? You may not be able to recover it.",
+                                                      QMessageBox::Yes | QMessageBox::No);
+                        if (reply == QMessageBox::Yes) {
+                            mainWindow->removeFile(filePath);
+                        }
                     }
-//
-//                else if (selected->text() == "Remove")
-//                {
-//                    removeFile(filePath);
-//                }
+                    else if (selected->text() == "Open in Explorer(&O)"||selected->text() == "Open in Finder(&O)") {
+                        mainWindow->revealFileInOS(filePath);
+                    }
                 }
             } else {
                 return;
@@ -190,7 +240,7 @@ void FolderTreeView::renameFile(const QString &oldFilePath, const QString &newFi
     if (QFileInfo(oldFilePath).isDir()) {
         bool success = QDir().rename(oldFilePath, newFilePath);
         if (success) {
-            mainWindow->updateTabWidget(oldFilePath, newFilePath, true);
+            mainWindow->updateTabWidgetForRename(oldFilePath, newFilePath, true);
         }
         // else do nothing
         return;
@@ -202,7 +252,7 @@ void FolderTreeView::renameFile(const QString &oldFilePath, const QString &newFi
         bool success = QFile::rename(oldFilePath, newFilePath);
         if (success) {
             //check if the file is opened in the editor
-            mainWindow->updateTabWidget(oldFilePath, newFilePath);
+            mainWindow->updateTabWidgetForRename(oldFilePath, newFilePath);
         }
         // else do nothing
     }

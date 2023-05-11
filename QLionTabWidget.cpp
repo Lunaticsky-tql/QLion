@@ -189,13 +189,22 @@ QLionCodePage *QLionTabWidget::getCodePage(const QString &filePath) {
 
 }
 
-void QLionTabWidget::updateTabWidget(const QString &oldFilePath, const QString &newFilePath) {
+void QLionTabWidget::updateTabWidgetForRename(const QString &oldFilePath, const QString &newFilePath) {
     //isOnTab guarantees that the filePath is in the map
+//    qDebug()<<"updateTabWidgetForRename"<<"oldFilePath"<<oldFilePath<<"newFilePath"<<newFilePath;
     QLionCodePage* codePage=getCodePage(oldFilePath);
     if(codePage==nullptr){
         return;
     }
     codePage->changeFilePath(newFilePath);
+
+}
+
+void QLionTabWidget::closeTabByFilePath(const QString &filePath) {
+    if(!isOnTab(filePath)){
+        return;
+    }
+    closeTabWithoutSaving(usingFilePath[filePath]);
 
 }
 

@@ -31,10 +31,12 @@ public:
     QFileSystemModel* getFileSystemModel();
     FolderTreeView *getFolderTreeView();
     bool isOnTab(const QString& filePath);
-    void updateTabWidget(const QString& oldFilePath, const QString& newFilePath,bool isDir=false);
+    void updateTabWidgetForRename(const QString& oldFilePath, const QString& newFilePath, bool isDir= false);
+    void removeFile(const QString& removeFilePath, bool isDir=false);
     void traverseDir(const QString& dirPath, QStringList &fileList);
+    bool deleteDir(const QString& dirPath);
     bool saveFile(const QString& filePath);
-
+    void revealFileInOS(const QString &pathToReveal);
 
 private:
     Ui::MainWindow *ui;

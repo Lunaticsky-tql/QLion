@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QProcessEnvironment>
 #include "mainwindow.h"
 #include "ui_MainWindow.h"
 #include "QLionCodePage.h"
@@ -214,7 +215,7 @@ QFileSystemModel *MainWindow::getFileSystemModel() {
     return model;
 }
 
-void MainWindow::updateTabWidget(const QString &oldFilePath, const QString &newFilePath, bool isDir) {
+void MainWindow::updateTabWidgetForRename(const QString &oldFilePath, const QString &newFilePath, bool isDir) {
     //let the tab widget to handle the file path change event
     if (isDir) {
         // update all files in the dir
@@ -228,10 +229,12 @@ void MainWindow::updateTabWidget(const QString &oldFilePath, const QString &newF
         QStringList fileList;
         traverseDir(newFilePath, fileList);
         for (auto filePath: fileList) {
-            ui->tabWidget->updateTabWidget(filePath.replace(newFilePath, oldFilePath), filePath);
+            // notice that replace will change the value of filePath !!!
+            QString temp = filePath;
+            ui->tabWidget->updateTabWidgetForRename(filePath.replace(newFilePath, oldFilePath), temp);
         }
     } else {
-        ui->tabWidget->updateTabWidget(oldFilePath, newFilePath);
+        ui->tabWidget->updateTabWidgetForRename(oldFilePath, newFilePath);
     }
 
 
@@ -248,7 +251,7 @@ bool MainWindow::saveFile(const QString &filePath) {
 void MainWindow::traverseDir(const QString &dirPath, QStringList &fileList) {
     QDir dir(dirPath);
     QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-    for (auto fileInfo: infoList) {
+    for (const auto &fileInfo: infoList) {
         if (fileInfo.isDir()) {
             traverseDir(fileInfo.filePath(), fileList);
         } else {
@@ -260,4 +263,112 @@ void MainWindow::traverseDir(const QString &dirPath, QStringList &fileList) {
         }
     }
 }
+
+
+bool MainWindow::deleteDir(const QString &dirPath) {
+    bool result;
+    QDir dir(dirPath);
+    QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const auto &fileInfo: infoList) {
+        if (fileInfo.isDir()) {
+            deleteDir(fileInfo.filePath());
+        } else {
+            //delete the file
+            result = QFile::remove(fileInfo.filePath());
+            if (!result) {
+                QMessageBox::warning(this, "Delete File", "Delete file failed!");
+                return false;
+            }
+        }
+    }
+    //delete the dir
+    result = dir.rmdir(dirPath);
+    if (!result) {
+        QMessageBox::warning(this, "Delete Dir", "Delete dir failed!");
+        return false;
+    }
+    return true;
+}
+
+void MainWindow::removeFile(const QString &removeFilePath, bool isDir) {
+    if (isDir) {
+        //traverse dir
+        // the dir has been renamed, so we need to use the new file path to traverse
+        QDir dir(removeFilePath);
+        if (!dir.exists()) {
+            qDebug() << "dir not exist";
+            return;
+        }
+        QStringList fileList;
+        traverseDir(removeFilePath, fileList);
+        deleteDir(removeFilePath);
+        for (const auto &filePath: fileList) {
+            ui->tabWidget->closeTabByFilePath(filePath);
+        }
+    } else {
+        //delete the file
+        QFile file(removeFilePath);
+        if (!file.exists()) {
+            qDebug() << "file not exist";
+            return;
+        }
+        bool result = file.remove();
+        if (!result) {
+            QMessageBox::warning(this, "Delete File", "Delete file failed!");
+            return;
+        }
+        ui->tabWidget->closeTabByFilePath(removeFilePath);
+    }
+}
+
+void MainWindow::revealFileInOS(const QString &pathToReveal) {
+
+    // See http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt
+    // for details
+
+    // Mac, Windows support folder or file.
+#if defined(Q_OS_WIN)
+    const QString explorer = QProcessEnvironment::systemEnvironment().value("WINDIR") + "\\explorer.exe";
+    if (explorer.isEmpty()) {
+        QMessageBox::warning(this,
+                             tr("Launching Windows Explorer failed"),
+                             tr("Could not find explorer.exe in path to launch Windows Explorer."));
+        return;
+    }
+    QStringList param;
+    if (!QFileInfo(pathToReveal).isDir())
+        param << QLatin1String("/select,");
+    param << QDir::toNativeSeparators(pathToReveal);
+    auto *process = new QProcess(this);
+    process->start(explorer, param);
+
+#elif defined(Q_OS_MAC)
+    Q_UNUSED(parent)
+    QStringList scriptArgs;
+    scriptArgs << QLatin1String("-e")
+            << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
+            .arg(pathToReveal);
+    QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
+    scriptArgs.clear();
+    scriptArgs << QLatin1String("-e")
+            << QLatin1String("tell application \"Finder\" to activate");
+    QProcess::execute("/usr/bin/osascript", scriptArgs);
+#else
+    // we cannot select a file here, because no file browser really supports it...
+    const QFileInfo fileInfo(pathIn);
+    const QString folder = fileInfo.absoluteFilePath();
+    const QString app = Utils::UnixUtils::fileBrowser(Core::ICore::instance()->settings());
+    QProcess browserProc;
+    const QString browserArgs = Utils::UnixUtils::substituteFileBrowserParameters(app, folder);
+    if (debug)
+        qDebug() <<  browserArgs;
+    bool success = browserProc.startDetached(browserArgs);
+    const QString error = QString::fromLocal8Bit(browserProc.readAllStandardError());
+    success = success && error.isEmpty();
+    if (!success)
+        showGraphicalShellError(parent, app, error);
+#endif
+
+}
+
 
