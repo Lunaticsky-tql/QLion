@@ -20,7 +20,9 @@ public:
 protected:
     MainWindow* mainWindow;
     void mouseReleaseEvent(QMouseEvent* e) override;
-
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
 };
 
 

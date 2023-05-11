@@ -96,7 +96,7 @@
   </widget>
   <action name="action_new_file">
    <property name="text">
-    <string>新建文本文件</string>
+    <string>New Text File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -104,7 +104,7 @@
   </action>
   <action name="action_open_file">
    <property name="text">
-    <string>打开文件</string>
+    <string>Open File...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -112,7 +112,7 @@
   </action>
   <action name="action_open_folder">
    <property name="text">
-    <string>打开文件夹</string>
+    <string>Open Folder</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
@@ -120,7 +120,7 @@
   </action>
   <action name="action_save_file">
    <property name="text">
-    <string>保存</string>
+    <string>Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -128,7 +128,7 @@
   </action>
   <action name="action_save_as_file">
    <property name="text">
-    <string>另存为</string>
+    <string>Save As</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
@@ -136,7 +136,7 @@
   </action>
   <action name="action_setting">
    <property name="text">
-    <string>设置</string>
+    <string>Setting</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+,</string>
@@ -144,7 +144,7 @@
   </action>
   <action name="action_new_window">
    <property name="text">
-    <string>新建窗口</string>
+    <string>New Window</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+N</string>
@@ -152,7 +152,7 @@
   </action>
   <action name="action_undo">
    <property name="text">
-    <string>撤销</string>
+    <string>Undo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -160,7 +160,7 @@
   </action>
   <action name="action_redo">
    <property name="text">
-    <string>恢复</string>
+    <string>Redo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
@@ -168,7 +168,7 @@
   </action>
   <action name="action_cut">
    <property name="text">
-    <string>剪切</string>
+    <string>Cut</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -176,7 +176,7 @@
   </action>
   <action name="action_copy">
    <property name="text">
-    <string>复制</string>
+    <string>Copy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -184,7 +184,7 @@
   </action>
   <action name="action_paste">
    <property name="text">
-    <string>粘贴</string>
+    <string>Paste</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -192,7 +192,7 @@
   </action>
   <action name="action_find">
    <property name="text">
-    <string>查找</string>
+    <string>Find</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
@@ -200,7 +200,7 @@
   </action>
   <action name="action_replace">
    <property name="text">
-    <string>替换</string>
+    <string>Replace</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
@@ -208,7 +208,7 @@
   </action>
   <action name="action_denote">
    <property name="text">
-    <string>切换行注释</string>
+    <string>Toggle Line Comment</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+/</string>
@@ -216,7 +216,7 @@
   </action>
   <action name="action_show_shotcut">
    <property name="text">
-    <string>快捷键</string>
+    <string>Short Cut List</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+K</string>
@@ -224,7 +224,7 @@
   </action>
   <action name="action_info">
    <property name="text">
-    <string>关于</string>
+    <string>About</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -240,7 +240,7 @@
      <normalon>resources/icons/folder.png</normalon>:/resources/icons/folder.png</iconset>
    </property>
    <property name="text">
-    <string>资源管理器</string>
+    <string>Explorer</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+E</string>
@@ -248,7 +248,7 @@
   </action>
   <action name="action_exit">
    <property name="text">
-    <string>退出</string>
+    <string>Exit</string>
    </property>
   </action>
  </widget>

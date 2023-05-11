@@ -4,5 +4,6 @@
         <file>resources/keywords/1.txt</file>
         <file>resources/keywords/2.txt</file>
         <file>resources/keywords/punctuations.txt</file>
+        <file>resources/keywords/suffix_support.txt</file>
     </qresource>
 </RCC>

@@ -8,6 +8,7 @@
 #include <QMainWindow>
 #include<QStackedWidget>
 #include <QFileSystemModel>
+#include<unordered_set>
 #include "QLionCodePage.h"
 #include "FolderTreeView.h"
 
@@ -39,6 +40,9 @@ public:
     void revealFileInOS(const QString &pathToReveal);
     // make public for FolderTreeView
     void openFile(const QString& filePath, bool changeLastFilePath=false);
+    void addAndOpenFile(const QString& oldFilePath, const QString& newFilePath,bool isDir=false);
+    QString copyDir(const QString& oldDirPath, const QString& newDirPath);
+    void dragFileAndOpen(const QString& oldPath, const QString& newDirPath, bool isShow=false);
 
 private:
     Ui::MainWindow *ui;
@@ -46,12 +50,16 @@ private:
     QString lastDirPath;
     QFileSystemModel* model;
     FolderTreeView *folderTreeView;
+    QWidget *tipOpenFolderWidget;
+    std::unordered_set<QString> openableSuffixSet;
+    QStringList openableSuffixList;
 
 
     void setUpSideDock();
     void setUpConnection();
     void setUpFolderTreeViewConnections();
     void setUpFolderTreeView();
+    void loadOpenableSuffix();
 
     QStackedWidget *stackedWidget{};
 
@@ -61,11 +69,13 @@ private slots:
     void on_action_exit_triggered();
     void on_action_new_file_triggered();
     void on_action_open_file_triggered();
+    void on_action_open_folder_triggered();
     void on_action_save_file_triggered();
     void on_action_save_as_file_triggered();
     void on_action_copy_triggered();
     void on_action_cut_triggered();
     void on_action_paste_triggered();
+
     void do_folderTreeView_doubleClicked(const QModelIndex &index);
 
 

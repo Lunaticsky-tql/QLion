@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include "FolderTreeView.h"
 #include "mainwindow.h"
+#include <QMimeData>
 
 class NewFileWidget : public QWidget {
 public:
@@ -64,7 +65,7 @@ protected:
 
                     FolderTreeView *folderTreeView = mainWindow->getFolderTreeView();
                     // unfold the folder
-                    folderTreeView->expand(folderTreeView ->currentIndex());
+                    folderTreeView->expand(folderTreeView->currentIndex());
                     // select the new file
                     folderTreeView->setCurrentIndex(mainWindow->getFileSystemModel()->index(newFilePath));
                     // open the new file
@@ -164,6 +165,7 @@ private:
 
 FolderTreeView::FolderTreeView(MainWindow *parent) {
     mainWindow = parent;
+    setAcceptDrops(true);
 }
 
 void FolderTreeView::mouseReleaseEvent(QMouseEvent *e) {
@@ -190,14 +192,14 @@ void FolderTreeView::mouseReleaseEvent(QMouseEvent *e) {
                 QAction *selected = m.exec(mapToGlobal(e->pos()));
                 if (selected) {
                     QString selectedText = selected->text();
-                    if (selectedText== "Rename(&R)") {
+                    if (selectedText == "Rename(&R)") {
                         new RenameEditRect(visualRect(idx), filePath, this);
-                    } else if (selectedText== "New File(&F)") {
+                    } else if (selectedText == "New File(&F)") {
                         new NewFileWidget(mainWindow, filePath);
 
-                    } else if (selectedText== "New Folder(&D)") {
+                    } else if (selectedText == "New Folder(&D)") {
                         new NewFileWidget(mainWindow, filePath, true);
-                    } else if (selectedText== "Delete(&D)") {
+                    } else if (selectedText == "Delete(&D)") {
                         QMessageBox::StandardButton reply;
                         reply = QMessageBox::question(this, "Delete File",
                                                       "Are you sure to delete the dir? You may not be able to recover it.",
@@ -205,8 +207,7 @@ void FolderTreeView::mouseReleaseEvent(QMouseEvent *e) {
                         if (reply == QMessageBox::Yes) {
                             mainWindow->removeFile(filePath, true);
                         }
-                    }
-                    else if (selectedText== "Open in Explorer(&O)"||selectedText== "Open in Finder(&O)") {
+                    } else if (selectedText == "Open in Explorer(&O)" || selectedText == "Open in Finder(&O)") {
                         mainWindow->revealFileInOS(filePath);
                     }
                 }
@@ -232,8 +233,7 @@ void FolderTreeView::mouseReleaseEvent(QMouseEvent *e) {
                         if (reply == QMessageBox::Yes) {
                             mainWindow->removeFile(filePath);
                         }
-                    }
-                    else if (selected->text() == "Open in Explorer(&O)"||selected->text() == "Open in Finder(&O)") {
+                    } else if (selected->text() == "Open in Explorer(&O)" || selected->text() == "Open in Finder(&O)") {
                         mainWindow->revealFileInOS(filePath);
                     }
                 }
@@ -271,3 +271,51 @@ void FolderTreeView::renameFile(const QString &oldFilePath, const QString &newFi
     }
 
 }
+
+void FolderTreeView::dragEnterEvent(QDragEnterEvent *event) {
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void FolderTreeView::dropEvent(QDropEvent *event) {
+    if (event->mimeData()->hasUrls()) {
+        QList<QUrl> urls = event->mimeData()->urls();
+        // get the tree node under the cursor
+        QModelIndex idx = indexAt(event->position().toPoint());
+        if (!idx.isValid()) {
+            return;
+        }
+        QString newDirPath = mainWindow->getFileSystemModel()->filePath(idx);
+        //check is directory
+        if (QFileInfo(newDirPath).isDir()) {
+            //  let the user ensure the action
+            QMessageBox::StandardButton reply;
+            QString popupText = "Are you sure to move the file(s) to" + newDirPath +
+                                "?";
+            reply = QMessageBox::question(this, "Move File",popupText,
+                                          QMessageBox::Yes | QMessageBox::No);
+            if (reply == QMessageBox::No) {
+                return;
+            }
+            for (int i = 0; i < urls.size(); i++) {
+                QString url = urls.at(i).toLocalFile();
+                if (i == urls.size() - 1) {
+                    mainWindow->dragFileAndOpen(url, newDirPath, true);
+                } else {
+                    mainWindow->dragFileAndOpen(url, newDirPath, false);
+                }
+            }
+        } else {
+            return;
+        }
+    }
+}
+
+void FolderTreeView::dragMoveEvent(QDragMoveEvent *event) {
+    if (event->mimeData()->hasUrls()) {
+
+        event->acceptProposedAction();
+    }
+}
+
