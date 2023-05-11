@@ -80,7 +80,7 @@ void MainWindow::on_action_new_file_triggered() {
     setActions(true);
 }
 
-void MainWindow::openFile(const QString &filePath, bool changeLastFilePath = false) {
+void MainWindow::openFile(const QString &filePath, bool changeLastFilePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());

@@ -50,12 +50,25 @@ protected:
                 // if the folder already exists, do nothing
                 if (!dir.exists(newFilePath)) {
                     dir.mkdir(newFilePath);
+                    FolderTreeView *folderTreeView = mainWindow->getFolderTreeView();
+                    // unfold the folder
+                    folderTreeView->expand(folderTreeView->currentIndex());
+                    // select the new folder
+                    folderTreeView->setCurrentIndex(mainWindow->getFileSystemModel()->index(newFilePath));
                 }
             } else {
                 // if the file already exists, do nothing
                 if (!QFile::exists(newFilePath)) {
                     std::ofstream file(folderPath.toStdString() + "/" + lineEdit->text().toStdString());
                     file.close();
+
+                    FolderTreeView *folderTreeView = mainWindow->getFolderTreeView();
+                    // unfold the folder
+                    folderTreeView->expand(folderTreeView ->currentIndex());
+                    // select the new file
+                    folderTreeView->setCurrentIndex(mainWindow->getFileSystemModel()->index(newFilePath));
+                    // open the new file
+                    mainWindow->openFile(newFilePath);
                 }
             }
             close();

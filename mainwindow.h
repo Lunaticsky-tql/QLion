@@ -37,6 +37,8 @@ public:
     bool deleteDir(const QString& dirPath);
     bool saveFile(const QString& filePath);
     void revealFileInOS(const QString &pathToReveal);
+    // make public for FolderTreeView
+    void openFile(const QString& filePath, bool changeLastFilePath=false);
 
 private:
     Ui::MainWindow *ui;
@@ -50,7 +52,7 @@ private:
     void setUpConnection();
     void setUpFolderTreeViewConnections();
     void setUpFolderTreeView();
-    void openFile(const QString& filePath, bool changeLastFilePath);
+
     QStackedWidget *stackedWidget{};
 
 private slots:
