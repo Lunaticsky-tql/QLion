@@ -17,6 +17,10 @@ class QLionTabWidget;
 class QLionCodePage :public QPlainTextEdit
 {
     Q_OBJECT
+
+
+
+
 public:
     explicit QLionCodePage(QWidget *parent = nullptr,bool isInitHighLighter=true);
     void lineNumberAreaPaintEvent(QPaintEvent *pEvent);
@@ -34,6 +38,9 @@ public:
     void setUntitledID(int id);
     void selectCurrentTabSearchText(const QString &qString, int &i);
     void highlightCurrentTabText(const QString &highlightWord);
+    void replaceCurrentTabSearchText(QString &qString, QString &qString1, int &i);
+
+    void clearSelection();
 private:
     LineNumberArea *lineNumberArea;
     QLionTabWidget *myTabWidget;
@@ -43,6 +50,7 @@ private:
     bool unsaved;
     int untitledID=-1;
     void initConnections();
+
     void initFont();
     void initHighlighter();
     int getLineNumberAreaWidth();

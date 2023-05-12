@@ -37,9 +37,13 @@ public:
     int findCurrentTabText(const QString &qString, int i);
     void selectCurrentTabSearchText(const QString &qString, int &i);
     void highlightCurrentTabText(const QString &highlightWord);
+    void clearCurrentTabHighlight();
     // public for QLionCodePage to remove the untitledID from the set
     std::unordered_set<int> usingUntitledID;
     std::unordered_map<QString, int> usingFilePath;
+    void clearSelection();
+    void replaceCurrentTabSearchText(QString qString, QString qString1, int &i);
+    void setCurrentPageReadOnly(bool readOnly);
 private:
     MainWindow *mainWindow;
 };

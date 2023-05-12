@@ -65,6 +65,7 @@ void MainWindow::setUpConnection() {
 }
 
 void MainWindow::on_action_tool_tree_view_triggered() {
+    ui->sideDock->setWindowTitle("File Explorer");
     ui->action_search->setChecked(false);
     if (!ui->sideDock->isHidden()) {
         if (stackedWidget->currentIndex() == 1 || stackedWidget->currentIndex() == 0) {
@@ -83,6 +84,7 @@ void MainWindow::on_action_tool_tree_view_triggered() {
 
 void MainWindow::on_action_search_triggered() {
     // uncheck the tool tree view action
+    ui->sideDock->setWindowTitle("Search");
     ui->action_tool_tree_view->setChecked(false);
     if (!ui->sideDock->isHidden()) {
         if (stackedWidget->currentIndex() == 2) {
@@ -150,9 +152,9 @@ void MainWindow::on_action_open_folder_triggered() {
     lastDirPath = dirPath;
     model->setRootPath(dirPath);
     folderTreeView->setRootIndex(model->index(dirPath));
-    //set the title of the tree view
-    //that is, set the header title of column 0
-    model->setHeaderData(0, Qt::Horizontal, "Folder");
+    ui->sideDock->setWindowTitle("File Explorer");
+    ui->action_search->setChecked(false);
+    ui->sideDock->show();
     stackedWidget->setCurrentIndex(1);
 }
 
@@ -493,26 +495,85 @@ void MainWindow::dragFileAndOpen(const QString &oldPath, const QString &newDirPa
     }
 }
 
-void MainWindow::findInitial(const QString &searchWord) {
-    if (!findIndices.empty()) {
-        findIndices.clear();
+void MainWindow::findInitial() {
+    if (!findPositions.empty()) {
+        findPositions.clear();
     }
-    int searchingIndex = 0;
-    searchingIndex = ui->tabWidget->findCurrentTabText(searchWord, searchingIndex);
-    while((searchingIndex = ui->tabWidget->findCurrentTabText(searchWord, searchingIndex))!=-1){
-        findIndices.append(searchingIndex);
-        searchingIndex+=searchWord.length();
+    //if set the page readonly when searching, it can be mush easier to handle.
+    // as it is not a real project, it is only a homework....
+    setCurrentPageReadOnly(true);
+    int searchingPosition = 0;
+    currentFindIndex = 0;
+    searchingPosition = ui->tabWidget->findCurrentTabText(searchWord, searchingPosition);
+    while ((searchingPosition = ui->tabWidget->findCurrentTabText(searchWord, searchingPosition)) != -1) {
+        findPositions.append(searchingPosition);
+        searchingPosition += searchWord.length();
     }
-    if(!findIndices.empty()){
+    if (!findPositions.empty()) {
+        totalFindCount = findPositions.size();
+        findReplaceView->clearNotFoundText();
+        findReplaceView->updateCountLabel(currentFindIndex + 1, totalFindCount);
+        findReplaceView->setToolButtons(true);
         ui->tabWidget->highlightCurrentTabText(searchWord);
-        ui->tabWidget->selectCurrentTabSearchText(searchWord, findIndices[0]);
+        ui->tabWidget->selectCurrentTabSearchText(searchWord, findPositions[0]);
+    } else {
+        setCurrentPageReadOnly(false);
+        findReplaceView->setNotFoundText();
+        findReplaceView->setToolButtons(false);
+        clearFoundState();
     }
+}
+
+void MainWindow::findPrevious() {
+    currentFindIndex = (currentFindIndex - 1 + totalFindCount) % totalFindCount;
+    ui->tabWidget->highlightCurrentTabText(searchWord);
+    int findIndex = findPositions[currentFindIndex];
+    ui->tabWidget->selectCurrentTabSearchText(searchWord, findIndex);
+    findReplaceView->updateCountLabel(currentFindIndex + 1, totalFindCount);
+}
+
+void MainWindow::findNext() {
+    currentFindIndex = (currentFindIndex + 1) % totalFindCount;
+    ui->tabWidget->highlightCurrentTabText(searchWord);
+    int findIndex = findPositions[currentFindIndex];
+    ui->tabWidget->selectCurrentTabSearchText(searchWord, findIndex);
+    findReplaceView->updateCountLabel(currentFindIndex + 1, totalFindCount);
+}
+
+void MainWindow::clearFoundState() {
+    ui->tabWidget->clearCurrentTabHighlight();
+    ui->tabWidget->clearSelection();
+}
+
+void MainWindow::replace(QString replaceWord) {
+    ui->tabWidget->replaceCurrentTabSearchText(searchWord, replaceWord, findPositions[currentFindIndex]);
+    int offset = replaceWord.length() - searchWord.length();
+    for (int i = currentFindIndex + 1; i < findPositions.size(); i++) {
+        findPositions[i] += offset;
+    }
+    // delete this position from the findPositions
+    findPositions.remove(currentFindIndex);
+    totalFindCount--;
+    currentFindIndex--;
+    if (totalFindCount == 0) {
+        findReplaceView->setNotFoundText();
+        findReplaceView->setToolButtons(false);
+        clearFoundState();
+    } else {
+        findNext();
+    }
+}
+
+void MainWindow::setSearchWord(const QString &searchWord) {
+    this->searchWord = searchWord;
+}
+
+void MainWindow::setCurrentPageReadOnly(bool isReadOnly) {
+    ui->tabWidget->setCurrentPageReadOnly(isReadOnly);
 
 }
 
-bool MainWindow::hasTab() {
-    return ui->tabWidget->hasTab();
-}
+
 
 
 

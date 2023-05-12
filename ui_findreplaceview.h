@@ -35,8 +35,8 @@ public:
     QHBoxLayout *horizontalLayout_2;
     QLabel *label_2;
     QLineEdit *lineEditReplace;
-    QToolButton *replace;
     QToolButton *findAndReplace;
+    QToolButton *replaceAll;
     QLabel *noTabLabel;
     QSpacerItem *verticalSpacer;
 
@@ -97,21 +97,21 @@ public:
 
         horizontalLayout_2->addWidget(lineEditReplace);
 
-        replace = new QToolButton(FindReplaceView);
-        replace->setObjectName("replace");
-        QIcon icon2;
-        icon2.addFile(QString::fromUtf8(":/resources/icons/replace_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
-        replace->setIcon(icon2);
-
-        horizontalLayout_2->addWidget(replace);
-
         findAndReplace = new QToolButton(FindReplaceView);
         findAndReplace->setObjectName("findAndReplace");
-        QIcon icon3;
-        icon3.addFile(QString::fromUtf8(":/resources/icons/find_replace_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
-        findAndReplace->setIcon(icon3);
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/resources/icons/find_replace_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
+        findAndReplace->setIcon(icon2);
 
         horizontalLayout_2->addWidget(findAndReplace);
+
+        replaceAll = new QToolButton(FindReplaceView);
+        replaceAll->setObjectName("replaceAll");
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/resources/icons/replace_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
+        replaceAll->setIcon(icon3);
+
+        horizontalLayout_2->addWidget(replaceAll);
 
 
         verticalLayout_2->addLayout(horizontalLayout_2);
@@ -141,13 +141,13 @@ public:
         countLabel->setText(QCoreApplication::translate("FindReplaceView", "TextLabel", nullptr));
         label_2->setText(QCoreApplication::translate("FindReplaceView", "Replace", nullptr));
 #if QT_CONFIG(tooltip)
-        replace->setToolTip(QCoreApplication::translate("FindReplaceView", "Replace", nullptr));
-#endif // QT_CONFIG(tooltip)
-        replace->setText(QCoreApplication::translate("FindReplaceView", "...", nullptr));
-#if QT_CONFIG(tooltip)
         findAndReplace->setToolTip(QCoreApplication::translate("FindReplaceView", "Find and Replace", nullptr));
 #endif // QT_CONFIG(tooltip)
         findAndReplace->setText(QCoreApplication::translate("FindReplaceView", "...", nullptr));
+#if QT_CONFIG(tooltip)
+        replaceAll->setToolTip(QCoreApplication::translate("FindReplaceView", "Replace", nullptr));
+#endif // QT_CONFIG(tooltip)
+        replaceAll->setText(QCoreApplication::translate("FindReplaceView", "...", nullptr));
         noTabLabel->setText(QCoreApplication::translate("FindReplaceView", "You have not opened a file. Only the text in the active tab is searched.", nullptr));
     } // retranslateUi
 

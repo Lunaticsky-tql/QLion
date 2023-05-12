@@ -41,6 +41,7 @@ void QLionCodePage::initFont() {
 
 void QLionCodePage::initConnections() {
     // highlight current cursor line
+    // it may conflict with the highlighter but it is not a big problem
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
     // update lineNumberArea paint event
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
@@ -48,7 +49,6 @@ void QLionCodePage::initConnections() {
     connect(this,SIGNAL(blockCountChanged(int)),this,SLOT(updateLineNumberAreaWidth()));
     // update unsaved changes status
     connect(document(), SIGNAL(undoCommandAdded()), this,SLOT(setUnsaved()));
-
 }
 void QLionCodePage::resizeEvent(QResizeEvent *event) {
     QPlainTextEdit::resizeEvent(event);
@@ -292,6 +292,25 @@ void QLionCodePage::highlightCurrentTabText(const QString &highlightWord) {
     mHighlighter->setSearchText(highlightWord);
     mHighlighter->rehighlight();
 }
+
+void QLionCodePage::clearSelection() {
+    QTextCursor cursor = textCursor();
+    cursor.clearSelection();
+    setTextCursor(cursor);
+}
+
+void QLionCodePage::replaceCurrentTabSearchText(QString &searchText, QString &replaceText, int &i) {
+    QTextCursor cursor = textCursor();
+    cursor.clearSelection();
+    cursor.setPosition(i);
+    cursor.setPosition(i + searchText.length(), QTextCursor::KeepAnchor);
+    // If there is a selection, the selection is deleted and replaced by text according to the document
+    // https://doc.qt.io/qt-6/qtextcursor.html#insertText
+    cursor.insertText(replaceText);
+    setTextCursor(cursor);
+
+}
+
 
 
 

@@ -33,7 +33,6 @@ public:
     QFileSystemModel* getFileSystemModel();
     FolderTreeView *getFolderTreeView();
     bool isOnTab(const QString& filePath);
-    bool hasTab();
     void updateTabWidgetForRename(const QString& oldFilePath, const QString& newFilePath, bool isDir= false);
     void removeFile(const QString& removeFilePath, bool isDir=false);
     void traverseDir(const QString& dirPath, QStringList &fileList);
@@ -44,7 +43,14 @@ public:
     void openFile(const QString& filePath, bool changeLastFilePath=false);
     QString copyDir(const QString& oldDirPath, const QString& newDirPath);
     void dragFileAndOpen(const QString& oldPath, const QString& newDirPath, bool isShow=false);
-    void findInitial(const QString &searchWord);
+    void findInitial();
+    void findPrevious();
+    void findNext();
+    void clearFoundState();
+    void replace(QString replaceWord);
+    void setSearchWord(const QString& searchWord);
+    void setCurrentPageReadOnly(bool isReadOnly);
+
 
 private:
     Ui::MainWindow *ui;
@@ -56,8 +62,11 @@ private:
     QWidget *tipOpenFolderWidget;
     std::unordered_set<QString> openableSuffixSet;
     QStringList openableSuffixList;
-    QVector<int> findIndices;
+    QVector<int> findPositions;
+    int currentFindIndex{0};
+    int totalFindCount{0};
     bool hasOpenedFolder{false};
+    QString searchWord;
 
 
     void setUpSideDock();

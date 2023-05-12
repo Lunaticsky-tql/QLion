@@ -92,7 +92,7 @@ void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
 
 void QLionTabWidget::closeTab(int index) {
     QLionCodePage *codePage = getCodePage(index);
-    if(!codePage){
+    if (!codePage) {
         return;
     }
     bool canceled = false;
@@ -106,8 +106,7 @@ void QLionTabWidget::closeTab(int index) {
     QString filePath = codePage->getFilePath();
     if (filePath.isEmpty()) {
         usingUntitledID.erase(codePage->getUntitledID());
-    }
-    else{
+    } else {
         usingFilePath.erase(filePath);
     }
     removeTab(index);
@@ -121,15 +120,14 @@ void QLionTabWidget::closeTab(int index) {
 void QLionTabWidget::closeTabWithoutSaving(int index) {
 
     QLionCodePage *codePage = getCodePage(index);
-    if(!codePage){
+    if (!codePage) {
         return;
     }
     // do not forget to update the untitledCount
     QString filePath = codePage->getFilePath();
     if (filePath.isEmpty()) {
         usingUntitledID.erase(codePage->getUntitledID());
-    }
-    else{
+    } else {
         usingFilePath.erase(filePath);
     }
     removeTab(index);
@@ -163,7 +161,7 @@ QString QLionTabWidget::getLastFilePath() {
     return mainWindow->getLastFilePath();
 }
 
-bool QLionTabWidget::isOnTab(const QString& filePath) const {
+bool QLionTabWidget::isOnTab(const QString &filePath) const {
     // directly check if the filePath is in the set can be faster
     if (usingFilePath.count(filePath)) {
         return true;
@@ -173,7 +171,7 @@ bool QLionTabWidget::isOnTab(const QString& filePath) const {
 }
 
 bool QLionTabWidget::saveFile(const QString &filePath) {
-    if(!isOnTab(filePath)){
+    if (!isOnTab(filePath)) {
         return false;
     }
     //isOnTab guarantees that the filePath is in the map
@@ -182,7 +180,7 @@ bool QLionTabWidget::saveFile(const QString &filePath) {
 }
 
 QLionCodePage *QLionTabWidget::getCodePage(const QString &filePath) {
-    if(!isOnTab(filePath)){
+    if (!isOnTab(filePath)) {
         return nullptr;
     }
     return getCodePage(usingFilePath[filePath]);
@@ -192,8 +190,8 @@ QLionCodePage *QLionTabWidget::getCodePage(const QString &filePath) {
 void QLionTabWidget::updateTabWidgetForRename(const QString &oldFilePath, const QString &newFilePath) {
     //isOnTab guarantees that the filePath is in the map
 //    qDebug()<<"updateTabWidgetForRename"<<"oldFilePath"<<oldFilePath<<"newFilePath"<<newFilePath;
-    QLionCodePage* codePage=getCodePage(oldFilePath);
-    if(codePage==nullptr){
+    QLionCodePage *codePage = getCodePage(oldFilePath);
+    if (codePage == nullptr) {
         return;
     }
     codePage->changeFilePath(newFilePath);
@@ -201,7 +199,7 @@ void QLionTabWidget::updateTabWidgetForRename(const QString &oldFilePath, const 
 }
 
 void QLionTabWidget::closeTabByFilePath(const QString &filePath) {
-    if(!isOnTab(filePath)){
+    if (!isOnTab(filePath)) {
         return;
     }
     closeTabWithoutSaving(usingFilePath[filePath]);
@@ -209,20 +207,20 @@ void QLionTabWidget::closeTabByFilePath(const QString &filePath) {
 }
 
 int QLionTabWidget::findCurrentTabText(const QString &qString, int i) {
-    QLionCodePage* codePage=getCurrentCodePage();
-    if(codePage==nullptr){
+    QLionCodePage *codePage = getCurrentCodePage();
+    if (codePage == nullptr) {
         return -1;
     }
     return codePage->toPlainText().indexOf(qString, i);
 }
 
 bool QLionTabWidget::hasTab() {
-    return count()>0;
+    return count() > 0;
 }
 
 void QLionTabWidget::selectCurrentTabSearchText(const QString &qString, int &i) {
-    QLionCodePage* codePage=getCurrentCodePage();
-    if(codePage==nullptr){
+    QLionCodePage *codePage = getCurrentCodePage();
+    if (codePage == nullptr) {
         return;
     }
     codePage->selectCurrentTabSearchText(qString, i);
@@ -230,12 +228,47 @@ void QLionTabWidget::selectCurrentTabSearchText(const QString &qString, int &i) 
 }
 
 void QLionTabWidget::highlightCurrentTabText(const QString &highlightWord) {
-    QLionCodePage* codePage=getCurrentCodePage();
-    if(codePage==nullptr){
+    QLionCodePage *codePage = getCurrentCodePage();
+    if (codePage == nullptr) {
         return;
     }
     codePage->highlightCurrentTabText(highlightWord);
 }
+
+void QLionTabWidget::clearCurrentTabHighlight() {
+    highlightCurrentTabText("");
+
+}
+
+void QLionTabWidget::clearSelection() {
+    QLionCodePage *codePage = getCurrentCodePage();
+    if (codePage == nullptr) {
+        return;
+    }
+    codePage->clearSelection();
+
+}
+
+void QLionTabWidget::replaceCurrentTabSearchText(QString searchWord, QString replaceText, int &position) {
+    QLionCodePage *codePage = getCurrentCodePage();
+    if (codePage == nullptr) {
+        return;
+    }
+    codePage->replaceCurrentTabSearchText(searchWord, replaceText, position);
+
+}
+
+
+
+void QLionTabWidget::setCurrentPageReadOnly(bool readOnly) {
+    QLionCodePage *page=getCurrentCodePage();
+    if(page==nullptr){
+        return;
+    }
+    page->setReadOnly(readOnly);
+}
+
+
 
 
 

@@ -165,6 +165,7 @@ void Highlighter::highlightBlock(const QString &text) {
     addCommentFormat(text);
     addMultiLineCommentFormat(text);
     highlightSearchText(text);
+
 }
 
 void Highlighter::addKeywordsFormat() {
