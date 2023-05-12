@@ -11,6 +11,7 @@
 #include<unordered_set>
 #include "QLionCodePage.h"
 #include "FolderTreeView.h"
+#include "findreplaceview.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -40,9 +41,9 @@ public:
     void revealFileInOS(const QString &pathToReveal);
     // make public for FolderTreeView
     void openFile(const QString& filePath, bool changeLastFilePath=false);
-    void addAndOpenFile(const QString& oldFilePath, const QString& newFilePath,bool isDir=false);
     QString copyDir(const QString& oldDirPath, const QString& newDirPath);
     void dragFileAndOpen(const QString& oldPath, const QString& newDirPath, bool isShow=false);
+    void findInitial(const QString &qString);
 
 private:
     Ui::MainWindow *ui;
@@ -50,9 +51,12 @@ private:
     QString lastDirPath;
     QFileSystemModel* model;
     FolderTreeView *folderTreeView;
+    FindReplaceView *findReplaceView;
     QWidget *tipOpenFolderWidget;
     std::unordered_set<QString> openableSuffixSet;
     QStringList openableSuffixList;
+    QVector<int> findIndex;
+    bool hasOpenedFolder{false};
 
 
     void setUpSideDock();
@@ -64,7 +68,7 @@ private:
     QStackedWidget *stackedWidget{};
 
 private slots:
-    void do_act_tool_tree_view_triggered();
+    void on_action_tool_tree_view_triggered();
     void on_action_new_window_triggered();
     void on_action_exit_triggered();
     void on_action_new_file_triggered();
@@ -75,6 +79,7 @@ private slots:
     void on_action_copy_triggered();
     void on_action_cut_triggered();
     void on_action_paste_triggered();
+    void on_action_search_triggered();
 
     void do_folderTreeView_doubleClicked(const QModelIndex &index);
 

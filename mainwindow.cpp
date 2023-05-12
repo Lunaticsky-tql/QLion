@@ -50,28 +50,49 @@ void MainWindow::setUpSideDock() {
     layout2->addWidget(test_pushbutton1);
     layout2->addItem(spacer);
     folderTreeView = new FolderTreeView(this);
+    findReplaceView = new FindReplaceView(this);
     stackedWidget = new QStackedWidget(ui->dockWidgetContents);
     stackedWidget->addWidget(tipOpenFolderWidget);
     stackedWidget->addWidget(folderTreeView);
+    stackedWidget->addWidget(findReplaceView);
     setUpFolderTreeView();
     setUpFolderTreeViewConnections();
     layout->addWidget(stackedWidget);
-    stackedWidget->setCurrentIndex(1);
+    stackedWidget->setCurrentIndex(0);
 }
 
 void MainWindow::setUpConnection() {
-
-    connect(ui->action_tool_tree_view, SIGNAL(triggered()), this, SLOT(do_act_tool_tree_view_triggered()));
 }
 
-void MainWindow::do_act_tool_tree_view_triggered() {
-    if (ui->sideDock->isHidden()) {
-        ui->sideDock->show();
-        stackedWidget->setCurrentIndex(0);
-        qDebug() << stackedWidget->currentIndex();
+void MainWindow::on_action_tool_tree_view_triggered() {
+    ui->action_search->setChecked(false);
+    if (!ui->sideDock->isHidden()) {
+        if (stackedWidget->currentIndex() == 1 || stackedWidget->currentIndex() == 0) {
+            ui->sideDock->hide();
+            return;
+        }
     } else {
-        ui->sideDock->hide();
+        ui->sideDock->show();
     }
+    if (hasOpenedFolder) {
+        stackedWidget->setCurrentIndex(1);
+    } else {
+        stackedWidget->setCurrentIndex(0);
+    }
+}
+
+void MainWindow::on_action_search_triggered() {
+    // uncheck the tool tree view action
+    ui->action_tool_tree_view->setChecked(false);
+    if (!ui->sideDock->isHidden()) {
+        if (stackedWidget->currentIndex() == 2) {
+            ui->sideDock->hide();
+            return;
+        }
+    } else {
+        ui->sideDock->show();
+    }
+    stackedWidget->setCurrentIndex(2);
 }
 
 void MainWindow::on_action_new_window_triggered() {
@@ -121,6 +142,7 @@ void MainWindow::on_action_open_file_triggered() {
 }
 
 void MainWindow::on_action_open_folder_triggered() {
+    hasOpenedFolder = true;
     QString dirPath = QFileDialog::getExistingDirectory(this, "Open Folder", lastDirPath);
     if (dirPath.isEmpty()) {
         return;
@@ -438,8 +460,8 @@ void MainWindow::loadOpenableSuffix() {
 void MainWindow::dragFileAndOpen(const QString &oldPath, const QString &newDirPath, bool isShow) {
     bool isDir = QFileInfo(oldPath).isDir();
     if (isDir) {
-        QString newDirPathWithDirName =copyDir(oldPath, newDirPath);
-        if (!newDirPathWithDirName.isEmpty()&&isShow) {
+        QString newDirPathWithDirName = copyDir(oldPath, newDirPath);
+        if (!newDirPathWithDirName.isEmpty() && isShow) {
             folderTreeView->expand(folderTreeView->currentIndex());
             folderTreeView->setCurrentIndex(model->index(newDirPath));
         }
@@ -456,8 +478,8 @@ void MainWindow::dragFileAndOpen(const QString &oldPath, const QString &newDirPa
                 return;
             }
         }
-        bool success=QFile::copy(oldPath, newFilePath);
-        if(!success){
+        bool success = QFile::copy(oldPath, newFilePath);
+        if (!success) {
             QMessageBox::warning(this, "Copy File", "Copy file failed!");
             return;
         }
@@ -468,6 +490,15 @@ void MainWindow::dragFileAndOpen(const QString &oldPath, const QString &newDirPa
         }
     }
 }
+
+void MainWindow::findInitial(const QString &qString) {
+    if (!findIndex.empty()) {
+        findIndex.clear();
+    }
+
+}
+
+
 
 
 

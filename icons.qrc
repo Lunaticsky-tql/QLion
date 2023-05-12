@@ -3,5 +3,10 @@
         <file>resources/icons/qlion.png</file>
         <file>resources/icons/folder.png</file>
         <file>resources/icons/unsaved.png</file>
+        <file>resources/icons/nextOccurence_dark.png</file>
+        <file>resources/icons/previousOccurence_dark.png</file>
+        <file>resources/icons/replace_dark.png</file>
+        <file>resources/icons/find_replace_dark.png</file>
+        <file>resources/icons/search.png</file>
     </qresource>
 </RCC>

@@ -36,7 +36,7 @@ public:
             fileExistedLabel = new QLabel("File already exists", this);
         }
         fileExistedLabel->hide();
-        connect(lineEdit, &QLineEdit::textChanged, this, &NewFileWidget::fileExisted);
+        connect(lineEdit, &QLineEdit::textChanged, this, &NewFileWidget::fileExistedDetection);
         layout->addWidget(fileExistedLabel);
         show();
     }
@@ -79,7 +79,7 @@ protected:
             QWidget::keyPressEvent(event);
     }
 
-    void fileExisted(const QString &text) {
+    void fileExistedDetection(const QString &text) {
         if (text.isEmpty()) {
             // cannot create a file with empty name but do not show the file existed label
             fileExistedFlag = true;

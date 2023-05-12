@@ -47,6 +47,7 @@ public:
     QAction *action_info;
     QAction *action_tool_tree_view;
     QAction *action_exit;
+    QAction *action_search;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QLionTabWidget *tabWidget;
@@ -103,12 +104,19 @@ public:
         action_tool_tree_view = new QAction(MainWindow);
         action_tool_tree_view->setObjectName("action_tool_tree_view");
         action_tool_tree_view->setCheckable(true);
+        action_tool_tree_view->setChecked(true);
         QIcon icon1;
         icon1.addFile(QString::fromUtf8(":/resources/icons/folder.png"), QSize(), QIcon::Normal, QIcon::Off);
         icon1.addFile(QString::fromUtf8("resources/icons/folder.png"), QSize(), QIcon::Normal, QIcon::On);
         action_tool_tree_view->setIcon(icon1);
         action_exit = new QAction(MainWindow);
         action_exit->setObjectName("action_exit");
+        action_search = new QAction(MainWindow);
+        action_search->setObjectName("action_search");
+        action_search->setCheckable(true);
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/resources/icons/search.png"), QSize(), QIcon::Normal, QIcon::Off);
+        action_search->setIcon(icon2);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -166,6 +174,7 @@ public:
         menu_E->addAction(action_replace);
         menu_E->addAction(action_denote);
         toolBar->addAction(action_tool_tree_view);
+        toolBar->addAction(action_search);
 
         retranslateUi(MainWindow);
 
@@ -178,79 +187,83 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "Qlion", nullptr));
-        action_new_file->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\273\272\346\226\207\346\234\254\346\226\207\344\273\266", nullptr));
+        action_new_file->setText(QCoreApplication::translate("MainWindow", "New Text File", nullptr));
 #if QT_CONFIG(shortcut)
         action_new_file->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+N", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_open_file->setText(QCoreApplication::translate("MainWindow", "\346\211\223\345\274\200\346\226\207\344\273\266", nullptr));
+        action_open_file->setText(QCoreApplication::translate("MainWindow", "Open File...", nullptr));
 #if QT_CONFIG(shortcut)
         action_open_file->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+O", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_open_folder->setText(QCoreApplication::translate("MainWindow", "\346\211\223\345\274\200\346\226\207\344\273\266\345\244\271", nullptr));
+        action_open_folder->setText(QCoreApplication::translate("MainWindow", "Open Folder", nullptr));
 #if QT_CONFIG(shortcut)
         action_open_folder->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+O", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_save_file->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230", nullptr));
+        action_save_file->setText(QCoreApplication::translate("MainWindow", "Save", nullptr));
 #if QT_CONFIG(shortcut)
         action_save_file->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+S", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_save_as_file->setText(QCoreApplication::translate("MainWindow", "\345\217\246\345\255\230\344\270\272", nullptr));
+        action_save_as_file->setText(QCoreApplication::translate("MainWindow", "Save As", nullptr));
 #if QT_CONFIG(shortcut)
         action_save_as_file->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+S", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_setting->setText(QCoreApplication::translate("MainWindow", "\350\256\276\347\275\256", nullptr));
+        action_setting->setText(QCoreApplication::translate("MainWindow", "Setting", nullptr));
 #if QT_CONFIG(shortcut)
         action_setting->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+,", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_new_window->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\273\272\347\252\227\345\217\243", nullptr));
+        action_new_window->setText(QCoreApplication::translate("MainWindow", "New Window", nullptr));
 #if QT_CONFIG(shortcut)
         action_new_window->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+N", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_undo->setText(QCoreApplication::translate("MainWindow", "\346\222\244\351\224\200", nullptr));
+        action_undo->setText(QCoreApplication::translate("MainWindow", "Undo", nullptr));
 #if QT_CONFIG(shortcut)
         action_undo->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Z", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_redo->setText(QCoreApplication::translate("MainWindow", "\346\201\242\345\244\215", nullptr));
+        action_redo->setText(QCoreApplication::translate("MainWindow", "Redo", nullptr));
 #if QT_CONFIG(shortcut)
         action_redo->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Y", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_cut->setText(QCoreApplication::translate("MainWindow", "\345\211\252\345\210\207", nullptr));
+        action_cut->setText(QCoreApplication::translate("MainWindow", "Cut", nullptr));
 #if QT_CONFIG(shortcut)
         action_cut->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+X", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_copy->setText(QCoreApplication::translate("MainWindow", "\345\244\215\345\210\266", nullptr));
+        action_copy->setText(QCoreApplication::translate("MainWindow", "Copy", nullptr));
 #if QT_CONFIG(shortcut)
         action_copy->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+C", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_paste->setText(QCoreApplication::translate("MainWindow", "\347\262\230\350\264\264", nullptr));
+        action_paste->setText(QCoreApplication::translate("MainWindow", "Paste", nullptr));
 #if QT_CONFIG(shortcut)
         action_paste->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+V", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_find->setText(QCoreApplication::translate("MainWindow", "\346\237\245\346\211\276", nullptr));
+        action_find->setText(QCoreApplication::translate("MainWindow", "Find", nullptr));
 #if QT_CONFIG(shortcut)
         action_find->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+F", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_replace->setText(QCoreApplication::translate("MainWindow", "\346\233\277\346\215\242", nullptr));
+        action_replace->setText(QCoreApplication::translate("MainWindow", "Replace", nullptr));
 #if QT_CONFIG(shortcut)
         action_replace->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+H", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_denote->setText(QCoreApplication::translate("MainWindow", "\345\210\207\346\215\242\350\241\214\346\263\250\351\207\212", nullptr));
+        action_denote->setText(QCoreApplication::translate("MainWindow", "Toggle Line Comment", nullptr));
 #if QT_CONFIG(shortcut)
         action_denote->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+/", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_show_shotcut->setText(QCoreApplication::translate("MainWindow", "\345\277\253\346\215\267\351\224\256", nullptr));
+        action_show_shotcut->setText(QCoreApplication::translate("MainWindow", "Short Cut List", nullptr));
 #if QT_CONFIG(shortcut)
         action_show_shotcut->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+K", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_info->setText(QCoreApplication::translate("MainWindow", "\345\205\263\344\272\216", nullptr));
+        action_info->setText(QCoreApplication::translate("MainWindow", "About", nullptr));
 #if QT_CONFIG(shortcut)
         action_info->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+I", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_tool_tree_view->setText(QCoreApplication::translate("MainWindow", "\350\265\204\346\272\220\347\256\241\347\220\206\345\231\250", nullptr));
+        action_tool_tree_view->setText(QCoreApplication::translate("MainWindow", "Explorer", nullptr));
 #if QT_CONFIG(shortcut)
         action_tool_tree_view->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+E", nullptr));
 #endif // QT_CONFIG(shortcut)
-        action_exit->setText(QCoreApplication::translate("MainWindow", "\351\200\200\345\207\272", nullptr));
+        action_exit->setText(QCoreApplication::translate("MainWindow", "Exit", nullptr));
+        action_search->setText(QCoreApplication::translate("MainWindow", "action_search", nullptr));
+#if QT_CONFIG(shortcut)
+        action_search->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+F", nullptr));
+#endif // QT_CONFIG(shortcut)
         menu_F->setTitle(QCoreApplication::translate("MainWindow", "\346\226\207\344\273\266(&F)", nullptr));
         menu_E->setTitle(QCoreApplication::translate("MainWindow", "\347\274\226\350\276\221(&E)", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));

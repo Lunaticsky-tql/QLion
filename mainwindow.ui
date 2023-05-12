@@ -84,6 +84,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="action_tool_tree_view"/>
+   <addaction name="action_search"/>
   </widget>
   <widget class="QDockWidget" name="sideDock">
    <property name="allowedAreas">
@@ -234,6 +235,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/resources/icons/folder.png</normaloff>
@@ -249,6 +253,21 @@
   <action name="action_exit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="action_search">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/resources/icons/search.png</normaloff>:/resources/icons/search.png</iconset>
+   </property>
+   <property name="text">
+    <string>action_search</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F</string>
    </property>
   </action>
  </widget>
