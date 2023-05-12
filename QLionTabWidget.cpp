@@ -208,6 +208,35 @@ void QLionTabWidget::closeTabByFilePath(const QString &filePath) {
 
 }
 
+int QLionTabWidget::findCurrentTabText(const QString &qString, int i) {
+    QLionCodePage* codePage=getCurrentCodePage();
+    if(codePage==nullptr){
+        return -1;
+    }
+    return codePage->toPlainText().indexOf(qString, i);
+}
+
+bool QLionTabWidget::hasTab() {
+    return count()>0;
+}
+
+void QLionTabWidget::selectCurrentTabSearchText(const QString &qString, int &i) {
+    QLionCodePage* codePage=getCurrentCodePage();
+    if(codePage==nullptr){
+        return;
+    }
+    codePage->selectCurrentTabSearchText(qString, i);
+
+}
+
+void QLionTabWidget::highlightCurrentTabText(const QString &highlightWord) {
+    QLionCodePage* codePage=getCurrentCodePage();
+    if(codePage==nullptr){
+        return;
+    }
+    codePage->highlightCurrentTabText(highlightWord);
+}
+
 
 
 

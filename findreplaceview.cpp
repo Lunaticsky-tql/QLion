@@ -42,3 +42,13 @@ void FindReplaceView::setToolButtons(bool isEnable) {
         ui->countLabel->hide();
     }
 }
+
+void FindReplaceView::setCannotSearch(bool cannotSearch) {
+    ui->lineEditFind->setEnabled(!cannotSearch);
+    ui->lineEditReplace->setEnabled(!cannotSearch);
+    if(cannotSearch){
+        ui->noTabLabel->show();
+    }else{
+        ui->noTabLabel->hide();
+    }
+}

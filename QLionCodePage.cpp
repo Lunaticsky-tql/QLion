@@ -278,5 +278,20 @@ void QLionCodePage::setSaved() {
     unsaved = false;
 }
 
+void QLionCodePage::selectCurrentTabSearchText(const QString &qString, int &i) {
+    QTextCursor cursor = textCursor();
+    cursor.clearSelection();
+    cursor.setPosition(i);
+    cursor.setPosition(i + qString.length(), QTextCursor::KeepAnchor);
+    setTextCursor(cursor);
+
+}
+
+void QLionCodePage::highlightCurrentTabText(const QString &highlightWord) {
+    // just highlight all the text matched, do not select the text
+    mHighlighter->setSearchText(highlightWord);
+    mHighlighter->rehighlight();
+}
+
 
 

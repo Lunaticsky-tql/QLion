@@ -32,6 +32,8 @@ public:
     bool saveFile(bool isSaveAs);
     int getUntitledID() const;
     void setUntitledID(int id);
+    void selectCurrentTabSearchText(const QString &qString, int &i);
+    void highlightCurrentTabText(const QString &highlightWord);
 private:
     LineNumberArea *lineNumberArea;
     QLionTabWidget *myTabWidget;

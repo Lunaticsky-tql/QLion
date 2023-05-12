@@ -37,6 +37,7 @@ public:
     QLineEdit *lineEditReplace;
     QToolButton *replace;
     QToolButton *findAndReplace;
+    QLabel *noTabLabel;
     QSpacerItem *verticalSpacer;
 
     void setupUi(QWidget *FindReplaceView)
@@ -115,6 +116,12 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_2);
 
+        noTabLabel = new QLabel(FindReplaceView);
+        noTabLabel->setObjectName("noTabLabel");
+        noTabLabel->setWordWrap(true);
+
+        verticalLayout_2->addWidget(noTabLabel);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_2->addItem(verticalSpacer);
@@ -141,6 +148,7 @@ public:
         findAndReplace->setToolTip(QCoreApplication::translate("FindReplaceView", "Find and Replace", nullptr));
 #endif // QT_CONFIG(tooltip)
         findAndReplace->setText(QCoreApplication::translate("FindReplaceView", "...", nullptr));
+        noTabLabel->setText(QCoreApplication::translate("FindReplaceView", "You have not opened a file. Only the text in the active tab is searched.", nullptr));
     } // retranslateUi
 
 };

@@ -201,6 +201,8 @@ void MainWindow::setActions(bool isEnable) {
     ui->action_copy->setEnabled(isEnable);
     ui->action_cut->setEnabled(isEnable);
     ui->action_paste->setEnabled(isEnable);
+    ui->action_undo->setEnabled(isEnable);
+    findReplaceView->setCannotSearch(!isEnable);
 }
 
 QString MainWindow::getLastFilePath() {
@@ -491,11 +493,25 @@ void MainWindow::dragFileAndOpen(const QString &oldPath, const QString &newDirPa
     }
 }
 
-void MainWindow::findInitial(const QString &qString) {
-    if (!findIndex.empty()) {
-        findIndex.clear();
+void MainWindow::findInitial(const QString &searchWord) {
+    if (!findIndices.empty()) {
+        findIndices.clear();
+    }
+    int searchingIndex = 0;
+    searchingIndex = ui->tabWidget->findCurrentTabText(searchWord, searchingIndex);
+    while((searchingIndex = ui->tabWidget->findCurrentTabText(searchWord, searchingIndex))!=-1){
+        findIndices.append(searchingIndex);
+        searchingIndex+=searchWord.length();
+    }
+    if(!findIndices.empty()){
+        ui->tabWidget->highlightCurrentTabText(searchWord);
+        ui->tabWidget->selectCurrentTabSearchText(searchWord, findIndices[0]);
     }
 
+}
+
+bool MainWindow::hasTab() {
+    return ui->tabWidget->hasTab();
 }
 
 

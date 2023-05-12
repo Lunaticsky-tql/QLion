@@ -164,6 +164,7 @@ void Highlighter::highlightBlock(const QString &text) {
     // or the comment will be highlighted by other formats like keywords
     addCommentFormat(text);
     addMultiLineCommentFormat(text);
+    highlightSearchText(text);
 }
 
 void Highlighter::addKeywordsFormat() {
@@ -226,8 +227,25 @@ void Highlighter::addFunctionFormat(const QString &text) {
         //we should not highlight the '('
         setFormat(match.capturedStart(), match.capturedLength() - 1, rule.format);
     }
-
 }
+
+void Highlighter::highlightSearchText(const QString &text) {
+    if(searchedText.isEmpty()) {
+        return;
+    }
+    HighlightRule rule;
+    rule.pattern = QRegularExpression(searchedText);
+    // green background
+    QColor color(0, 255, 0, 100);
+    rule.format.setBackground(color);
+    rule.format.setFont(QFont(mFontFamily, mFontSize));
+    QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+    while (matchIterator.hasNext()) {
+        QRegularExpressionMatch match = matchIterator.next();
+        setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+    }
+}
+
 
 
 void Highlighter::initBatchHighlightFormat() {
@@ -235,6 +253,14 @@ void Highlighter::initBatchHighlightFormat() {
     addKeywordsFormat();
     addClassNameFormat();
 }
+
+void Highlighter::setSearchText(const QString &keyWord) {
+    searchedText = keyWord;
+
+}
+
+
+
 
 
 

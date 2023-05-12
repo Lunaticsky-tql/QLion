@@ -12,6 +12,7 @@
 class Highlighter : public QSyntaxHighlighter {
 public:
     explicit Highlighter(QTextDocument *parent = nullptr, const QString& fontFamily="Consolas", int fontSize=14);
+    void setSearchText(const QString &keyWord);
 protected:
     void highlightBlock(const QString &text) override;
 private:
@@ -33,6 +34,9 @@ private:
     void addFunctionFormat(const QString &text);
     void addVarMemberFormat(const QString &text);
     void addIncludeFormat(const QString &text);
+    void highlightSearchText(const QString &text);
+    QString searchedText="";
+
 };
 
 

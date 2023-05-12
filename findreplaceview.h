@@ -6,6 +6,7 @@
 #define QLION_FINDREPLACEVIEW_H
 
 #include <QWidget>
+
 class MainWindow;
 
 QT_BEGIN_NAMESPACE
@@ -18,14 +19,19 @@ Q_OBJECT
 public:
     explicit FindReplaceView(MainWindow *parent = nullptr);
 
+    void setCannotSearch(bool cannotSearch);
+
     ~FindReplaceView() override;
 
 private:
     Ui::FindReplaceView *ui;
-    MainWindow* mainWindow;
+    MainWindow *mainWindow;
+
     void setToolButtons(bool isEnable);
+
 private slots:
-    void onFindTextChanged(const QString& text);
+
+    void onFindTextChanged(const QString &text);
 };
 
 
