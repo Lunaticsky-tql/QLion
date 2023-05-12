@@ -102,3 +102,11 @@ void FindReplaceView::showCountLabel(bool isShow) {
         ui->countLabel->hide();
     }
 }
+
+void FindReplaceView::setSearchWord(QString keyWord) {
+    ui->lineEditFind->setText(keyWord);
+}
+
+QString FindReplaceView::getCurrentSearchWord() {
+    return ui->lineEditFind->text();
+}

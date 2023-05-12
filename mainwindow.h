@@ -50,6 +50,8 @@ public:
     void replace(QString replaceWord);
     void setSearchWord(const QString& searchWord);
     void setCurrentPageReadOnly(bool isReadOnly);
+    void triggerFindIfOnSearch();
+
 
 
 private:
@@ -92,8 +94,7 @@ private slots:
     void on_action_search_triggered();
 
     void do_folderTreeView_doubleClicked(const QModelIndex &index);
-
-
+    void on_action_find_triggered();
 };
 
 

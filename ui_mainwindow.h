@@ -264,8 +264,8 @@ public:
 #if QT_CONFIG(shortcut)
         action_search->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+F", nullptr));
 #endif // QT_CONFIG(shortcut)
-        menu_F->setTitle(QCoreApplication::translate("MainWindow", "\346\226\207\344\273\266(&F)", nullptr));
-        menu_E->setTitle(QCoreApplication::translate("MainWindow", "\347\274\226\350\276\221(&E)", nullptr));
+        menu_F->setTitle(QCoreApplication::translate("MainWindow", "File(&F)", nullptr));
+        menu_E->setTitle(QCoreApplication::translate("MainWindow", "Edit(&E)", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 

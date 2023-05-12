@@ -283,31 +283,34 @@ void FolderTreeView::dropEvent(QDropEvent *event) {
         QList<QUrl> urls = event->mimeData()->urls();
         // get the tree node under the cursor
         QModelIndex idx = indexAt(event->position().toPoint());
+        QString newDirPath;
         if (!idx.isValid()) {
+            qDebug() << "invalid index";
+            // newDirPath is the base path
+            newDirPath = mainWindow->getFileSystemModel()->rootPath();
+            qDebug() << newDirPath;
+        } else {
+            newDirPath = mainWindow->getFileSystemModel()->filePath(idx);
+            if (!QFileInfo(newDirPath).isDir()) {
+                newDirPath = QFileInfo(newDirPath).absolutePath();
+            }
+        }
+        //  let the user ensure the action
+        QMessageBox::StandardButton reply;
+        QString popupText = "Are you sure to move the file(s) to" + newDirPath +
+                            "?";
+        reply = QMessageBox::question(this, "Move File", popupText,
+                                      QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::No) {
             return;
         }
-        QString newDirPath = mainWindow->getFileSystemModel()->filePath(idx);
-        //check is directory
-        if (QFileInfo(newDirPath).isDir()) {
-            //  let the user ensure the action
-            QMessageBox::StandardButton reply;
-            QString popupText = "Are you sure to move the file(s) to" + newDirPath +
-                                "?";
-            reply = QMessageBox::question(this, "Move File",popupText,
-                                          QMessageBox::Yes | QMessageBox::No);
-            if (reply == QMessageBox::No) {
-                return;
+        for (int i = 0; i < urls.size(); i++) {
+            QString url = urls.at(i).toLocalFile();
+            if (i == urls.size() - 1) {
+                mainWindow->dragFileAndOpen(url, newDirPath, true);
+            } else {
+                mainWindow->dragFileAndOpen(url, newDirPath, false);
             }
-            for (int i = 0; i < urls.size(); i++) {
-                QString url = urls.at(i).toLocalFile();
-                if (i == urls.size() - 1) {
-                    mainWindow->dragFileAndOpen(url, newDirPath, true);
-                } else {
-                    mainWindow->dragFileAndOpen(url, newDirPath, false);
-                }
-            }
-        } else {
-            return;
         }
     }
 }

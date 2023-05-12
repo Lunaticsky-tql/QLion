@@ -17,6 +17,8 @@ class FindReplaceView : public QWidget {
 Q_OBJECT
 
 
+
+
 public:
     explicit FindReplaceView(MainWindow *parent = nullptr);
 
@@ -36,6 +38,8 @@ public:
 
     void updateCountLabel(int current, int total);
     void showCountLabel(bool isShow);
+    void setSearchWord(QString keyWord);
+    QString getCurrentSearchWord();
 
 private:
     Ui::FindReplaceView *ui;
@@ -44,10 +48,9 @@ private:
     void setPreviousButton(bool isEnable);
     void setNextButton(bool isEnable);
 
-
-private slots:
-
+public slots:
     void onFindInitRequested(const QString &text);
+private slots:
     void replace();
 };
 

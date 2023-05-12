@@ -196,6 +196,21 @@ void MainWindow::on_action_paste_triggered() {
     }
 }
 
+void MainWindow::on_action_find_triggered() {
+    QString selectedText = "";
+    QLionCodePage *currentPage = ui->tabWidget->getCurrentCodePage();
+    if (currentPage != nullptr) {
+        //get the selected text
+        selectedText = currentPage->textCursor().selectedText();
+    }
+    on_action_search_triggered();
+    if (selectedText != "") {
+        findReplaceView->setSearchWord(selectedText);
+    }
+
+
+}
+
 
 void MainWindow::setActions(bool isEnable) {
     ui->action_save_file->setEnabled(isEnable);
@@ -204,6 +219,10 @@ void MainWindow::setActions(bool isEnable) {
     ui->action_cut->setEnabled(isEnable);
     ui->action_paste->setEnabled(isEnable);
     ui->action_undo->setEnabled(isEnable);
+    ui->action_redo->setEnabled(isEnable);
+    ui->action_denote->setEnabled(isEnable);
+    ui->action_find->setEnabled(isEnable);
+    ui->action_replace->setEnabled(isEnable);
     findReplaceView->setCannotSearch(!isEnable);
 }
 
@@ -379,7 +398,8 @@ QString MainWindow::copyDir(const QString &oldDirPath, const QString &newDirPath
     QString newDirPathWithDirName = newDirPath + "/" + dirName;
     bool result = QDir().mkdir(newDirPathWithDirName);
     if (!result) {
-        QMessageBox::warning(this, "Copy Dir", "Copy dir failed!");
+        QMessageBox::warning(this, "Copy Dir",
+                             "Copy dir failed! Please check if it is a duplicate name or bad permission!");
         return "";
     }
     QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
@@ -570,6 +590,14 @@ void MainWindow::setSearchWord(const QString &searchWord) {
 
 void MainWindow::setCurrentPageReadOnly(bool isReadOnly) {
     ui->tabWidget->setCurrentPageReadOnly(isReadOnly);
+
+}
+
+void MainWindow::triggerFindIfOnSearch() {
+    if (stackedWidget->currentIndex() != 2) {
+        return;
+    }
+    findReplaceView->onFindInitRequested(findReplaceView->getCurrentSearchWord());
 
 }
 

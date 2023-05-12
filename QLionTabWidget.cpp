@@ -141,6 +141,7 @@ void QLionTabWidget::closeTabWithoutSaving(int index) {
 
 void QLionTabWidget::initConnections() {
     connect(this, &QLionTabWidget::tabCloseRequested, this, &QLionTabWidget::closeTab);
+    connect(this, &QLionTabWidget::currentChanged, this, &QLionTabWidget::updateFindReplaceHighlight);
 }
 
 QLionCodePage *QLionTabWidget::getCurrentCodePage() {
@@ -235,9 +236,22 @@ void QLionTabWidget::highlightCurrentTabText(const QString &highlightWord) {
     codePage->highlightCurrentTabText(highlightWord);
 }
 
+
+void QLionTabWidget::highlightTabText(int index, const QString &highlightWord) {
+    QLionCodePage *page = getCodePage(index);
+    if (page == nullptr) {
+        return;
+    }
+    page->highlightCurrentTabText(highlightWord);
+
+}
+
 void QLionTabWidget::clearCurrentTabHighlight() {
     highlightCurrentTabText("");
+}
 
+void QLionTabWidget::clearTabHighlight(int index) {
+    highlightTabText(index, "");
 }
 
 void QLionTabWidget::clearSelection() {
@@ -249,6 +263,15 @@ void QLionTabWidget::clearSelection() {
 
 }
 
+void QLionTabWidget::clearSelection(int index) {
+    QLionCodePage *codePage = getCodePage(index);
+    if (codePage == nullptr) {
+        return;
+    }
+    codePage->clearSelection();
+}
+
+
 void QLionTabWidget::replaceCurrentTabSearchText(QString searchWord, QString replaceText, int &position) {
     QLionCodePage *codePage = getCurrentCodePage();
     if (codePage == nullptr) {
@@ -259,14 +282,36 @@ void QLionTabWidget::replaceCurrentTabSearchText(QString searchWord, QString rep
 }
 
 
-
 void QLionTabWidget::setCurrentPageReadOnly(bool readOnly) {
-    QLionCodePage *page=getCurrentCodePage();
-    if(page==nullptr){
+    QLionCodePage *page = getCurrentCodePage();
+    if (page == nullptr) {
         return;
     }
     page->setReadOnly(readOnly);
 }
+
+void QLionTabWidget::updateFindReplaceHighlight(int i) {
+    if (lastTabIndex != -1) {
+        clearSelection(lastTabIndex);
+        setPageReadOnly(lastTabIndex, false);
+        clearTabHighlight(lastTabIndex);
+    }
+    lastTabIndex = i;
+
+}
+
+void QLionTabWidget::setPageReadOnly(int index, bool readOnly) {
+    QLionCodePage *page = getCodePage(index);
+    if (page == nullptr) {
+        return;
+    }
+    page->setReadOnly(readOnly);
+
+}
+
+
+
+
 
 
 
