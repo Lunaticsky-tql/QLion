@@ -206,14 +206,22 @@ void MainWindow::on_action_find_triggered() {
         //get the selected text
         selectedText = currentPage->textCursor().selectedText();
     }
-    on_action_search_triggered();
+    // uncheck the tool tree view action
+    ui->sideDock->setWindowTitle("Search");
+    ui->action_tool_tree_view->setChecked(false);
+    ui->sideDock->show();
+    stackedWidget->setCurrentIndex(2);
+    triggerFindIfOnSearch();
     if (selectedText != "") {
         findReplaceView->setSearchWord(selectedText);
     }
-
-
 }
 
+void MainWindow::on_action_replace_triggered() {
+    on_action_find_triggered();
+    findReplaceView->setReplaceCursor();
+
+}
 
 void MainWindow::setActions(bool isEnable) {
     ui->action_save_file->setEnabled(isEnable);
@@ -566,6 +574,7 @@ void MainWindow::clearFoundState() {
     ui->tabWidget->clearCurrentTabHighlight();
     ui->tabWidget->clearSelection();
 }
+
 void MainWindow::notFoundUIAction() {
     setCurrentPageReadOnly(false);
     findReplaceView->setNotFoundText();
@@ -617,6 +626,11 @@ void MainWindow::triggerFindIfOnSearch() {
     findReplaceView->onFindInitRequested(findReplaceView->getCurrentSearchWord());
 
 }
+
+void MainWindow::on_action_denote_triggered() {
+    ui->tabWidget->denoteCurrentTab();
+}
+
 
 
 

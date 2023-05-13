@@ -39,7 +39,7 @@ public:
     void selectCurrentTabSearchText(const QString &qString, int &i);
     void highlightCurrentTabText(const QString &highlightWord);
     void replaceCurrentTabSearchText(QString &qString, QString &qString1, int &i);
-
+    void denoteCurrentLine();
     void clearSelection();
 private:
     LineNumberArea *lineNumberArea;

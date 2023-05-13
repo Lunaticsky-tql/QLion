@@ -40,6 +40,7 @@ public:
     void showCountLabel(bool isShow);
     void setSearchWord(QString keyWord);
     QString getCurrentSearchWord();
+    void setReplaceCursor();
 
 private:
     Ui::FindReplaceView *ui;

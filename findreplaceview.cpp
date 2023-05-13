@@ -115,4 +115,11 @@ QString FindReplaceView::getCurrentSearchWord() {
     return ui->lineEditFind->text();
 }
 
+void FindReplaceView::setReplaceCursor() {
+    if(ui->lineEditReplace->isEnabled())
+    {
+        ui->lineEditReplace->setFocus();
+    }
+}
+
 

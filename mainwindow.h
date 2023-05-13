@@ -97,6 +97,8 @@ private slots:
 
     void do_folderTreeView_doubleClicked(const QModelIndex &index);
     void on_action_find_triggered();
+    void on_action_replace_triggered();
+    void on_action_denote_triggered();
 };
 
 

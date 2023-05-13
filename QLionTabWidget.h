@@ -16,6 +16,7 @@ class QLionTabWidget: public  QTabWidget{
 
 
 
+
 public:
     QLionTabWidget(QWidget *parent);
     void addNewTab();
@@ -50,6 +51,7 @@ public:
     void updateFindReplaceHighlight(int i);
     void clearFindReplaceState(int i);
     void clearCurrentFindReplaceState();
+    void denoteCurrentTab();
 private:
     MainWindow *mainWindow;
     int lastTabIndex=-1;

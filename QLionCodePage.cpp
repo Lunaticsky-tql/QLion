@@ -311,6 +311,73 @@ void QLionCodePage::replaceCurrentTabSearchText(QString &searchText, QString &re
 
 }
 
+void QLionCodePage::denoteCurrentLine() {
+    QTextCursor cursor = textCursor();
+    // record the current position
+    int position = cursor.position();
+    int positionInBlock = cursor.positionInBlock();
+//    qDebug() << position << " " << positionInBlock;
+    cursor.movePosition(QTextCursor::StartOfLine);
+    QString text = cursor.block().text();
+    int i;
+    for(i=0;i<text.length();i++){
+        if(text[i]==' '||text[i]=='\t'){
+            continue;
+        }
+        else if(text[i]=='/'){
+            if(i<text.length()-1){
+                if(text[i+1]=='/') {
+                    //it is a line with spaces and a double '/', remove the denotation here
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, i);
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 2);
+                    cursor.removeSelectedText();
+                    if(positionInBlock<=i){
+                        // if the cursor is at the right of the denotation, move the cursor to the original position
+                        cursor.setPosition(position);
+                    }
+                    else if(positionInBlock==i+1){
+                        // if the cursor is at the left of the denotation, move the cursor to the original position with a offset
+                        cursor.setPosition(position-1);
+                    }
+                    else{
+                        // if the cursor is at the right of the denotation, move the cursor to the original position with a offset
+                        cursor.setPosition(position-2);
+                    }
+                }
+                else{
+                    //it is a line with spaces and a single '/', add a single '/' here
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, i+1);
+                    cursor.insertText("/");
+                    if(positionInBlock<=i+1){
+                        // if the cursor is at the right of the denotation, move the cursor to the original position
+                        cursor.setPosition(position);
+                    }
+                    else{
+                        // if the cursor is at the left of the denotation, move the cursor to the original position with a offset
+                        cursor.setPosition(position+1);
+                    }
+                }
+            }
+            else{
+                //it is a line with spaces and a single '/', add a single '/' to the end of the line
+                cursor.movePosition(QTextCursor::EndOfLine);
+                cursor.insertText("/");
+                cursor.setPosition(position);
+            }
+            break;
+        }
+        else{
+            // not start with spaces and '/', denote at the start of the line
+            cursor.insertText(R"(//)");
+            cursor.setPosition(position+2);
+            break;
+        }
+    }
+    // move the cursor to the original position
+
+    setTextCursor(cursor);
+}
+
 
 
 

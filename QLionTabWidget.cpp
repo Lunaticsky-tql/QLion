@@ -321,6 +321,16 @@ void QLionTabWidget::clearCurrentFindReplaceState() {
     clearFindReplaceState(index);
 }
 
+void QLionTabWidget::denoteCurrentTab() {
+    QLionCodePage *codePage = getCurrentCodePage();
+    if (codePage == nullptr) {
+        return;
+    }
+    codePage->denoteCurrentLine();
+
+
+}
+
 
 
 
