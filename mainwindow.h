@@ -48,9 +48,11 @@ public:
     void findNext();
     void clearFoundState();
     void replace(QString replaceWord);
+    void replaceAll(QString replaceWord);
     void setSearchWord(const QString& searchWord);
     void setCurrentPageReadOnly(bool isReadOnly);
     void triggerFindIfOnSearch();
+    void notFoundUIAction();
 
 
 

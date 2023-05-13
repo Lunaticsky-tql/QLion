@@ -32,14 +32,13 @@ public:
     void closeTabWithoutSaving(int index);
     bool isOnTab(const QString& filePath) const;
     bool saveFile(const QString& filePath);
-    bool hasTab();
     void updateTabWidgetForRename(const QString &oldFilePath, const QString &newFilePath);
     int findCurrentTabText(const QString &qString, int i);
     void selectCurrentTabSearchText(const QString &qString, int &i);
     void highlightCurrentTabText(const QString &highlightWord);
     void highlightTabText(int index, const QString &highlightWord);
     void clearCurrentTabHighlight();
-    void clearTabHighlight(int index);
+    void clearTabSearchWordHighlight(int index);
     // public for QLionCodePage to remove the untitledID from the set
     std::unordered_set<int> usingUntitledID;
     std::unordered_map<QString, int> usingFilePath;
@@ -49,6 +48,8 @@ public:
     void setCurrentPageReadOnly(bool readOnly);
     void setPageReadOnly(int index, bool readOnly);
     void updateFindReplaceHighlight(int i);
+    void clearFindReplaceState(int i);
+    void clearCurrentFindReplaceState();
 private:
     MainWindow *mainWindow;
     int lastTabIndex=-1;

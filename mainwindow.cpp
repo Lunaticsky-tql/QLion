@@ -67,6 +67,7 @@ void MainWindow::setUpConnection() {
 void MainWindow::on_action_tool_tree_view_triggered() {
     ui->sideDock->setWindowTitle("File Explorer");
     ui->action_search->setChecked(false);
+    ui->tabWidget->clearCurrentFindReplaceState();
     if (!ui->sideDock->isHidden()) {
         if (stackedWidget->currentIndex() == 1 || stackedWidget->currentIndex() == 0) {
             ui->sideDock->hide();
@@ -89,12 +90,14 @@ void MainWindow::on_action_search_triggered() {
     if (!ui->sideDock->isHidden()) {
         if (stackedWidget->currentIndex() == 2) {
             ui->sideDock->hide();
+            ui->tabWidget->clearCurrentFindReplaceState();
             return;
         }
     } else {
         ui->sideDock->show();
     }
     stackedWidget->setCurrentIndex(2);
+    triggerFindIfOnSearch();
 }
 
 void MainWindow::on_action_new_window_triggered() {
@@ -534,13 +537,12 @@ void MainWindow::findInitial() {
         findReplaceView->clearNotFoundText();
         findReplaceView->updateCountLabel(currentFindIndex + 1, totalFindCount);
         findReplaceView->setToolButtons(true);
+        findReplaceView->showCountLabel(true);
         ui->tabWidget->highlightCurrentTabText(searchWord);
         ui->tabWidget->selectCurrentTabSearchText(searchWord, findPositions[0]);
     } else {
-        setCurrentPageReadOnly(false);
-        findReplaceView->setNotFoundText();
-        findReplaceView->setToolButtons(false);
-        clearFoundState();
+        notFoundUIAction();
+
     }
 }
 
@@ -564,6 +566,13 @@ void MainWindow::clearFoundState() {
     ui->tabWidget->clearCurrentTabHighlight();
     ui->tabWidget->clearSelection();
 }
+void MainWindow::notFoundUIAction() {
+    setCurrentPageReadOnly(false);
+    findReplaceView->setNotFoundText();
+    findReplaceView->setToolButtons(false);
+    findReplaceView->showCountLabel(false);
+    clearFoundState();
+}
 
 void MainWindow::replace(QString replaceWord) {
     ui->tabWidget->replaceCurrentTabSearchText(searchWord, replaceWord, findPositions[currentFindIndex]);
@@ -574,13 +583,21 @@ void MainWindow::replace(QString replaceWord) {
     // delete this position from the findPositions
     findPositions.remove(currentFindIndex);
     totalFindCount--;
+    // the findNext will add 1 to the currentFindIndex, so we need to minus 1 here.
+    // if not found, the currentFindIndex will be -1, but it will turn to 0 after the next find request.
     currentFindIndex--;
     if (totalFindCount == 0) {
-        findReplaceView->setNotFoundText();
-        findReplaceView->setToolButtons(false);
-        clearFoundState();
+        notFoundUIAction();
     } else {
         findNext();
+    }
+}
+
+void MainWindow::replaceAll(QString replaceWord) {
+    //it is low efficient, but it is easy to implement.
+    currentFindIndex = 0;
+    while (totalFindCount > 0) {
+        replace(replaceWord);
     }
 }
 
@@ -600,6 +617,9 @@ void MainWindow::triggerFindIfOnSearch() {
     findReplaceView->onFindInitRequested(findReplaceView->getCurrentSearchWord());
 
 }
+
+
+
 
 
 

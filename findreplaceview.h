@@ -52,6 +52,7 @@ public slots:
     void onFindInitRequested(const QString &text);
 private slots:
     void replace();
+void replaceAll();
 };
 
 

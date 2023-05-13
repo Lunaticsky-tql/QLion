@@ -215,10 +215,6 @@ int QLionTabWidget::findCurrentTabText(const QString &qString, int i) {
     return codePage->toPlainText().indexOf(qString, i);
 }
 
-bool QLionTabWidget::hasTab() {
-    return count() > 0;
-}
-
 void QLionTabWidget::selectCurrentTabSearchText(const QString &qString, int &i) {
     QLionCodePage *codePage = getCurrentCodePage();
     if (codePage == nullptr) {
@@ -250,7 +246,7 @@ void QLionTabWidget::clearCurrentTabHighlight() {
     highlightCurrentTabText("");
 }
 
-void QLionTabWidget::clearTabHighlight(int index) {
+void QLionTabWidget::clearTabSearchWordHighlight(int index) {
     highlightTabText(index, "");
 }
 
@@ -291,11 +287,12 @@ void QLionTabWidget::setCurrentPageReadOnly(bool readOnly) {
 }
 
 void QLionTabWidget::updateFindReplaceHighlight(int i) {
-    if (lastTabIndex != -1) {
-        clearSelection(lastTabIndex);
-        setPageReadOnly(lastTabIndex, false);
-        clearTabHighlight(lastTabIndex);
+//    qDebug() << "updateFindReplaceHighlight" << lastTabIndex<<"->"<<i;
+    if (lastTabIndex >=0&&lastTabIndex<count()) {
+        clearFindReplaceState(lastTabIndex);
+        mainWindow->triggerFindIfOnSearch();
     }
+
     lastTabIndex = i;
 
 }
@@ -307,6 +304,21 @@ void QLionTabWidget::setPageReadOnly(int index, bool readOnly) {
     }
     page->setReadOnly(readOnly);
 
+}
+
+void QLionTabWidget::clearFindReplaceState(int i) {
+    clearSelection(i);
+    setPageReadOnly(i, false);
+    clearTabSearchWordHighlight(i);
+}
+
+void QLionTabWidget::clearCurrentFindReplaceState() {
+    //get the current index
+    int index=currentIndex();
+    if (index<0||index>=count()) {
+        return;
+    }
+    clearFindReplaceState(index);
 }
 
 

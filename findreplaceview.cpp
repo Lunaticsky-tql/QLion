@@ -19,6 +19,7 @@ FindReplaceView::FindReplaceView(MainWindow *parent) :
     connect(ui->prevoiusOccurence, &QToolButton::clicked, this, &FindReplaceView::findPrevious);
     connect(ui->nextOccurence, &QToolButton::clicked, this, &FindReplaceView::findNext);
     connect(ui->findAndReplace, &QToolButton::clicked, this, &FindReplaceView::replace);
+    connect(ui->replaceAll, &QToolButton::clicked, this, &FindReplaceView::replaceAll);
 }
 
 FindReplaceView::~FindReplaceView() {
@@ -41,7 +42,10 @@ void FindReplaceView::replace(){
     QString text = ui->lineEditReplace->text();
     mainWindow->replace(text);
 }
-
+void FindReplaceView::replaceAll() {
+    QString text = ui->lineEditReplace->text();
+    mainWindow->replaceAll(text);
+}
 void FindReplaceView::setToolButtons(bool isEnable) {
     setPreviousButton(isEnable);
     setNextButton(isEnable);
@@ -110,3 +114,5 @@ void FindReplaceView::setSearchWord(QString keyWord) {
 QString FindReplaceView::getCurrentSearchWord() {
     return ui->lineEditFind->text();
 }
+
+
