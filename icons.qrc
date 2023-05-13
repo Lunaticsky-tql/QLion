@@ -8,5 +8,7 @@
         <file>resources/icons/replace_dark.png</file>
         <file>resources/icons/replaceAll.png</file>
         <file>resources/icons/search.png</file>
+        <file>resources/icons/execute_dark.png</file>
+        <file>resources/icons/suspend_dark.png</file>
     </qresource>
 </RCC>

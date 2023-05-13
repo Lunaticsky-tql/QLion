@@ -26,7 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpSideDock();
     setUpConnection();
     setActions(false);
-    this->setCentralWidget(ui->tabWidget);
+//    this->setCentralWidget(ui->tabWidget);
+//    ui->terminal->hide();
+    ui->terminal->setCommand("ping", QStringList() << "www.baidu.com");
     lastDirPath = QDir::currentPath();
     lastFilePath = QString();
 

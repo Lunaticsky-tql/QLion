@@ -26,6 +26,22 @@
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="QLionTerminal" name="terminal" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>150</width>
+        <height>150</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -73,7 +89,7 @@
     <property name="title">
      <string>Run(&amp;R)</string>
     </property>
-    <addaction name="actionRun_Project"/>
+    <addaction name="action_run_project"/>
     <addaction name="action_edit_configurations"/>
    </widget>
    <addaction name="menu_F"/>
@@ -84,6 +100,9 @@
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftToolBarArea|Qt::RightToolBarArea</set>
    </property>
    <attribute name="toolBarArea">
     <enum>LeftToolBarArea</enum>
@@ -278,7 +297,7 @@
     <string>Ctrl+Shift+F</string>
    </property>
   </action>
-  <action name="actionRun_Project">
+  <action name="action_run_project">
    <property name="text">
     <string>Run Project</string>
    </property>
@@ -297,6 +316,12 @@
    <class>QLionTabWidget</class>
    <extends>QTabWidget</extends>
    <header>QLionTabWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QLionTerminal</class>
+   <extends>QWidget</extends>
+   <header>qlionterminal.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -22,6 +22,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 #include "QLionTabWidget.h"
+#include "qlionterminal.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -48,12 +49,16 @@ public:
     QAction *action_tool_tree_view;
     QAction *action_exit;
     QAction *action_search;
+    QAction *action_run_project;
+    QAction *action_edit_configurations;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QLionTabWidget *tabWidget;
+    QLionTerminal *terminal;
     QMenuBar *menubar;
     QMenu *menu_F;
     QMenu *menu_E;
+    QMenu *menuRun_R;
     QStatusBar *statusbar;
     QToolBar *toolBar;
     QDockWidget *sideDock;
@@ -117,6 +122,10 @@ public:
         QIcon icon2;
         icon2.addFile(QString::fromUtf8(":/resources/icons/search.png"), QSize(), QIcon::Normal, QIcon::Off);
         action_search->setIcon(icon2);
+        action_run_project = new QAction(MainWindow);
+        action_run_project->setObjectName("action_run_project");
+        action_edit_configurations = new QAction(MainWindow);
+        action_edit_configurations->setObjectName("action_edit_configurations");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -126,6 +135,17 @@ public:
 
         verticalLayout->addWidget(tabWidget);
 
+        terminal = new QLionTerminal(centralwidget);
+        terminal->setObjectName("terminal");
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(terminal->sizePolicy().hasHeightForWidth());
+        terminal->setSizePolicy(sizePolicy);
+        terminal->setMinimumSize(QSize(150, 150));
+
+        verticalLayout->addWidget(terminal);
+
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -134,12 +154,15 @@ public:
         menu_F->setObjectName("menu_F");
         menu_E = new QMenu(menubar);
         menu_E->setObjectName("menu_E");
+        menuRun_R = new QMenu(menubar);
+        menuRun_R->setObjectName("menuRun_R");
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
         MainWindow->setStatusBar(statusbar);
         toolBar = new QToolBar(MainWindow);
         toolBar->setObjectName("toolBar");
+        toolBar->setAllowedAreas(Qt::LeftToolBarArea|Qt::RightToolBarArea);
         MainWindow->addToolBar(Qt::LeftToolBarArea, toolBar);
         sideDock = new QDockWidget(MainWindow);
         sideDock->setObjectName("sideDock");
@@ -151,6 +174,7 @@ public:
 
         menubar->addAction(menu_F->menuAction());
         menubar->addAction(menu_E->menuAction());
+        menubar->addAction(menuRun_R->menuAction());
         menu_F->addAction(action_new_file);
         menu_F->addAction(action_new_window);
         menu_F->addSeparator();
@@ -173,6 +197,8 @@ public:
         menu_E->addAction(action_find);
         menu_E->addAction(action_replace);
         menu_E->addAction(action_denote);
+        menuRun_R->addAction(action_run_project);
+        menuRun_R->addAction(action_edit_configurations);
         toolBar->addAction(action_tool_tree_view);
         toolBar->addAction(action_search);
 
@@ -264,8 +290,14 @@ public:
 #if QT_CONFIG(shortcut)
         action_search->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+F", nullptr));
 #endif // QT_CONFIG(shortcut)
+        action_run_project->setText(QCoreApplication::translate("MainWindow", "Run Project", nullptr));
+#if QT_CONFIG(shortcut)
+        action_run_project->setShortcut(QCoreApplication::translate("MainWindow", "F5", nullptr));
+#endif // QT_CONFIG(shortcut)
+        action_edit_configurations->setText(QCoreApplication::translate("MainWindow", "Edit Configurations...", nullptr));
         menu_F->setTitle(QCoreApplication::translate("MainWindow", "File(&F)", nullptr));
         menu_E->setTitle(QCoreApplication::translate("MainWindow", "Edit(&E)", nullptr));
+        menuRun_R->setTitle(QCoreApplication::translate("MainWindow", "Run(&R)", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 

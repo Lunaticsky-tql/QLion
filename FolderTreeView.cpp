@@ -62,7 +62,6 @@ protected:
                 if (!QFile::exists(newFilePath)) {
                     std::ofstream file(folderPath.toStdString() + "/" + lineEdit->text().toStdString());
                     file.close();
-
                     FolderTreeView *folderTreeView = mainWindow->getFolderTreeView();
                     // unfold the folder
                     folderTreeView->expand(folderTreeView->currentIndex());
@@ -285,10 +284,8 @@ void FolderTreeView::dropEvent(QDropEvent *event) {
         QModelIndex idx = indexAt(event->position().toPoint());
         QString newDirPath;
         if (!idx.isValid()) {
-            qDebug() << "invalid index";
             // newDirPath is the base path
             newDirPath = mainWindow->getFileSystemModel()->rootPath();
-            qDebug() << newDirPath;
         } else {
             newDirPath = mainWindow->getFileSystemModel()->filePath(idx);
             if (!QFileInfo(newDirPath).isDir()) {
