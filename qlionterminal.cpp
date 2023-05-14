@@ -23,6 +23,10 @@ QLionTerminal::~QLionTerminal() {
 
 void QLionTerminal::runCommand() {
     ui->toolButton_run->setEnabled(false);
+
+    QString fullCommand = command + " " + args.join(" ");
+    qDebug() << fullCommand;
+    ui->plainTextEdit->appendPlainText(fullCommand);
     process->setReadChannel(QProcess::StandardOutput);
     process->start(command, args);
     ui->plainTextEdit->clear();
@@ -48,7 +52,7 @@ void QLionTerminal::showError(QProcess::ProcessError errorCode) {
             ui->plainTextEdit->appendPlainText("Process killed");
             break;
         case QProcess::Timedout:
-            QMessageBox::warning(this, "Error", "Timedout");
+            QMessageBox::warning(this, "Error", "Timeout");
             break;
         case QProcess::WriteError:
             QMessageBox::warning(this, "Error", "WriteError");

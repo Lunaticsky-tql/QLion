@@ -647,14 +647,30 @@ void MainWindow::on_action_run_project_triggered() {
     }
     if (runConfigList == nullptr) {
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "Run", "You have not set the run configuration yet, do you want to set?",
+        reply = QMessageBox::question(this, "Run", "You have not set the run configuration yet, set it and try again?",
                                       QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             on_action_edit_configurations_triggered();
+            //as it is not a true dialog, so we need to return here to wait for the user to apply the configuration.
+            return;
         } else {
             return;
         }
     }
+    // check if the project have a CMakeList.txt
+    QString cmakeListPath = currentProjectPath + "/CMakeLists.txt";
+    if (!QFile::exists(cmakeListPath)) {
+        QMessageBox::warning(this, "Run", "The project does not have a CMakeLists.txt file!");
+        return;
+    }
+    QString command = runConfigList->cmakePath;
+    QStringList params;
+    QString genPath = "-DCMAKE_MAKE_PROGRAM=" + runConfigList->ninjaPath;
+    QString buildDir = currentProjectPath + QDir::separator() + "build";
+    params << runConfigList->genPara << genPath << "-G" << "Ninja" << "-S" << currentProjectPath << "-B" << buildDir;
+    ui->terminal->show();
+    ui->terminal->setCommand(command, params);
+    ui->terminal->runCommand();
 
 
 }
@@ -669,7 +685,7 @@ void MainWindow::saveProjectFiles() {
 }
 
 void MainWindow::on_action_edit_configurations_triggered() {
-    runConfig = new RunConfig(nullptr, runConfigList);
+    runConfig = new RunConfig(this, runConfigList);
     runConfig->setMainWindow(this);
 }
 

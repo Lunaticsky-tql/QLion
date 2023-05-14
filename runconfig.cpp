@@ -13,6 +13,8 @@ RunConfig::RunConfig(QWidget *parent, RunConfigList *runConfig) :
     ui->setupUi(this);
     setWindowTitle("Run Configuration");
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    setWindowModality(Qt::WindowModal);
     this->runConfig = runConfig;
     if (runConfig != nullptr) {
         updateUI();

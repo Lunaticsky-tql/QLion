@@ -24,8 +24,6 @@ public:
     void setCommand(const QString &command, const QStringList &args);
 
     void readData();
-
-    void readErrorData();
     void initConnections();
     void hideTerminal();
 
