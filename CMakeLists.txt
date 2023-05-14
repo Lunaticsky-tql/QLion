@@ -14,7 +14,7 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(QLion main.cpp mainwindow.cpp mainwindow.h mainwindow.ui QLionTabWidget.cpp QLionTabWidget.h QLionCodePage.cpp QLionCodePage.h Highlighter.cpp Highlighter.h icons.qrc keywords.qrc FolderTreeView.cpp FolderTreeView.h findreplaceview.cpp findreplaceview.h findreplaceview.ui qlionterminal.cpp qlionterminal.h qlionterminal.ui)
+add_executable(QLion main.cpp mainwindow.cpp mainwindow.h mainwindow.ui QLionTabWidget.cpp QLionTabWidget.h QLionCodePage.cpp QLionCodePage.h Highlighter.cpp Highlighter.h icons.qrc keywords.qrc FolderTreeView.cpp FolderTreeView.h findreplaceview.cpp findreplaceview.h findreplaceview.ui qlionterminal.cpp qlionterminal.h qlionterminal.ui runconfig.cpp runconfig.h runconfig.ui)
 target_link_libraries(QLion
         Qt::Core
         Qt::Gui

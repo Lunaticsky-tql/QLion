@@ -52,6 +52,7 @@ public:
     void clearFindReplaceState(int i);
     void clearCurrentFindReplaceState();
     void denoteCurrentTab();
+    void saveProjectFiles(QString qString);
 private:
     MainWindow *mainWindow;
     int lastTabIndex=-1;

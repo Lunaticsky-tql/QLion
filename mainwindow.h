@@ -9,18 +9,26 @@
 #include<QStackedWidget>
 #include <QFileSystemModel>
 #include<unordered_set>
+#include<QLabel>
 #include "QLionCodePage.h"
 #include "FolderTreeView.h"
 #include "findreplaceview.h"
+#include "runconfig.h"
 
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+struct RunConfigList {
+    QString cmakePath="";
+    QString ninjaPath="";
+    QStringList genPara;
+    QStringList budPara;
+};
+
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-
 
 
 
@@ -53,6 +61,7 @@ public:
     void setCurrentPageReadOnly(bool isReadOnly);
     void triggerFindIfOnSearch();
     void notFoundUIAction();
+    void setConfigList(RunConfigList *pList);
 
 
 
@@ -60,6 +69,7 @@ private:
     Ui::MainWindow *ui;
     QString lastFilePath;
     QString lastDirPath;
+    QString currentProjectPath="";
     QFileSystemModel* model;
     FolderTreeView *folderTreeView;
     FindReplaceView *findReplaceView;
@@ -71,6 +81,9 @@ private:
     int totalFindCount{0};
     bool hasOpenedFolder{false};
     QString searchWord;
+    RunConfig *runConfig= nullptr;
+    RunConfigList *runConfigList= nullptr;
+    void saveProjectFiles();
 
 
     void setUpSideDock();
@@ -94,11 +107,14 @@ private slots:
     void on_action_cut_triggered();
     void on_action_paste_triggered();
     void on_action_search_triggered();
+    void on_action_run_project_triggered();
 
     void do_folderTreeView_doubleClicked(const QModelIndex &index);
     void on_action_find_triggered();
     void on_action_replace_triggered();
     void on_action_denote_triggered();
+
+    void on_action_edit_configurations_triggered();
 };
 
 

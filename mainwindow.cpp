@@ -26,11 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpSideDock();
     setUpConnection();
     setActions(false);
-//    this->setCentralWidget(ui->tabWidget);
-//    ui->terminal->hide();
+    ui->terminal->hide();
     ui->terminal->setCommand("ping", QStringList() << "www.baidu.com");
     lastDirPath = QDir::currentPath();
     lastFilePath = QString();
+
 
 }
 
@@ -149,7 +149,6 @@ void MainWindow::on_action_open_file_triggered() {
 }
 
 void MainWindow::on_action_open_folder_triggered() {
-    hasOpenedFolder = true;
     QString dirPath = QFileDialog::getExistingDirectory(this, "Open Folder", lastDirPath);
     if (dirPath.isEmpty()) {
         return;
@@ -157,6 +156,8 @@ void MainWindow::on_action_open_folder_triggered() {
     lastDirPath = dirPath;
     model->setRootPath(dirPath);
     folderTreeView->setRootIndex(model->index(dirPath));
+    hasOpenedFolder = true;
+    currentProjectPath = dirPath;
     ui->sideDock->setWindowTitle("File Explorer");
     ui->action_search->setChecked(false);
     ui->sideDock->show();
@@ -631,6 +632,45 @@ void MainWindow::triggerFindIfOnSearch() {
 
 void MainWindow::on_action_denote_triggered() {
     ui->tabWidget->denoteCurrentTab();
+}
+
+void MainWindow::on_action_run_project_triggered() {
+    if (!hasOpenedFolder) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Run", "You have not opened a folder yet, do you want to open one?",
+                                      QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            on_action_open_folder_triggered();
+        } else {
+            return;
+        }
+    }
+    if (runConfigList == nullptr) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Run", "You have not set the run configuration yet, do you want to set?",
+                                      QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            on_action_edit_configurations_triggered();
+        } else {
+            return;
+        }
+    }
+
+
+}
+
+void MainWindow::setConfigList(RunConfigList *pList) {
+    runConfigList = pList;
+}
+
+void MainWindow::saveProjectFiles() {
+    //let the tabWidget do this work.
+    ui->tabWidget->saveProjectFiles(currentProjectPath);
+}
+
+void MainWindow::on_action_edit_configurations_triggered() {
+    runConfig = new RunConfig(nullptr, runConfigList);
+    runConfig->setMainWindow(this);
 }
 
 

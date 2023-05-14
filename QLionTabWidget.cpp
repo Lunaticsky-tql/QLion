@@ -331,6 +331,22 @@ void QLionTabWidget::denoteCurrentTab() {
 
 }
 
+void QLionTabWidget::saveProjectFiles(QString projectPath) {
+    for(auto & iter : usingFilePath){
+        QLionCodePage *codePage=getCodePage(iter.second);
+        if(codePage==nullptr){
+            continue;
+        }
+        QString filePath=iter.first;
+        //check the filePath is in the projectPath
+        if(!filePath.startsWith(projectPath)){
+            continue;
+        }
+        //save the file
+        codePage->saveFile(false);
+    }
+}
+
 
 
 

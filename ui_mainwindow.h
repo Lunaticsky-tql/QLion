@@ -17,6 +17,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QSplitter>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
@@ -53,6 +54,7 @@ public:
     QAction *action_edit_configurations;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
+    QSplitter *splitter;
     QLionTabWidget *tabWidget;
     QLionTerminal *terminal;
     QMenuBar *menubar;
@@ -130,21 +132,27 @@ public:
         centralwidget->setObjectName("centralwidget");
         verticalLayout = new QVBoxLayout(centralwidget);
         verticalLayout->setObjectName("verticalLayout");
-        tabWidget = new QLionTabWidget(centralwidget);
+        splitter = new QSplitter(centralwidget);
+        splitter->setObjectName("splitter");
+        splitter->setOrientation(Qt::Vertical);
+        tabWidget = new QLionTabWidget(splitter);
         tabWidget->setObjectName("tabWidget");
-
-        verticalLayout->addWidget(tabWidget);
-
-        terminal = new QLionTerminal(centralwidget);
-        terminal->setObjectName("terminal");
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy);
+        tabWidget->setMinimumSize(QSize(0, 0));
+        tabWidget->setBaseSize(QSize(0, 0));
+        splitter->addWidget(tabWidget);
+        terminal = new QLionTerminal(splitter);
+        terminal->setObjectName("terminal");
         sizePolicy.setHeightForWidth(terminal->sizePolicy().hasHeightForWidth());
         terminal->setSizePolicy(sizePolicy);
-        terminal->setMinimumSize(QSize(150, 150));
+        terminal->setMinimumSize(QSize(0, 0));
+        splitter->addWidget(terminal);
 
-        verticalLayout->addWidget(terminal);
+        verticalLayout->addWidget(splitter);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);

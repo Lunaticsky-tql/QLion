@@ -26,10 +26,13 @@ public:
     void readData();
 
     void readErrorData();
+    void initConnections();
+    void hideTerminal();
 
     void showError(QProcess::ProcessError errorCode);
 
     void showFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void stopCommand();
 
 private:
     Ui::QLionTerminal *ui;

@@ -10,5 +10,7 @@
         <file>resources/icons/search.png</file>
         <file>resources/icons/execute_dark.png</file>
         <file>resources/icons/suspend_dark.png</file>
+        <file>resources/icons/terminal_hide.png</file>
+        <file>resources/icons/terminal_hide.png</file>
     </qresource>
 </RCC>

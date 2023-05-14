@@ -12,13 +12,9 @@
 QLionTerminal::QLionTerminal(QWidget *parent) :
         QWidget(parent), ui(new Ui::QLionTerminal) {
     process = new QProcess();
-    command="ping";
-    args<<"www.baidu.com";
     ui->setupUi(this);
-    connect(ui->toolButton_run, &QToolButton::clicked, this, &QLionTerminal::runCommand);
-    connect(process,&QProcess::readyReadStandardOutput, this, &QLionTerminal::readData);
-    connect(process, &QProcess::errorOccurred, this, &QLionTerminal::showError);
-    connect(process, &QProcess::finished, this, &QLionTerminal::showFinished);
+    initConnections();
+
 }
 
 QLionTerminal::~QLionTerminal() {
@@ -26,8 +22,10 @@ QLionTerminal::~QLionTerminal() {
 }
 
 void QLionTerminal::runCommand() {
+    ui->toolButton_run->setEnabled(false);
     process->setReadChannel(QProcess::StandardOutput);
     process->start(command, args);
+    ui->plainTextEdit->clear();
 }
 
 void QLionTerminal::readData() {
@@ -47,7 +45,7 @@ void QLionTerminal::showError(QProcess::ProcessError errorCode) {
             QMessageBox::warning(this, "Error", "Process FailedToStart");
             break;
         case QProcess::Crashed:
-            QMessageBox::warning(this, "Error", "Crashed");
+            ui->plainTextEdit->appendPlainText("Process killed");
             break;
         case QProcess::Timedout:
             QMessageBox::warning(this, "Error", "Timedout");
@@ -62,17 +60,35 @@ void QLionTerminal::showError(QProcess::ProcessError errorCode) {
             QMessageBox::warning(this, "Error", "UnknownError");
             break;
     }
-
+    ui->toolButton_run->setEnabled(true);
 
 }
 
-void QLionTerminal::showFinished(int exitCode, QProcess::ExitStatus exitStatus){
-    if(exitStatus==QProcess::CrashExit){
-        QMessageBox::warning(this, "Error", "Process Crashed");
+void QLionTerminal::showFinished(int exitCode, QProcess::ExitStatus exitStatus) {
+    if (exitStatus == QProcess::CrashExit) {
         return;
     }
-    QString tip="Process finished with exit code "+QString::number(exitCode);
+    QString tip = "Process finished with exit code " + QString::number(exitCode);
     ui->plainTextEdit->appendPlainText(tip);
+    ui->toolButton_run->setEnabled(true);
+}
 
+void QLionTerminal::stopCommand() {
+    process->kill();
+    ui->toolButton_run->setEnabled(true);
+}
 
+void QLionTerminal::initConnections() {
+    connect(ui->toolButton_run, &QToolButton::clicked, this, &QLionTerminal::runCommand);
+    connect(ui->toolButton_stop, &QToolButton::clicked, this,&QLionTerminal::stopCommand);
+    connect(process, &QProcess::readyReadStandardOutput, this, &QLionTerminal::readData);
+    connect(process, &QProcess::errorOccurred, this, &QLionTerminal::showError);
+    connect(process, &QProcess::finished, this, &QLionTerminal::showFinished);
+    connect(ui->toolButton_hide, &QToolButton::clicked, this, &QLionTerminal::hideTerminal);
+
+}
+
+void QLionTerminal::hideTerminal() {
+    stopCommand();
+    this->hide();
 }

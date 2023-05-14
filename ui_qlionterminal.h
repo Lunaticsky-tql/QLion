@@ -13,6 +13,7 @@
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QToolButton>
@@ -24,6 +25,13 @@ QT_BEGIN_NAMESPACE
 class Ui_QLionTerminal
 {
 public:
+    QVBoxLayout *verticalLayout_2;
+    QWidget *widget_2;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *label;
+    QSpacerItem *horizontalSpacer;
+    QToolButton *toolButton_hide;
+    QWidget *widget_3;
     QHBoxLayout *horizontalLayout;
     QWidget *widget;
     QVBoxLayout *verticalLayout;
@@ -36,27 +44,58 @@ public:
     {
         if (QLionTerminal->objectName().isEmpty())
             QLionTerminal->setObjectName("QLionTerminal");
-        QLionTerminal->resize(400, 300);
-        horizontalLayout = new QHBoxLayout(QLionTerminal);
+        QLionTerminal->resize(400, 128);
+        verticalLayout_2 = new QVBoxLayout(QLionTerminal);
+        verticalLayout_2->setObjectName("verticalLayout_2");
+        widget_2 = new QWidget(QLionTerminal);
+        widget_2->setObjectName("widget_2");
+        widget_2->setMinimumSize(QSize(0, 30));
+        horizontalLayout_2 = new QHBoxLayout(widget_2);
+        horizontalLayout_2->setObjectName("horizontalLayout_2");
+        horizontalLayout_2->setContentsMargins(-1, 0, 9, 0);
+        label = new QLabel(widget_2);
+        label->setObjectName("label");
+
+        horizontalLayout_2->addWidget(label);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer);
+
+        toolButton_hide = new QToolButton(widget_2);
+        toolButton_hide->setObjectName("toolButton_hide");
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/resources/icons/terminal_hide.png"), QSize(), QIcon::Normal, QIcon::Off);
+        toolButton_hide->setIcon(icon);
+
+        horizontalLayout_2->addWidget(toolButton_hide);
+
+
+        verticalLayout_2->addWidget(widget_2);
+
+        widget_3 = new QWidget(QLionTerminal);
+        widget_3->setObjectName("widget_3");
+        horizontalLayout = new QHBoxLayout(widget_3);
         horizontalLayout->setObjectName("horizontalLayout");
-        widget = new QWidget(QLionTerminal);
+        horizontalLayout->setContentsMargins(-1, 0, -1, 0);
+        widget = new QWidget(widget_3);
         widget->setObjectName("widget");
         verticalLayout = new QVBoxLayout(widget);
         verticalLayout->setObjectName("verticalLayout");
         verticalLayout->setContentsMargins(0, -1, 0, -1);
         toolButton_run = new QToolButton(widget);
         toolButton_run->setObjectName("toolButton_run");
-        QIcon icon;
-        icon.addFile(QString::fromUtf8(":/resources/icons/execute_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
-        toolButton_run->setIcon(icon);
+        QIcon icon1;
+        icon1.addFile(QString::fromUtf8(":/resources/icons/execute_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
+        toolButton_run->setIcon(icon1);
 
         verticalLayout->addWidget(toolButton_run);
 
         toolButton_stop = new QToolButton(widget);
         toolButton_stop->setObjectName("toolButton_stop");
-        QIcon icon1;
-        icon1.addFile(QString::fromUtf8(":/resources/icons/suspend_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
-        toolButton_stop->setIcon(icon1);
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/resources/icons/suspend_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
+        toolButton_stop->setIcon(icon2);
 
         verticalLayout->addWidget(toolButton_stop);
 
@@ -67,10 +106,14 @@ public:
 
         horizontalLayout->addWidget(widget);
 
-        plainTextEdit = new QPlainTextEdit(QLionTerminal);
+        plainTextEdit = new QPlainTextEdit(widget_3);
         plainTextEdit->setObjectName("plainTextEdit");
+        plainTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
         horizontalLayout->addWidget(plainTextEdit);
+
+
+        verticalLayout_2->addWidget(widget_3);
 
 
         retranslateUi(QLionTerminal);
@@ -81,6 +124,8 @@ public:
     void retranslateUi(QWidget *QLionTerminal)
     {
         QLionTerminal->setWindowTitle(QCoreApplication::translate("QLionTerminal", "QLionTerminal", nullptr));
+        label->setText(QCoreApplication::translate("QLionTerminal", "Terminal", nullptr));
+        toolButton_hide->setText(QCoreApplication::translate("QLionTerminal", "...", nullptr));
         toolButton_run->setText(QCoreApplication::translate("QLionTerminal", "...", nullptr));
         toolButton_stop->setText(QCoreApplication::translate("QLionTerminal", "...", nullptr));
     } // retranslateUi
