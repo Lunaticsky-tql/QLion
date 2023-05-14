@@ -133,6 +133,7 @@
    </attribute>
    <addaction name="action_tool_tree_view"/>
    <addaction name="action_search"/>
+   <addaction name="action_run_project"/>
   </widget>
   <widget class="QDockWidget" name="sideDock">
    <property name="allowedAreas">
@@ -313,6 +314,9 @@
    </property>
    <property name="text">
     <string>action_search</string>
+   </property>
+   <property name="toolTip">
+    <string>Search</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+F</string>

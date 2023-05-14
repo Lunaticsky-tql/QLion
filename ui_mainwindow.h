@@ -126,6 +126,9 @@ public:
         action_search->setIcon(icon2);
         action_run_project = new QAction(MainWindow);
         action_run_project->setObjectName("action_run_project");
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/resources/icons/execute_dark.png"), QSize(), QIcon::Normal, QIcon::Off);
+        action_run_project->setIcon(icon3);
         action_edit_configurations = new QAction(MainWindow);
         action_edit_configurations->setObjectName("action_edit_configurations");
         centralwidget = new QWidget(MainWindow);
@@ -209,6 +212,7 @@ public:
         menuRun_R->addAction(action_edit_configurations);
         toolBar->addAction(action_tool_tree_view);
         toolBar->addAction(action_search);
+        toolBar->addAction(action_run_project);
 
         retranslateUi(MainWindow);
 

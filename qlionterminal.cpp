@@ -23,7 +23,7 @@ QLionTerminal::~QLionTerminal() {
 
 void QLionTerminal::runCommand() {
     ui->toolButton_run->setEnabled(false);
-
+    ui->toolButton_stop->setEnabled(true);
     QString fullCommand = command + " " + args.join(" ");
     qDebug() << fullCommand;
     ui->plainTextEdit->appendPlainText(fullCommand);
@@ -38,10 +38,14 @@ void QLionTerminal::readData() {
     ui->plainTextEdit->appendPlainText(str);
 }
 
-void QLionTerminal::setCommand(const QString &command, const QStringList &args) {
+
+void QLionTerminal::setCommand(const QString &command, const QStringList &args, RunStatus type) {
     this->command = command;
     this->args = args;
+    this->status = type;
+//    qDebug()<<static_cast<int>(status);
 }
+
 
 void QLionTerminal::showError(QProcess::ProcessError errorCode) {
     switch (errorCode) {
@@ -65,6 +69,7 @@ void QLionTerminal::showError(QProcess::ProcessError errorCode) {
             break;
     }
     ui->toolButton_run->setEnabled(true);
+    ui->toolButton_stop->setEnabled(false);
 
 }
 
@@ -75,6 +80,25 @@ void QLionTerminal::showFinished(int exitCode, QProcess::ExitStatus exitStatus) 
     QString tip = "Process finished with exit code " + QString::number(exitCode);
     ui->plainTextEdit->appendPlainText(tip);
     ui->toolButton_run->setEnabled(true);
+    ui->toolButton_stop->setEnabled(false);
+//    qDebug()<<static_cast<int>(status);
+    switch (status){
+        case RunStatus::IDLE:
+            break;
+        case RunStatus::GENERATE:
+            emit runFinished(exitCode,RunStatus::GENERATE);
+            break;
+        case RunStatus::BUILD:
+            emit runFinished(exitCode,RunStatus::BUILD);
+            break;
+        case RunStatus::RUN:
+            emit runFinished(exitCode,RunStatus::RUN);
+            ui->plainTextEdit->appendPlainText("Who are you....? I am....");
+            status=RunStatus::IDLE;
+            break;
+        default:
+            break;
+    }
 }
 
 void QLionTerminal::stopCommand() {
@@ -96,3 +120,6 @@ void QLionTerminal::hideTerminal() {
     stopCommand();
     this->hide();
 }
+
+
+

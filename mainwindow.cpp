@@ -27,7 +27,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpConnection();
     setActions(false);
     ui->terminal->hide();
-    ui->terminal->setCommand("ping", QStringList() << "www.baidu.com");
     lastDirPath = QDir::currentPath();
     lastFilePath = QString();
 
@@ -64,6 +63,7 @@ void MainWindow::setUpSideDock() {
 }
 
 void MainWindow::setUpConnection() {
+    connect(ui->terminal, &QLionTerminal::runFinished, this, &MainWindow::doTerminalRunFinished);
 }
 
 void MainWindow::on_action_tool_tree_view_triggered() {
@@ -663,13 +663,36 @@ void MainWindow::on_action_run_project_triggered() {
         QMessageBox::warning(this, "Run", "The project does not have a CMakeLists.txt file!");
         return;
     }
+    // read the CMakeLists.txt to get the first target name.
+    // TODO: support multiple targets.
+    QFile cmakeListFile(cmakeListPath);
+    if (!cmakeListFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "Run", "Can not open the CMakeLists.txt file!");
+        return;
+    }
+    QTextStream in(&cmakeListFile);
+    QString firstLine = in.readLine();
+    QString targetName="";
+    while (!firstLine.isNull()) {
+        if (firstLine.contains("add_executable")) {
+            targetName = firstLine.split("(")[1].split(" ")[0];
+            break;
+        }
+        firstLine = in.readLine();
+    }
+    if(targetName.isEmpty()) {
+        QMessageBox::warning(this, "Run", "No target found in the CMakeLists.txt file!");
+        return;
+    }
+//    qDebug() << targetName;
+    currentCMakeTarget= targetName;
     QString command = runConfigList->cmakePath;
     QStringList params;
     QString genPath = "-DCMAKE_MAKE_PROGRAM=" + runConfigList->ninjaPath;
-    QString buildDir = currentProjectPath + QDir::separator() + "build";
+    QString buildDir = currentProjectPath +"/"+ "build";
     params << runConfigList->genPara << genPath << "-G" << "Ninja" << "-S" << currentProjectPath << "-B" << buildDir;
     ui->terminal->show();
-    ui->terminal->setCommand(command, params);
+    ui->terminal->setCommand(command, params, RunStatus::GENERATE);
     ui->terminal->runCommand();
 
 
@@ -687,6 +710,54 @@ void MainWindow::saveProjectFiles() {
 void MainWindow::on_action_edit_configurations_triggered() {
     runConfig = new RunConfig(this, runConfigList);
     runConfig->setMainWindow(this);
+}
+
+void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
+//    qDebug() << "terminal task finished callback";
+    if (exitCode != 0) {
+        QString statusString;
+        switch (runStatus) {
+            case RunStatus::GENERATE:
+                statusString = "Generating";
+                break;
+            case RunStatus::BUILD:
+                statusString = "Building";
+                break;
+            case RunStatus::RUN:
+                statusString = "Running";
+                break;
+            default:
+                statusString = "Unexpected";
+                break;
+
+        }
+        QMessageBox::critical(this, "Run", statusString + " failed!");
+    }
+    //if reach here, it means the run is successful.
+    if(runStatus==RunStatus::GENERATE) {
+        //if the generation is successful, we need to build the project.
+        QString command = runConfigList->cmakePath;
+        QStringList params;
+        params << "--build";
+        QString buildDir = currentProjectPath + "/" + "build";
+        params << buildDir;
+        params << "--target" << currentCMakeTarget << runConfigList->budPara;
+        ui->terminal->setCommand(command, params, RunStatus::BUILD);
+        ui->terminal->runCommand();
+    }else if(runStatus==RunStatus::BUILD) {
+        //if the build is successful, we need to run the project.
+        QString execFile = currentProjectPath + QDir::separator() + "build" + "/" + currentCMakeTarget;
+#if defined(Q_OS_WIN)
+        execFile += ".exe";
+#endif
+        QString command = execFile;
+        QStringList params;
+        ui->terminal->setCommand(command, params, RunStatus::RUN);
+        ui->terminal->runCommand();
+    }
+//    else{
+//        // do nothing
+//    }
 }
 
 

@@ -17,6 +17,7 @@
 
 
 QT_BEGIN_NAMESPACE
+enum class RunStatus;
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 struct RunConfigList {
@@ -70,6 +71,7 @@ private:
     QString lastFilePath;
     QString lastDirPath;
     QString currentProjectPath="";
+    QString currentCMakeTarget="";
     QFileSystemModel* model;
     FolderTreeView *folderTreeView;
     FindReplaceView *findReplaceView;
@@ -115,6 +117,7 @@ private slots:
     void on_action_denote_triggered();
 
     void on_action_edit_configurations_triggered();
+    void doTerminalRunFinished(int exitCode, RunStatus runStatus);
 };
 
 

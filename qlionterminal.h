@@ -7,6 +7,7 @@
 
 #include <QWidget>
 #include <QProcess>
+#include "runstatus.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -21,7 +22,7 @@ public:
 
     ~QLionTerminal() override;
 
-    void setCommand(const QString &command, const QStringList &args);
+    void setCommand(const QString &command, const QStringList &args,RunStatus type);
 
     void readData();
     void initConnections();
@@ -31,12 +32,15 @@ public:
 
     void showFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void stopCommand();
-
+signals:
+    void runFinished(int exitCode,RunStatus type);
 private:
     Ui::QLionTerminal *ui;
     QProcess *process;
     QString command;
     QStringList args;
+    RunStatus status=RunStatus::IDLE;
+
 public slots:
 
     void runCommand();
