@@ -760,6 +760,10 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
 //    }
 }
 
+QString MainWindow::getCurrentProjectPath() {
+    return currentProjectPath;
+}
+
 
 
 

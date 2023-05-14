@@ -32,7 +32,7 @@ QLionCodePage::QLionCodePage(QWidget *parent,bool isInitHighlighter) : QPlainTex
 
 void QLionCodePage::initFont() {
     QFont font;
-    font.setFamily("Consolas");
+    font.setFamily("JetBrains Mono NL");
     font.setPointSize(12);
     this->setFont(font);
     lineNumberFontWidth=fontMetrics().horizontalAdvance(QChar('0'));
@@ -332,15 +332,15 @@ void QLionCodePage::denoteCurrentLine() {
                     cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 2);
                     cursor.removeSelectedText();
                     if(positionInBlock<=i){
-                        // if the cursor is at the right of the denotation, move the cursor to the original position
+                        // if the cursor is at the left of the denotation, move the cursor to the original position
                         cursor.setPosition(position);
                     }
                     else if(positionInBlock==i+1){
-                        // if the cursor is at the left of the denotation, move the cursor to the original position with a offset
+                        // if the cursor is at the middle of the denotation, move the cursor to the original position with a offset
                         cursor.setPosition(position-1);
                     }
                     else{
-                        // if the cursor is at the right of the denotation, move the cursor to the original position with a offset
+                        // if the cursor is at the right of the denotation
                         cursor.setPosition(position-2);
                     }
                 }
@@ -374,7 +374,6 @@ void QLionCodePage::denoteCurrentLine() {
         }
     }
     // move the cursor to the original position
-
     setTextCursor(cursor);
 }
 

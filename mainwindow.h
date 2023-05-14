@@ -63,6 +63,7 @@ public:
     void triggerFindIfOnSearch();
     void notFoundUIAction();
     void setConfigList(RunConfigList *pList);
+    QString getCurrentProjectPath();
 
 
 

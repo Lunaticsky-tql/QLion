@@ -72,9 +72,8 @@ void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
         if (needToDistinguish) {
             fileName = filePath;
         }
-
         // if the text is too long, do not init Highlighter
-        if (text.length() > 10000) {
+        if (text.length() > 100000) {
             addTab(new QLionCodePage(this, false), fileName);
         } else {
             addTab(new QLionCodePage(this), fileName);

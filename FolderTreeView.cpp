@@ -15,7 +15,7 @@
 
 class NewFileWidget : public QWidget {
 public:
-    NewFileWidget(MainWindow *parent, QString &folderPath, bool isDir = false) : QWidget(parent),
+    NewFileWidget(MainWindow *parent, QString &folderPath, bool isDir = false,bool isUnFold=true) : QWidget(parent),
                                                                                  folderPath(folderPath) {
         mainWindow = parent;
         isDirFlag = isDir;
@@ -240,6 +240,31 @@ void FolderTreeView::mouseReleaseEvent(QMouseEvent *e) {
                 return;
             }
 
+        }
+        else{
+            QMenu m;
+            QString filePath = mainWindow->getCurrentProjectPath();
+            m.addAction("New File(&F)");
+            m.addAction("New Folder(&D)");
+#if defined(Q_OS_WIN)
+            m.addAction("Open in Explorer(&O)");
+#elif defined(Q_OS_MACOS)
+            m.addAction("Open in Finder(&O)");
+#else
+                m.addAction("Open in File Manager(&O)");
+#endif
+            QAction *selected = m.exec(mapToGlobal(e->pos()));
+            if (selected) {
+                QString selectedText = selected->text();
+                if (selectedText == "New File(&F)") {
+                    new NewFileWidget(mainWindow, filePath, false, false);
+
+                } else if (selectedText == "New Folder(&D)") {
+                    new NewFileWidget(mainWindow, filePath, true, false);
+                }else if (selectedText == "Open in Explorer(&O)" || selectedText == "Open in Finder(&O)") {
+                    mainWindow->revealFileInOS(filePath);
+                }
+            }
         }
     } else {
         QTreeView::mouseReleaseEvent(e);

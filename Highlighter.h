@@ -11,7 +11,7 @@
 
 class Highlighter : public QSyntaxHighlighter {
 public:
-    explicit Highlighter(QTextDocument *parent = nullptr, const QString& fontFamily="Consolas", int fontSize=14);
+    explicit Highlighter(QTextDocument *parent = nullptr, const QString& fontFamily="JetBrains Mono NL", int fontSize=12);
     void setSearchText(const QString &keyWord);
 protected:
     void highlightBlock(const QString &text) override;
