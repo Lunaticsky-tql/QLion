@@ -101,6 +101,7 @@ void QLionTerminal::showFinished(int exitCode, QProcess::ExitStatus exitStatus) 
     }
 }
 
+
 void QLionTerminal::stopCommand() {
     process->kill();
     ui->toolButton_run->setEnabled(true);
