@@ -231,6 +231,7 @@ void Highlighter::addFunctionFormat(const QString &text) {
 }
 
 void Highlighter::highlightSearchText(const QString &text) {
+
     if(searchedText.isEmpty()) {
         return;
     }
@@ -242,8 +243,10 @@ void Highlighter::highlightSearchText(const QString &text) {
     rule.format.setFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
     while (matchIterator.hasNext()) {
+//        qDebug()<<"text:"<<text;
         QRegularExpressionMatch match = matchIterator.next();
         setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+//        qDebug()<<match.capturedStart()<<match.capturedLength()<<" ";
     }
 }
 

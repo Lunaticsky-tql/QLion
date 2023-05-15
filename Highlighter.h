@@ -16,7 +16,7 @@ public:
 protected:
     void highlightBlock(const QString &text) override;
 private:
-    QString mFontFamily="Consolas";
+    QString mFontFamily="JetBrains Mono NL";
     int mFontSize=12;
     struct HighlightRule{
         QRegularExpression pattern;
