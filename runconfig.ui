@@ -43,14 +43,14 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Generator Path</string>
+         <string>Generator</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="ninjaPath">
+       <widget class="QLineEdit" name="generator">
         <property name="placeholderText">
-         <string>ninja</string>
+         <string>Ninja</string>
         </property>
        </widget>
       </item>

@@ -31,7 +31,7 @@ public:
     QWidget *widget_2;
     QHBoxLayout *horizontalLayout_2;
     QLabel *label_2;
-    QLineEdit *ninjaPath;
+    QLineEdit *generator;
     QWidget *widget_3;
     QHBoxLayout *horizontalLayout_3;
     QLabel *label_3;
@@ -78,10 +78,10 @@ public:
 
         horizontalLayout_2->addWidget(label_2);
 
-        ninjaPath = new QLineEdit(widget_2);
-        ninjaPath->setObjectName("ninjaPath");
+        generator = new QLineEdit(widget_2);
+        generator->setObjectName("generator");
 
-        horizontalLayout_2->addWidget(ninjaPath);
+        horizontalLayout_2->addWidget(generator);
 
 
         verticalLayout->addWidget(widget_2);
@@ -151,8 +151,8 @@ public:
         RunConfig->setWindowTitle(QCoreApplication::translate("RunConfig", "RunConfig", nullptr));
         label->setText(QCoreApplication::translate("RunConfig", "CMake Path", nullptr));
         cmakePath->setPlaceholderText(QCoreApplication::translate("RunConfig", "cmake", nullptr));
-        label_2->setText(QCoreApplication::translate("RunConfig", "Generator Path", nullptr));
-        ninjaPath->setPlaceholderText(QCoreApplication::translate("RunConfig", "ninja", nullptr));
+        label_2->setText(QCoreApplication::translate("RunConfig", "Generator", nullptr));
+        generator->setPlaceholderText(QCoreApplication::translate("RunConfig", "Ninja", nullptr));
         label_3->setText(QCoreApplication::translate("RunConfig", "Additional Generating Parameter", nullptr));
         genPara->setPlaceholderText(QCoreApplication::translate("RunConfig", "-DCMAKE_BUILD_TYPE=Debug", nullptr));
         label_4->setText(QCoreApplication::translate("RunConfig", "Additional Building Parameter", nullptr));

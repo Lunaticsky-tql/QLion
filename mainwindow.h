@@ -22,7 +22,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 struct RunConfigList {
     QString cmakePath="";
-    QString ninjaPath="";
+    QString generator="";
     QStringList genPara;
     QStringList budPara;
 };

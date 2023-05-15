@@ -25,8 +25,8 @@ RunConfig::RunConfig(QWidget *parent, RunConfigList *runConfig) :
         }
         this->runConfig->cmakePath = ui->cmakePath->text().isEmpty() ? ui->cmakePath->placeholderText()
                                                                : ui->cmakePath->text();
-        this->runConfig->ninjaPath = ui->ninjaPath->text().isEmpty() ? ui->ninjaPath->placeholderText()
-                                                               : ui->ninjaPath->text();
+        this->runConfig->generator = ui->generator->text().isEmpty() ? ui->generator->placeholderText()
+                                                                     : ui->generator->text();
         this->runConfig->genPara = ui->genPara->text().isEmpty() ? ui->genPara->placeholderText().split(" ")
                                                              : ui->genPara->text().split(" ");
         this->runConfig->budPara = ui->budPara->text().isEmpty() ? ui->budPara->placeholderText().split(" ")
@@ -50,7 +50,7 @@ void RunConfig::setMainWindow(MainWindow *mainWindow) {
 
 void RunConfig::updateUI() {
     ui->cmakePath->setText(runConfig->cmakePath);
-    ui->ninjaPath->setText(runConfig->ninjaPath);
+    ui->generator->setText(runConfig->generator);
     ui->genPara->setText(runConfig->genPara.join(" "));
     ui->budPara->setText(runConfig->budPara.join(" "));
 }

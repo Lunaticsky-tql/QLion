@@ -688,9 +688,8 @@ void MainWindow::on_action_run_project_triggered() {
     currentCMakeTarget= targetName;
     QString command = runConfigList->cmakePath;
     QStringList params;
-    QString genPath = "-DCMAKE_MAKE_PROGRAM=" + runConfigList->ninjaPath;
     QString buildDir = currentProjectPath +"/"+ "build";
-    params << runConfigList->genPara << genPath << "-G" << "Ninja" << "-S" << currentProjectPath << "-B" << buildDir;
+    params << runConfigList->genPara<< "-G" <<runConfigList->generator << "-S" << currentProjectPath << "-B" << buildDir;
     ui->terminal->show();
     ui->terminal->setCommand(command, params, RunStatus::GENERATE);
     ui->terminal->runCommand();
@@ -733,7 +732,7 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
         }
         QMessageBox::critical(this, "Run", statusString + " failed!");
     }
-    //if reach here, it means the run is successful.
+    //if reach here, it means the task is successful.
     if(runStatus==RunStatus::GENERATE) {
         //if the generation is successful, we need to build the project.
         QString command = runConfigList->cmakePath;
@@ -746,7 +745,7 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
         ui->terminal->runCommand();
     }else if(runStatus==RunStatus::BUILD) {
         //if the build is successful, we need to run the project.
-        QString execFile = currentProjectPath + QDir::separator() + "build" + "/" + currentCMakeTarget;
+        QString execFile = currentProjectPath + '/' + "build" + "/" + currentCMakeTarget;
 #if defined(Q_OS_WIN)
         execFile += ".exe";
 #endif
