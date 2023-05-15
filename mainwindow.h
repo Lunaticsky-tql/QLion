@@ -45,7 +45,7 @@ public:
     void updateTabWidgetForRename(const QString& oldFilePath, const QString& newFilePath, bool isDir= false);
     void removeFile(const QString& removeFilePath, bool isDir=false);
     void traverseDir(const QString& dirPath, QStringList &fileList);
-    bool deleteDir(const QString& dirPath);
+//    bool deleteDir(const QString& dirPath);
     bool saveFile(const QString& filePath);
     void revealFileInOS(const QString &pathToReveal);
     // make public for FolderTreeView

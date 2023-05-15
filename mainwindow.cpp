@@ -350,30 +350,32 @@ void MainWindow::traverseDir(const QString &dirPath, QStringList &fileList) {
 }
 
 
-bool MainWindow::deleteDir(const QString &dirPath) {
-    bool result;
-    QDir dir(dirPath);
-    QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-    for (const auto &fileInfo: infoList) {
-        if (fileInfo.isDir()) {
-            deleteDir(fileInfo.filePath());
-        } else {
-            //delete the file
-            result = QFile::remove(fileInfo.filePath());
-            if (!result) {
-                QMessageBox::warning(this, "Delete File", "Delete file failed!");
-                return false;
-            }
-        }
-    }
-    //delete the dir
-    result = dir.rmdir(dirPath);
-    if (!result) {
-        QMessageBox::warning(this, "Delete Dir", "Delete dir failed!");
-        return false;
-    }
-    return true;
-}
+//bool MainWindow::deleteDir(const QString &dirPath) {
+//    bool result;
+//    QDir dir(dirPath);
+//    QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+//    for (const auto &fileInfo: infoList) {
+//        if (fileInfo.isDir()) {
+//            deleteDir(fileInfo.filePath());
+//        } else {
+//            //delete the file
+//            result = QFile::remove(fileInfo.filePath());
+//            if (!result) {
+//                QMessageBox::warning(this, "Delete File", "Delete file failed!");
+//                return false;
+//            }
+//        }
+//    }
+//    //delete the dir
+//    qDebug()<<dir.isEmpty();
+//    qDebug() << "delete dir:" << dirPath;
+//    result = dir.rmdir(dirPath);
+//    if (!result) {
+//        QMessageBox::warning(this, "Delete Dir", "Delete dir failed!");
+//        return false;
+//    }
+//    return true;
+//}
 
 void MainWindow::removeFile(const QString &removeFilePath, bool isDir) {
     if (isDir) {
@@ -386,7 +388,8 @@ void MainWindow::removeFile(const QString &removeFilePath, bool isDir) {
         }
         QStringList fileList;
         traverseDir(removeFilePath, fileList);
-        deleteDir(removeFilePath);
+//        deleteDir(removeFilePath);
+        dir.removeRecursively();
         for (const auto &filePath: fileList) {
             ui->tabWidget->closeTabByFilePath(filePath);
         }
@@ -452,12 +455,12 @@ void MainWindow::revealFileInOS(const QString &pathToReveal) {
 #elif defined(Q_OS_MAC)
     QStringList scriptArgs;
     scriptArgs << QLatin1String("-e")
-            << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
-            .arg(pathToReveal);
+               << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
+                       .arg(pathToReveal);
     QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
     scriptArgs.clear();
     scriptArgs << QLatin1String("-e")
-            << QLatin1String("tell application \"Finder\" to activate");
+               << QLatin1String("tell application \"Finder\" to activate");
     QProcess::execute("/usr/bin/osascript", scriptArgs);
 #else
     // we cannot select a file here, because no file browser really supports it...
@@ -671,7 +674,7 @@ void MainWindow::on_action_run_project_triggered() {
     }
     QTextStream in(&cmakeListFile);
     QString firstLine = in.readLine();
-    QString targetName="";
+    QString targetName = "";
     while (!firstLine.isNull()) {
         if (firstLine.contains("add_executable")) {
             targetName = firstLine.split("(")[1].split(" ")[0];
@@ -679,16 +682,17 @@ void MainWindow::on_action_run_project_triggered() {
         }
         firstLine = in.readLine();
     }
-    if(targetName.isEmpty()) {
+    if (targetName.isEmpty()) {
         QMessageBox::warning(this, "Run", "No target found in the CMakeLists.txt file!");
         return;
     }
 //    qDebug() << targetName;
-    currentCMakeTarget= targetName;
+    currentCMakeTarget = targetName;
     QString command = runConfigList->cmakePath;
     QStringList params;
-    QString buildDir = currentProjectPath +"/"+ "build";
-    params << runConfigList->genPara<< "-G" <<runConfigList->generator << "-S" << currentProjectPath << "-B" << buildDir;
+    QString buildDir = currentProjectPath + "/" + "build";
+    params << runConfigList->genPara << "-G" << runConfigList->generator << "-S" << currentProjectPath << "-B"
+           << buildDir;
     ui->terminal->show();
     ui->terminal->setCommand(command, params, RunStatus::GENERATE);
     ui->terminal->runCommand();
@@ -732,7 +736,7 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
         QMessageBox::critical(this, "Run", statusString + " failed!");
     }
     //if reach here, it means the task is successful.
-    if(runStatus==RunStatus::GENERATE) {
+    if (runStatus == RunStatus::GENERATE) {
         //if the generation is successful, we need to build the project.
         QString command = runConfigList->cmakePath;
         QStringList params;
@@ -742,7 +746,7 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
         params << "--target" << currentCMakeTarget << runConfigList->budPara;
         ui->terminal->setCommand(command, params, RunStatus::BUILD);
         ui->terminal->runCommand();
-    }else if(runStatus==RunStatus::BUILD) {
+    } else if (runStatus == RunStatus::BUILD) {
         //if the build is successful, we need to run the project.
         QString execFile = currentProjectPath + '/' + "build" + "/" + currentCMakeTarget;
 #if defined(Q_OS_WIN)
