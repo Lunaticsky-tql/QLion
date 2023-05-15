@@ -53,7 +53,7 @@ protected:
                     dir.mkdir(newFilePath);
                     FolderTreeView *folderTreeView = mainWindow->getFolderTreeView();
                     // unfold the folder
-                    folderTreeView->expand(folderTreeView->currentIndex());
+                    folderTreeView->expand(folderTreeView->curentIndex());
                     // select the new folder
                     folderTreeView->setCurrentIndex(mainWindow->getFileSystemModel()->index(newFilePath));
                 }

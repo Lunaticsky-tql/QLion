@@ -10,9 +10,9 @@
 
 ## 开发软件
 
-Qt 6.4.2 
+Qt 6.4.2
 
-CLion 2023.1.2 
+CLion 2023.1.2
 
 Qt Designer
 
@@ -215,34 +215,34 @@ void Highlighter::addIncludeFormat(const QString &text) {
 ```C++
 //notice: it was called line by line
 void Highlighter::addMultiLineCommentFormat(const QString &text) {
-    //mark the start of the comment
-    setCurrentBlockState(0);
-    QRegularExpression startExpression(R"(/\*)");
-    QRegularExpression endExpression(R"(\*/)");
-    QColor color(128, 128, 128);
-    QTextCharFormat multiLineCommentFormat;
-    multiLineCommentFormat.setForeground(color);
-    multiLineCommentFormat.setFont(QFont(mFontFamily, mFontSize));
-    long long startIndex = 0;
-    // that is, if the previous line is not a comment
-    if (previousBlockState() != 1)
-        startIndex = startExpression.match(text).capturedStart();
-    //if the previous line is a comment, we should start from the beginning of the line (startIndex=0)
-    while (startIndex >= 0) {
-        QRegularExpressionMatch endMatch = endExpression.match(text, startIndex);
-        long long endIndex = endMatch.capturedStart();
-        long long commentLength = 0;
-        if (endIndex == -1) {
-            // we still in a comment
-            setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
-        } else {
-            // we find the end of the comment
-            commentLength = endIndex - startIndex + endMatch.capturedLength();
-        }
-        setFormat(startIndex, commentLength, multiLineCommentFormat);
-        startIndex = startExpression.match(text, startIndex + commentLength).capturedStart();
-    }
+//mark the start of the comment
+setCurrentBlockState(0);
+QRegularExpression startExpression(R"(/\*)");
+QRegularExpression endExpression(R"(\*/)");
+QColor color(128, 128, 128);
+QTextCharFormat multiLineCommentFormat;
+multiLineCommentFormat.setForeground(color);
+multiLineCommentFormat.setFont(QFont(mFontFamily, mFontSize));
+long long startIndex = 0;
+// that is, if the previous line is not a comment
+if (previousBlockState() != 1)
+startIndex = startExpression.match(text).capturedStart();
+//if the previous line is a comment, we should start from the beginning of the line (startIndex=0)
+while (startIndex >= 0) {
+QRegularExpressionMatch endMatch = endExpression.match(text, startIndex);
+long long endIndex = endMatch.capturedStart();
+long long commentLength = 0;
+if (endIndex == -1) {
+// we still in a comment
+setCurrentBlockState(1);
+commentLength = text.length() - startIndex;
+} else {
+// we find the end of the comment
+commentLength = endIndex - startIndex + endMatch.capturedLength();
+}
+setFormat(startIndex, commentLength, multiLineCommentFormat);
+startIndex = startExpression.match(text, startIndex + commentLength).capturedStart();
+}
 }
 ```
 
@@ -296,7 +296,7 @@ void Highlighter::addMultiLineCommentFormat(const QString &text) {
 
 高亮所有匹配目标仍旧是采用的HightLighter.为其动态额外增加高亮目标即可。不想高亮了将其设为空字符串。但是由于高亮器是按行高亮的，为关键字设置背景色时与`plaintextEdit`为当前行添加`extraSelection`可能有冲突。目前没找到好的解决方案，不过这个问题也不影响正常使用。
 
-注意到替换文本可能会为查找位置带来偏移，一开始保存的查找到的位置可能会失效。如果Highlighter提供某个正则表达式第n个匹配位置之类的接口，这就不需要我们太担心这个问题，只需要利用highlighter实时获取位置即可。理论上现在的编辑器支持查找过程中改变文本，也是采用的实时正则匹配。但是由于highlighter没有这样的接口，我们就只能手动获取匹配位置，而这些位置是编辑敏感的，且当文本较长时启动这样未经优化的遍历操作会带来较大的性能损耗。因此为了实现的简单，查找替换时冻结了编辑页面。这样可以经过简单的偏移计算保证位置准确性。不过由于每次替换都需要更新后续所有的位置，复杂度还是很高。在没有提供正则表达式匹配位置接口的情况下为模拟查找替换功能，只能采用这样委曲求全的方式。
+注意到替换文本可能会为查找位置带来偏移，一开始保存的查找到的位置可能会失效。如果Highlighter提供某个正则表达式第n个匹配位置之类的接口，这就不需要我们太担心这个问题，只需要利用highlighter实时获取位置即可。理论上现在的编辑器支持查找过程中改变文本，也是采用的实时正则匹配。但是一开始没有考虑到偏移问题，采用的是第一次查询把所有位置保存下来，后面查找直接从向量中取位置出来即可。后面发现这是一种很蠢的方案。毕竟，这些位置是编辑敏感的，编辑或替换文本后位置就变了。因此后续引入了偏移，以在替换时根据查找词长度更新位置。但是这还是没解决编辑的问题。因此查找替换时冻结了编辑页面。这样可以经过简单的偏移计算保证位置准确性。不过由于每次替换都需要更新后续所有的位置，复杂度还是很高。后来意识到没有有效利用高亮器提供的匹配功能本身就带有长度和位置信息。但是由于时间有限，这一部分并没有进行比较优雅的设计。后续再去进行调整。比较合理的思路是高亮器获取当前查找的index，高亮的过程中记录位置和匹配个数，分别发送信号给codePage和mainWindow(再传给FindReplaceView,这样设计的原因是有较明确的主从关系，而非任何两个对象都能直接交流，造成较强的耦合)去改变选中文本和查找的情况。抛开底层算法(字符串和正则匹配)的复杂性，将这一部分的业务逻辑进行合理的设计也是需要费些心思的。这也是在这个项目上面投入时间有些后悔的原因:比起业务逻辑和API调用，算法和系统设计才是我们最应当关注的地方。除开智商的因素，尽可能有意识的培养这一方面的直觉还是给常重要的。
 
 ### 快速注释
 
@@ -389,7 +389,9 @@ Helloworld程序执行:
 
 ![image-20230514234428154](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514234428154.png)
 
-## 单元测试
+## 单元测试及收获
 
-在编写代码时已经进行了大量的单元测试，才能最终编写出能够正常运行，稳健的项目。具体的细节在实现过程中大多也有阐述，项目效果可以参见视频。
+如[PA](https://nju-projectn.github.io/ics-pa-gitbook/ics2019/1.5.html）中所述，未经测试的代码永远是错的。尽管已经在编写代码中进行了大量单元测试，在此一一列举出成功的样例也没有意义。这一部分可以参见项目视频。而且我们只是体会文本编辑器的工作方式和原理，而非真的去造这么一个轮子出来，像PA中提到的[KISS法则](https://nju-projectn.github.io/ics-pa-gitbook/ics2019/1.5.html)样，只是实现了最基础的功能，更高级的设计，安全甚至性能都不是在一开始的实现过程需要考虑的，追求面面俱到只会增加代码维护的难度。即便如此，由于时间仓促，前面的分析可以看到，设计上仍旧有失误，也难免会出现这样那样未全面测试到的问题。当然，这个项目除了完成作业以外纯粹是兴趣驱动，没有功利性的目的，更没有任何实际价值(我们为什么不用VSCode呢)，因此暂时就容许这些失误出现吧(毕竟还有很多更重要的事情要做)，后续对bug的修复和对代码的重构在自己功力更深厚，思路更清晰的时候做，会更容易一些。
+
+
 
