@@ -1,8 +1,14 @@
+---
+title: QLIon
+categories: 作业
+tags:
+  - C++
+---
 # 高级语言程序设计实验报告
 
 南开大学 计算机学院 田佳业 2013599 1013班
 
-2023年4月29日
+2023年5月15日
 
 ## 作业题目
 
@@ -10,9 +16,9 @@
 
 ## 开发软件
 
-Qt 6.4.2
+Qt 6.4.2 
 
-CLion 2023.1.2
+CLion 2023.1.2 
 
 Qt Designer
 
@@ -31,12 +37,15 @@ Qt Designer
 - [x] 快速注释
 - [x] Cmake项目运行
 - [ ] 主题及快捷键配置
+- [ ] 括号补全和自动缩进
+
+还有好多其他作业要做呜呜呜
 
 ## 项目结构
 
 
 
-![image-20230514204456321](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514204456321.png)
+![image-20230514204456321](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214325856307_437_image-20230514204456321.png)
 
 ## 主要流程
 
@@ -60,7 +69,7 @@ Qt Designer
 
 - 注意到VSCode新建若干个未与文件关联的标签页时，会选取当前可用的最小标签页。如下图所示新建标签页会命名为`Untitled-2`。在这个项目中也复现了这样的设计。
 
-  ![image-20230514201910114](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514201910114.png)
+  ![image-20230514201910114](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214327370668_329_image-20230514201910114.png)
 
 第一点的实现可以逐个标签页进行遍历，也可以采用字典树等方式进行优化。在这个项目中采用了较容易实现的遍历方式。
 
@@ -186,7 +195,7 @@ void QLionCodePage::lineNumberAreaMousePressEvent(QMouseEvent *mEvent) {
 
 第二条的其他应用比如我们可以将头文件定义作为一条规则来匹配。CLion中高亮是这样:
 
-![image-20230514210950317](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514210950317.png)
+![image-20230514210950317](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214328373693_177_image-20230514210950317.png)
 
 单独的尖括号包裹的字符串不会被高亮，只有与`#include`配合使用时才会高亮。这只有通过单一匹配规则和部分高亮实现:
 
@@ -215,40 +224,40 @@ void Highlighter::addIncludeFormat(const QString &text) {
 ```C++
 //notice: it was called line by line
 void Highlighter::addMultiLineCommentFormat(const QString &text) {
-//mark the start of the comment
-setCurrentBlockState(0);
-QRegularExpression startExpression(R"(/\*)");
-QRegularExpression endExpression(R"(\*/)");
-QColor color(128, 128, 128);
-QTextCharFormat multiLineCommentFormat;
-multiLineCommentFormat.setForeground(color);
-multiLineCommentFormat.setFont(QFont(mFontFamily, mFontSize));
-long long startIndex = 0;
-// that is, if the previous line is not a comment
-if (previousBlockState() != 1)
-startIndex = startExpression.match(text).capturedStart();
-//if the previous line is a comment, we should start from the beginning of the line (startIndex=0)
-while (startIndex >= 0) {
-QRegularExpressionMatch endMatch = endExpression.match(text, startIndex);
-long long endIndex = endMatch.capturedStart();
-long long commentLength = 0;
-if (endIndex == -1) {
-// we still in a comment
-setCurrentBlockState(1);
-commentLength = text.length() - startIndex;
-} else {
-// we find the end of the comment
-commentLength = endIndex - startIndex + endMatch.capturedLength();
-}
-setFormat(startIndex, commentLength, multiLineCommentFormat);
-startIndex = startExpression.match(text, startIndex + commentLength).capturedStart();
-}
+    //mark the start of the comment
+    setCurrentBlockState(0);
+    QRegularExpression startExpression(R"(/\*)");
+    QRegularExpression endExpression(R"(\*/)");
+    QColor color(128, 128, 128);
+    QTextCharFormat multiLineCommentFormat;
+    multiLineCommentFormat.setForeground(color);
+    multiLineCommentFormat.setFont(QFont(mFontFamily, mFontSize));
+    long long startIndex = 0;
+    // that is, if the previous line is not a comment
+    if (previousBlockState() != 1)
+        startIndex = startExpression.match(text).capturedStart();
+    //if the previous line is a comment, we should start from the beginning of the line (startIndex=0)
+    while (startIndex >= 0) {
+        QRegularExpressionMatch endMatch = endExpression.match(text, startIndex);
+        long long endIndex = endMatch.capturedStart();
+        long long commentLength = 0;
+        if (endIndex == -1) {
+            // we still in a comment
+            setCurrentBlockState(1);
+            commentLength = text.length() - startIndex;
+        } else {
+            // we find the end of the comment
+            commentLength = endIndex - startIndex + endMatch.capturedLength();
+        }
+        setFormat(startIndex, commentLength, multiLineCommentFormat);
+        startIndex = startExpression.match(text, startIndex + commentLength).capturedStart();
+    }
 }
 ```
 
 可以看到几乎还原了在真实代码编辑器中的显示效果。
 
-![image-20230514230623432](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514230623432.png)
+![image-20230514230623432](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214329527229_954_image-20230514230623432.png)
 
 ### 菜单栏功能
 
@@ -256,7 +265,7 @@ startIndex = startExpression.match(text, startIndex + commentLength).capturedSta
 
 打开文件是文本编辑器的基本操作。需要判断文件是否有效，保存打开路径以便下次从这个目录再寻找文件，还要判断是否需要在标签栏上区分路径。得益于面向对象和封装的思想，`mainwindow`提供打开文件的接口后，除了通过菜单栏打开文件，后续通过文件目录树打开文件，通过拖拽打开文件等都可以直接调用接口，而不必再关心怎样区分标签栏路径这样的细节。
 
-![image-20230514220624197](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514220624197.png)
+![image-20230514220624197](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214330918451_552_image-20230514220624197.png)
 
 #### 保存文件
 
@@ -282,13 +291,17 @@ startIndex = startExpression.match(text, startIndex + commentLength).capturedSta
 
 拖拽操作需要重载三个`event`，其中`dropEvent`需要将文件添加到正确的位置，其他的只需要判断拖拽的是不是文件即可。
 
-上述操作目录相关的操作需要对其下的文件进行递归操作，QT没有直接的api做这件事就只好自己写了。
+上述操作目录相关的操作需要对其下的文件进行递归操作，一开始只看到有`rmdir`这个接口，自己造了轮子结果演示的时候发现`build`目录本身删不掉。后续测试发现其他目录都是可以的。为什么呢？阅读[文档](https://doc.qt.io/qt-6/qdir.html#rmdir)发现删除目录需要目录非空。`build`看上去是空的，但是获取文件列表的时候隐藏文件获取不到。实际上它就不是空的：
+
+![image-20230515153815269](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214332155342_338_image-20230515153815269.png)
+
+后来发现有[removeRecursively](https://doc.qt.io/qt-6/qdir.html#removeRecursively)，这个是可以正常工作的。还是得好好看文档。
 
 这一部分相对比较繁琐，花费时间也较长，但主要为API调用和操作逻辑为主，没有什么特别的技巧性的东西。
 
 ### 查找替换
 
-![image-20230514231847964](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514231847964.png)
+![image-20230514231847964](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214333625979_193_image-20230514231847964.png)
 
 首先比较坑的是需要处理好切换逻辑。可以使用`QActionLIst`完成互斥动作处理，不过由于只有两个动作，暂时直接在代码里写切换逻辑也不是不行。
 
@@ -381,17 +394,22 @@ void QLionCodePage::denoteCurrentLine() {
 
 Helloworld程序执行:
 
-![image-20230514234245615](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514234245615.png)
+![image-20230514234245615](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214335038890_263_image-20230514234245615.png)
 
 同样的道理，我们甚至可以让它构建自己:
 
-![image-20230514234354199](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514234354199.png)
+![image-20230514234354199](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214336183959_219_image-20230514234354199.png)
 
-![image-20230514234428154](C:\Users\LENOVO\Desktop\Qt_learn\QLion\高级语言程序设计实验报告.assets\image-20230514234428154.png)
+![image-20230514234428154](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/README/20230515214337928748_935_image-20230514234428154.png)
 
 ## 单元测试及收获
 
-如[PA](https://nju-projectn.github.io/ics-pa-gitbook/ics2019/1.5.html）中所述，未经测试的代码永远是错的。尽管已经在编写代码中进行了大量单元测试，在此一一列举出成功的样例也没有意义。这一部分可以参见项目视频。而且我们只是体会文本编辑器的工作方式和原理，而非真的去造这么一个轮子出来，像PA中提到的[KISS法则](https://nju-projectn.github.io/ics-pa-gitbook/ics2019/1.5.html)样，只是实现了最基础的功能，更高级的设计，安全甚至性能都不是在一开始的实现过程需要考虑的，追求面面俱到只会增加代码维护的难度。即便如此，由于时间仓促，前面的分析可以看到，设计上仍旧有失误，也难免会出现这样那样未全面测试到的问题。当然，这个项目除了完成作业以外纯粹是兴趣驱动，没有功利性的目的，更没有任何实际价值(我们为什么不用VSCode呢)，因此暂时就容许这些失误出现吧(毕竟还有很多更重要的事情要做)，后续对bug的修复和对代码的重构在自己功力更深厚，思路更清晰的时候做，会更容易一些。
+如[PA](https://nju-projectn.github.io/ics-pa-gitbook/ics2019/1.5.html)中所述，未经测试的代码永远是错的。尽管已经在编写代码中进行了大量单元测试，在此一一列举出成功的样例也没有意义。这一部分可以参见项目视频。而且我们只是体会文本编辑器的工作方式和原理，而非真的去造这么一个轮子出来，像PA中提到的[KISS法则](https://nju-projectn.github.io/ics-pa-gitbook/ics2019/1.5.html)样，只是实现了最基础的功能，更高级的设计，安全甚至性能都不是在一开始的实现过程需要考虑的，追求面面俱到只会增加代码维护的难度。即便如此，由于时间仓促，前面的分析可以看到，设计上仍旧有失误，也难免会出现这样那样未全面测试到的问题。当然，这个项目除了完成作业以外纯粹是兴趣驱动，没有功利性的目的，更没有任何实际价值(我们为什么不用VSCode呢)，因此暂时就容许这些失误出现吧(毕竟还有很多更重要的事情要做)，后续对bug的修复和对代码的重构在自己功力更深厚，思路更清晰的时候做，会更容易一些。
 
+## 借物表
 
+[续加仪](https://www.bilibili.com/video/BV16M4y167tB/?spm_id_from=333.999.0.0)的代码编辑器给了我灵感和启动项目的动力。基本的高亮部分和行号绘制部分参考了这个项目。
 
+[JetBrains Icons](https://jetbrains.design/intellij/resources/icons_list/)
+
+[VSCode Icons](https://github.com/microsoft/vscode-icons)
