@@ -450,7 +450,6 @@ void MainWindow::revealFileInOS(const QString &pathToReveal) {
     process->start(explorer, param);
 
 #elif defined(Q_OS_MAC)
-    Q_UNUSED(parent)
     QStringList scriptArgs;
     scriptArgs << QLatin1String("-e")
             << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
