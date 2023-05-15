@@ -1,0 +1,26 @@
+{
+	"BUILD_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/QLion_autogen",
+	"CMAKE_BINARY_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion",
+	"CMAKE_SOURCE_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion",
+	"INCLUDE_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/QLion_autogen/include",
+	"INPUTS" : 
+	[
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/keywords/suffix_support.txt",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/keywords/punctuations.txt",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/keywords/0.txt",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/keywords/1.txt",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/keywords/2.txt"
+	],
+	"LOCK_FILE" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/CMakeFiles/QLion_autogen.dir/AutoRcc_keywords_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "keywords" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_keywords.cpp",
+	"RCC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/CMakeFiles/QLion_autogen.dir/AutoRcc_keywords_EWIEGA46WW_Used.txt",
+	"SOURCE" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/keywords.qrc",
+	"VERBOSITY" : 0
+}

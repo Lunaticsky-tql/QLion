@@ -1,0 +1,5 @@
+/Users/tianjiaye/Documents/c++_寄科/QLion/build/CMakeFiles/QLion.dir
+/Users/tianjiaye/Documents/c++_寄科/QLion/build/CMakeFiles/edit_cache.dir
+/Users/tianjiaye/Documents/c++_寄科/QLion/build/CMakeFiles/rebuild_cache.dir
+/Users/tianjiaye/Documents/c++_寄科/QLion/build/CMakeFiles/QLion_autogen_timestamp_deps.dir
+/Users/tianjiaye/Documents/c++_寄科/QLion/build/CMakeFiles/QLion_autogen.dir

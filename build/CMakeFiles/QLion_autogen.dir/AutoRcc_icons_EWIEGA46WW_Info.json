@@ -1,0 +1,33 @@
+{
+	"BUILD_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/QLion_autogen",
+	"CMAKE_BINARY_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion",
+	"CMAKE_SOURCE_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion",
+	"INCLUDE_DIR" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/QLion_autogen/include",
+	"INPUTS" : 
+	[
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/execute_dark.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/folder.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/search.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/replace_dark.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/qlion.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/unsaved.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/previousOccurence_dark.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/suspend_dark.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/replaceAll.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/nextOccurence_dark.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/terminal_hide.png",
+		"/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/resources/icons/terminal_hide.png"
+	],
+	"LOCK_FILE" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/CMakeFiles/QLion_autogen.dir/AutoRcc_icons_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "icons" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_icons.cpp",
+	"RCC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/build/CMakeFiles/QLion_autogen.dir/AutoRcc_icons_EWIEGA46WW_Used.txt",
+	"SOURCE" : "/Users/tianjiaye/Documents/c++_\u5bc4\u79d1/QLion/icons.qrc",
+	"VERBOSITY" : 0
+}
