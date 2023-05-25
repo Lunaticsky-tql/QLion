@@ -23,7 +23,7 @@ void setUpStyle(QApplication &a)
     darkPalette.setColor(QPalette::ButtonText, Qt::white);
     darkPalette.setColor(QPalette::Link, blue);
     darkPalette.setColor(QPalette::Highlight, lightBlue);
-    darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+    darkPalette.setColor(QPalette::HighlightedText, textColor);
     darkPalette.setColor(QPalette::Active, QPalette::Button, gray.darker());
     darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, gray);
     darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, gray);
@@ -31,7 +31,7 @@ void setUpStyle(QApplication &a)
     darkPalette.setColor(QPalette::Disabled, QPalette::Light, darkGray);
     QApplication::setPalette(darkPalette); 
     a.setStyleSheet("QToolTip { color: #ffffff; background-color: #46484a; border: none; }"
-                        "QPlainTextEdit { background-color: #2b2b2b; }"
+                        "QPlainTextEdit { background-color: #CAE3FF; }"
     );
 }
 
@@ -41,6 +41,6 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     MainWindow w;
-    setUpStyle(a);
+//    setUpStyle(a);
     return QApplication::exec();
 }

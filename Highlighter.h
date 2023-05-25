@@ -11,8 +11,9 @@
 
 class Highlighter : public QSyntaxHighlighter {
 public:
-    explicit Highlighter(QTextDocument *parent = nullptr, const QString& fontFamily="JetBrains Mono NL", int fontSize=12);
+    Highlighter(QTextDocument *parent = nullptr, bool isVaporwaveTheme=false);
     void setSearchText(const QString &keyWord);
+    void setThemeColor(bool isVaporwave);
 protected:
     void highlightBlock(const QString &text) override;
 private:
@@ -22,20 +23,35 @@ private:
         QRegularExpression pattern;
         QTextCharFormat format;
     };
-    QVector<HighlightRule> highlightRules;
-    void initBatchHighlightFormat();
+    QVector<HighlightRule> keywordRules;
+
     void addVarFormat(const QString &text);
-    void addNumberFormat();
+    void addNumberFormat(const QString &text);
     void addStringFormat(const QString &text);
     void addCommentFormat(const QString &text);
     void addMultiLineCommentFormat(const QString &text);
     void addKeywordsFormat();
-    void addClassNameFormat();
+    void addPunctuationFormat(const QString &text);
+    void addClassNameFormat(const QString & text);
     void addFunctionFormat(const QString &text);
     void addVarMemberFormat(const QString &text);
     void addIncludeFormat(const QString &text);
     void highlightSearchText(const QString &text);
     QString searchedText="";
+    struct HighlighterThemeColor{
+        QColor plainTextColor;
+        QColor varColor = QColor(255, 255, 255);
+        QColor numberColor = QColor(255, 255, 255);
+        QColor stringColor = QColor(255, 255, 255);
+        QColor commentColor = QColor(255, 255, 255);
+        QColor keywordsColor = QColor(255, 255, 255);
+        QColor punctuationColor = QColor(255, 255, 255);
+        QColor classNameColor = QColor(255, 255, 255);
+        QColor functionColor = QColor(255, 255, 255);
+        QColor varMemberColor = QColor(255, 255, 255);
+        QColor includeColor = QColor(255, 255, 255);
+        QColor searchedTextBackgroundColor = QColor(255, 255, 255);
+    }themeColor;
 
 };
 

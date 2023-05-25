@@ -52,6 +52,7 @@ public:
     QAction *action_search;
     QAction *action_run_project;
     QAction *action_edit_configurations;
+    QAction *action_vaporwave_theme;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QSplitter *splitter;
@@ -61,6 +62,7 @@ public:
     QMenu *menu_F;
     QMenu *menu_E;
     QMenu *menuRun_R;
+    QMenu *menuView_V;
     QStatusBar *statusbar;
     QToolBar *toolBar;
     QDockWidget *sideDock;
@@ -74,6 +76,7 @@ public:
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/resources/icons/qlion.png"), QSize(), QIcon::Normal, QIcon::Off);
         MainWindow->setWindowIcon(icon);
+        MainWindow->setAutoFillBackground(true);
         action_new_file = new QAction(MainWindow);
         action_new_file->setObjectName("action_new_file");
         action_open_file = new QAction(MainWindow);
@@ -131,6 +134,9 @@ public:
         action_run_project->setIcon(icon3);
         action_edit_configurations = new QAction(MainWindow);
         action_edit_configurations->setObjectName("action_edit_configurations");
+        action_vaporwave_theme = new QAction(MainWindow);
+        action_vaporwave_theme->setObjectName("action_vaporwave_theme");
+        action_vaporwave_theme->setCheckable(true);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -167,6 +173,8 @@ public:
         menu_E->setObjectName("menu_E");
         menuRun_R = new QMenu(menubar);
         menuRun_R->setObjectName("menuRun_R");
+        menuView_V = new QMenu(menubar);
+        menuView_V->setObjectName("menuView_V");
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
@@ -186,6 +194,7 @@ public:
         menubar->addAction(menu_F->menuAction());
         menubar->addAction(menu_E->menuAction());
         menubar->addAction(menuRun_R->menuAction());
+        menubar->addAction(menuView_V->menuAction());
         menu_F->addAction(action_new_file);
         menu_F->addAction(action_new_window);
         menu_F->addSeparator();
@@ -210,6 +219,7 @@ public:
         menu_E->addAction(action_denote);
         menuRun_R->addAction(action_run_project);
         menuRun_R->addAction(action_edit_configurations);
+        menuView_V->addAction(action_vaporwave_theme);
         toolBar->addAction(action_tool_tree_view);
         toolBar->addAction(action_search);
         toolBar->addAction(action_run_project);
@@ -299,6 +309,9 @@ public:
 #endif // QT_CONFIG(shortcut)
         action_exit->setText(QCoreApplication::translate("MainWindow", "Exit", nullptr));
         action_search->setText(QCoreApplication::translate("MainWindow", "action_search", nullptr));
+#if QT_CONFIG(tooltip)
+        action_search->setToolTip(QCoreApplication::translate("MainWindow", "Search", nullptr));
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(shortcut)
         action_search->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Shift+F", nullptr));
 #endif // QT_CONFIG(shortcut)
@@ -307,9 +320,11 @@ public:
         action_run_project->setShortcut(QCoreApplication::translate("MainWindow", "F5", nullptr));
 #endif // QT_CONFIG(shortcut)
         action_edit_configurations->setText(QCoreApplication::translate("MainWindow", "Edit Configurations...", nullptr));
+        action_vaporwave_theme->setText(QCoreApplication::translate("MainWindow", "Vaporwave theme", nullptr));
         menu_F->setTitle(QCoreApplication::translate("MainWindow", "File(&F)", nullptr));
         menu_E->setTitle(QCoreApplication::translate("MainWindow", "Edit(&E)", nullptr));
         menuRun_R->setTitle(QCoreApplication::translate("MainWindow", "Run(&R)", nullptr));
+        menuView_V->setTitle(QCoreApplication::translate("MainWindow", "View(&V)", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 

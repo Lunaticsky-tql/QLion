@@ -20,6 +20,9 @@
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    switchTheme(false);
+//    auto* label=new QLabel("hello",this);
+//    ui->statusbar->addPermanentWidget(label);
     show();
     ui->tabWidget->setMainWindow(this);
     loadOpenableSuffix();
@@ -29,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->terminal->hide();
     lastDirPath = QDir::currentPath();
     lastFilePath = QString();
-
 
 }
 
@@ -283,7 +285,6 @@ void MainWindow::setUpFolderTreeView() {
 void MainWindow::setUpFolderTreeViewConnections() {
     connect(folderTreeView, SIGNAL(doubleClicked(QModelIndex)), this,
             SLOT(do_folderTreeView_doubleClicked(QModelIndex)));
-
 }
 
 void MainWindow::do_folderTreeView_doubleClicked(const QModelIndex &index) {
@@ -671,7 +672,7 @@ void MainWindow::on_action_run_project_triggered() {
     }
     QTextStream in(&cmakeListFile);
     QString firstLine = in.readLine();
-    QString targetName="";
+    QString targetName = "";
     while (!firstLine.isNull()) {
         if (firstLine.contains("add_executable")) {
             targetName = firstLine.split("(")[1].split(" ")[0];
@@ -679,16 +680,17 @@ void MainWindow::on_action_run_project_triggered() {
         }
         firstLine = in.readLine();
     }
-    if(targetName.isEmpty()) {
+    if (targetName.isEmpty()) {
         QMessageBox::warning(this, "Run", "No target found in the CMakeLists.txt file!");
         return;
     }
 //    qDebug() << targetName;
-    currentCMakeTarget= targetName;
+    currentCMakeTarget = targetName;
     QString command = runConfigList->cmakePath;
     QStringList params;
-    QString buildDir = currentProjectPath +"/"+ "build";
-    params << runConfigList->genPara<< "-G" <<runConfigList->generator << "-S" << currentProjectPath << "-B" << buildDir;
+    QString buildDir = currentProjectPath + "/" + "build";
+    params << runConfigList->genPara << "-G" << runConfigList->generator << "-S" << currentProjectPath << "-B"
+           << buildDir;
     ui->terminal->show();
     ui->terminal->setCommand(command, params, RunStatus::GENERATE);
     ui->terminal->runCommand();
@@ -732,7 +734,7 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
         QMessageBox::critical(this, "Run", statusString + " failed!");
     }
     //if reach here, it means the task is successful.
-    if(runStatus==RunStatus::GENERATE) {
+    if (runStatus == RunStatus::GENERATE) {
         //if the generation is successful, we need to build the project.
         QString command = runConfigList->cmakePath;
         QStringList params;
@@ -742,7 +744,7 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
         params << "--target" << currentCMakeTarget << runConfigList->budPara;
         ui->terminal->setCommand(command, params, RunStatus::BUILD);
         ui->terminal->runCommand();
-    }else if(runStatus==RunStatus::BUILD) {
+    } else if (runStatus == RunStatus::BUILD) {
         //if the build is successful, we need to run the project.
         QString execFile = currentProjectPath + '/' + "build" + "/" + currentCMakeTarget;
 #if defined(Q_OS_WIN)
@@ -762,7 +764,81 @@ QString MainWindow::getCurrentProjectPath() {
     return currentProjectPath;
 }
 
+void MainWindow::on_action_vaporwave_theme_toggled(bool checked) {
+    switchTheme(checked);
+}
 
+void MainWindow::switchTheme(bool isVaporwave) {
+    if (isVaporwave) {
+        QApplication::setStyle("windows");
+        QColor background(252, 241, 253);
+        QColor buttonColor(248, 228, 251);
+        QColor blue(42, 130, 218);
+        QColor lightBlue(75, 110, 175);
+        QColor textColor = QColor(78, 47, 207);
+        QColor baseColor = QColor(253, 224, 242);
+        QColor disabledColor = QColor(96, 96, 96);
+        QColor disabledBaseColor = QColor(192, 192, 192);
+        QPalette lightPalette(buttonColor);
+        lightPalette.setColor(QPalette::Window, background);
+        lightPalette.setColor(QPalette::WindowText, textColor);
+        lightPalette.setColor(QPalette::Base, baseColor);
+        lightPalette.setColor(QPalette::AlternateBase, background);
+        lightPalette.setColor(QPalette::ToolTipBase, lightBlue);
+        lightPalette.setColor(QPalette::ToolTipText, textColor);
+        lightPalette.setColor(QPalette::Text, textColor);
+        lightPalette.setColor(QPalette::Button, buttonColor);
+        lightPalette.setColor(QPalette::ButtonText, textColor);
+        lightPalette.setColor(QPalette::Link, blue);
+        lightPalette.setColor(QPalette::Highlight, lightBlue);
+        lightPalette.setColor(QPalette::Active, QPalette::Button, buttonColor);
+        lightPalette.setColor(QPalette::Disabled, QPalette::ButtonText, disabledColor);
+        lightPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
+        lightPalette.setColor(QPalette::Disabled, QPalette::Base, disabledBaseColor);
+        lightPalette.setColor(QPalette::Disabled, QPalette::Text, disabledColor);
+        lightPalette.setColor(QPalette::Disabled, QPalette::Light, background);
+        QApplication::setPalette(lightPalette);
+        this->setStyleSheet("QToolTip { color: #4D2ED2; background-color: #cae3ff; border: none; }"
+                            "QPlainTextEdit { background-color: #FDFFFD; }"
+                            "QMainWindow{border: 3px solid #8FDCF1;}"
+                            "QMenuBar{border-top: 3px solid #8FDCF1;}"
+                            "QMenuBar::item:hover{border-top: 3px solid #8FDCF1;}"
+                            "QMenuBar::item:focus{border-top: 3px solid #8FDCF1; }"
+        );
+    } else {
+        QApplication::setStyle("fusion");
+        QColor darkGray(53, 53, 53);
+        QColor gray(128, 128, 128);
+        QColor blue(42, 130, 218);
+        QColor lightBlue(75, 110, 175);
+        QColor textColor = QColor(187, 187, 187);
+        QColor baseGray = QColor(60, 63, 65);
+        QPalette darkPalette;
+        darkPalette.setColor(QPalette::Window, darkGray);
+        darkPalette.setColor(QPalette::WindowText, textColor);
+        darkPalette.setColor(QPalette::Base, baseGray);
+        darkPalette.setColor(QPalette::AlternateBase, darkGray);
+        darkPalette.setColor(QPalette::ToolTipBase, lightBlue);
+        darkPalette.setColor(QPalette::ToolTipText, textColor);
+        darkPalette.setColor(QPalette::Text, textColor);
+        darkPalette.setColor(QPalette::Button, darkGray);
+        darkPalette.setColor(QPalette::ButtonText, Qt::white);
+        darkPalette.setColor(QPalette::Link, blue);
+        darkPalette.setColor(QPalette::Highlight, lightBlue);
+        darkPalette.setColor(QPalette::HighlightedText, textColor);
+        darkPalette.setColor(QPalette::Active, QPalette::Button, gray.darker());
+        darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::Text, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::Light, darkGray);
+        QApplication::setPalette(darkPalette);
+        this->setStyleSheet("QToolTip { color: #ffffff; background-color: #46484a; border: none; }"
+                            "QPlainTextEdit { background-color: #2b2b2b; }"
+        );
+    }
+    ui->tabWidget->switchTheme(isVaporwave);
+    this->isVaporwaveTheme = isVaporwave;
+}
 
 
 

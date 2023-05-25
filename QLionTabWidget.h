@@ -53,9 +53,12 @@ public:
     void clearCurrentFindReplaceState();
     void denoteCurrentTab();
     void saveProjectFiles(QString qString);
+    void switchTheme(bool b);
+    bool isVaporwaveTheme=false;
 private:
     MainWindow *mainWindow;
     int lastTabIndex=-1;
+
 };
 
 

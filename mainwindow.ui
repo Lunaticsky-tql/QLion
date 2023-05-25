@@ -17,6 +17,9 @@
    <iconset resource="icons.qrc">
     <normaloff>:/resources/icons/qlion.png</normaloff>:/resources/icons/qlion.png</iconset>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
     <item>
@@ -113,9 +116,16 @@
     <addaction name="action_run_project"/>
     <addaction name="action_edit_configurations"/>
    </widget>
+   <widget class="QMenu" name="menuView_V">
+    <property name="title">
+     <string>View(&amp;V)</string>
+    </property>
+    <addaction name="action_vaporwave_theme"/>
+   </widget>
    <addaction name="menu_F"/>
    <addaction name="menu_E"/>
    <addaction name="menuRun_R"/>
+   <addaction name="menuView_V"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -337,6 +347,14 @@
   <action name="action_edit_configurations">
    <property name="text">
     <string>Edit Configurations...</string>
+   </property>
+  </action>
+  <action name="action_vaporwave_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Vaporwave theme</string>
    </property>
   </action>
  </widget>

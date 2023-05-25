@@ -30,7 +30,8 @@ Qt Designer
 - [x] 查找替换
 - [x] 快速注释
 - [x] Cmake项目运行
-- [ ] 主题及快捷键配置
+- [x] Auto Ident
+- [x] 主题配置
 
 ## 项目结构
 
@@ -197,7 +198,7 @@ void Highlighter::addIncludeFormat(const QString &text) {
     QColor stringColor(106, 135, 89);
     QColor includeColor(255, 198, 109);
     rule.format.setForeground(stringColor);
-    rule.format.setFont(QFont(mFontFamily, mFontSize));
+    rule.format.setMyFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
     while (matchIterator.hasNext()) {
         QRegularExpressionMatch match = matchIterator.next();
@@ -222,7 +223,7 @@ QRegularExpression endExpression(R"(\*/)");
 QColor color(128, 128, 128);
 QTextCharFormat multiLineCommentFormat;
 multiLineCommentFormat.setForeground(color);
-multiLineCommentFormat.setFont(QFont(mFontFamily, mFontSize));
+multiLineCommentFormat.setMyFont(QFont(mFontFamily, mFontSize));
 long long startIndex = 0;
 // that is, if the previous line is not a comment
 if (previousBlockState() != 1)

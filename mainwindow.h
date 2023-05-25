@@ -64,6 +64,8 @@ public:
     void notFoundUIAction();
     void setConfigList(RunConfigList *pList);
     QString getCurrentProjectPath();
+    bool isVaporwaveTheme{false};
+
 
 
 
@@ -94,6 +96,7 @@ private:
     void setUpFolderTreeViewConnections();
     void setUpFolderTreeView();
     void loadOpenableSuffix();
+    void switchTheme(bool isVaporwave);
 
     QStackedWidget *stackedWidget{};
 
@@ -119,6 +122,7 @@ private slots:
 
     void on_action_edit_configurations_triggered();
     void doTerminalRunFinished(int exitCode, RunStatus runStatus);
+    void on_action_vaporwave_theme_toggled(bool checked);
 };
 
 

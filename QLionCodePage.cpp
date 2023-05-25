@@ -12,30 +12,25 @@
 #include "QLionCodePage.h"
 #include "QLionTabWidget.h"
 
-QLionCodePage::QLionCodePage(QWidget *parent,bool isInitHighlighter) : QPlainTextEdit(parent) {
+QLionCodePage::QLionCodePage(QWidget *parent, bool isInitHighlighter) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setFrameShape(QPlainTextEdit::NoFrame);
-    QColor textColor = QColor(187, 187, 187);
-    setStyleSheet("color:rgb(" + QString::number(textColor.red()) + "," + QString::number(textColor.green()) + "," +
-                  QString::number(textColor.blue()) + ");");
-    filePath=QString();
+    filePath = QString();
     initConnections();
-    if(isInitHighlighter)
-    {
+    if (isInitHighlighter) {
         initHighlighter();
     }
-    initFont();
     highlightCurrentLine();
     updateLineNumberAreaWidth();
 }
 
-void QLionCodePage::initFont() {
+void QLionCodePage::setMyFont() {
     QFont font;
-    font.setFamily("JetBrains Mono NL");
+    font.setFamily(mFontFamily);
     font.setPointSize(12);
     this->setFont(font);
-    lineNumberFontWidth=fontMetrics().horizontalAdvance(QChar('0'));
+    lineNumberFontWidth = fontMetrics().horizontalAdvance(QChar('0'));
 
 }
 
@@ -44,36 +39,37 @@ void QLionCodePage::initConnections() {
     // it may conflict with the highlighter but it is not a big problem
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
     // update lineNumberArea paint event
-    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    connect(this, SIGNAL(updateRequest(QRect, int)), this, SLOT(updateLineNumberArea(QRect, int)));
     // update lineNumber width change
-    connect(this,SIGNAL(blockCountChanged(int)),this,SLOT(updateLineNumberAreaWidth()));
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth()));
     // update unsaved changes status
-    connect(document(), SIGNAL(undoCommandAdded()), this,SLOT(setUnsaved()));
+    connect(document(), SIGNAL(undoCommandAdded()), this, SLOT(setUnsaved()));
 }
+
 void QLionCodePage::resizeEvent(QResizeEvent *event) {
     QPlainTextEdit::resizeEvent(event);
     QRect cr = contentsRect();
-    lineNumberArea->setGeometry(0,0, getLineNumberAreaWidth(), cr.height());
+    lineNumberArea->setGeometry(0, 0, getLineNumberAreaWidth(), cr.height());
 
 }
 
 void QLionCodePage::lineNumberAreaPaintEvent(QPaintEvent *pEvent) {
     QPainter painter(lineNumberArea);
-    QColor lineNumberAreaColor = QColor(49, 51, 53);
-    QColor lineNumberColor = QColor(96,99,102);
-    QColor currentLineNumberColor=QColor(164, 163, 163);
+    QColor lineNumberAreaColor = themeColor.lineNumberAreaColor;
+    QColor lineNumberColor = themeColor.lineNumberColor;
+    QColor currentLineNumberColor = themeColor.currentLineNumberColor;
     painter.fillRect(pEvent->rect(), lineNumberAreaColor);
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
-    int currentCursorTop=(int)blockBoundingGeometry(textCursor().block()).translated(contentOffset()).top();
+    int currentCursorTop = (int) blockBoundingGeometry(textCursor().block()).translated(contentOffset()).top();
 
     int bottom = top + (int) blockBoundingRect(block).height();
     while (block.isValid() && top <= pEvent->rect().bottom()) {
         if (block.isVisible() && bottom >= pEvent->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(currentCursorTop==top ? currentLineNumberColor : lineNumberColor);
-            painter.drawText(0, top, getLineNumberAreaWidth()-lineNumberFontWidth/3, fontMetrics().height(),
+            painter.setPen(currentCursorTop == top ? currentLineNumberColor : lineNumberColor);
+            painter.drawText(0, top, getLineNumberAreaWidth() - lineNumberFontWidth / 3, fontMetrics().height(),
                              Qt::AlignRight, number);
         }
         block = block.next();
@@ -86,7 +82,7 @@ void QLionCodePage::lineNumberAreaPaintEvent(QPaintEvent *pEvent) {
 }
 
 void QLionCodePage::highlightCurrentLine() {
-    QList <QTextEdit::ExtraSelection> extraSelections;
+    QList<QTextEdit::ExtraSelection> extraSelections;
     QTextEdit::ExtraSelection selection;
     QColor lineColor = QColor(50, 50, 50);
     selection.format.setBackground(lineColor);
@@ -98,11 +94,11 @@ void QLionCodePage::highlightCurrentLine() {
 }
 
 void QLionCodePage::initHighlighter() {
-    mHighlighter = new Highlighter(this->document());
+    mHighlighter = new Highlighter(this->document(),isVaporwaveTheme);
 }
 
 int QLionCodePage::getLineNumberAreaWidth() {
-    return QString::number(blockCount()+1).length()*lineNumberFontWidth+lineNumberFontWidth;
+    return QString::number(blockCount() + 1).length() * lineNumberFontWidth + lineNumberFontWidth;
 
 }
 
@@ -119,16 +115,16 @@ void QLionCodePage::updateLineNumberArea(const QRect &, int dy) {
 }
 
 void QLionCodePage::updateLineNumberAreaWidth() {
-    setViewportMargins(getLineNumberAreaWidth(),0,0,0);
+    setViewportMargins(getLineNumberAreaWidth(), 0, 0, 0);
 }
 
 void QLionCodePage::lineNumberAreaMousePressEvent(QMouseEvent *mEvent) {
     // select the current line and jump the cursor to the beginning of the next line
-    int clickedLineNumber=qRound(mEvent->position().y())/fontMetrics().height()+verticalScrollBar()->value();
+    int clickedLineNumber = qRound(mEvent->position().y()) / fontMetrics().height() + verticalScrollBar()->value();
 //    qDebug()<<clickedLineNumber;
-    QTextBlock clickedBlock=document()->findBlockByLineNumber(clickedLineNumber);
+    QTextBlock clickedBlock = document()->findBlockByLineNumber(clickedLineNumber);
     QTextCursor cursor(clickedBlock);
-       cursor.movePosition(QTextCursor::QTextCursor::NextBlock,QTextCursor::KeepAnchor);
+    cursor.movePosition(QTextCursor::QTextCursor::NextBlock, QTextCursor::KeepAnchor);
     setTextCursor(cursor);
 }
 
@@ -147,15 +143,14 @@ void QLionCodePage::setFilePath(const QString &filePath) {
 
 void QLionCodePage::copyAction() {
     // copy the current line and do not change the cursor position
-    QTextCursor cursor=this->textCursor();
-    if(cursor.hasSelection()){
+    QTextCursor cursor = this->textCursor();
+    if (cursor.hasSelection()) {
         // if user select some text, copy the selected text
         copy();
-    }
-    else{
+    } else {
         //get the content of the current line and set the clipboard
-        QTextBlock block=cursor.block();
-        QString text=block.text();
+        QTextBlock block = cursor.block();
+        QString text = block.text();
         QApplication::clipboard()->setText(text);
     }
 
@@ -163,15 +158,14 @@ void QLionCodePage::copyAction() {
 
 void QLionCodePage::cutAction() {
     // cut the current line and do not change the cursor position
-    QTextCursor cursor=this->textCursor();
-    if(cursor.hasSelection()){
+    QTextCursor cursor = this->textCursor();
+    if (cursor.hasSelection()) {
         // if user select some text, cut the selected text
         cut();
-    }
-    else{
+    } else {
         //get the content of the current line and set the clipboard
-        QTextBlock block=cursor.block();
-        QString text=block.text();
+        QTextBlock block = cursor.block();
+        QString text = block.text();
         QApplication::clipboard()->setText(text);
         // delete the current line
         cursor.select(QTextCursor::LineUnderCursor);
@@ -185,9 +179,8 @@ bool QLionCodePage::areChangesUnsaved() const {
 
 
 void QLionCodePage::setMyTabWidgetIcon(const QIcon &icon) {
-    myTabWidget->setTabIcon(getMyCurrentIndex(),icon);
+    myTabWidget->setTabIcon(getMyCurrentIndex(), icon);
 }
-
 
 
 int QLionCodePage::getMyCurrentIndex() {
@@ -203,7 +196,7 @@ void QLionCodePage::setUnsaved() {
 }
 
 void QLionCodePage::setParentTabWidget(QLionTabWidget *pWidget) {
-    myTabWidget=pWidget;
+    myTabWidget = pWidget;
 }
 
 bool QLionCodePage::saveFile(bool isSaveAs) {
@@ -211,20 +204,17 @@ bool QLionCodePage::saveFile(bool isSaveAs) {
     if (isSaveAs || filePath.isEmpty()) {
         // if the file is not saved before or user want to "save as"
         newFilePath = QFileDialog::getSaveFileName(this, "保存文件", myTabWidget->getLastFilePath(),
-                                                        tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
-        qDebug()<<newFilePath;
+                                                   tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
+        qDebug() << newFilePath;
         if (newFilePath.isEmpty()) {
             return false;
-        }
-        else if(newFilePath==filePath)
-        {
+        } else if (newFilePath == filePath) {
             // if reached here, it means user want to save the file with the same name and path (so we actually do "save" rather than "save as")
             // gap the distinguishFileName function (it will close the tab with old file path) and act as "save"
-            isSaveAs=false;
+            isSaveAs = false;
         }
-    }
-    else{
-        newFilePath=filePath;
+    } else {
+        newFilePath = filePath;
     }
     QFile file(newFilePath);
     if (!file.open(QIODevice::WriteOnly)) {
@@ -236,13 +226,12 @@ bool QLionCodePage::saveFile(bool isSaveAs) {
     file.close();
     // we saved the file successfully but still have a lot of things to do...
     // save a file with a new name may need to distinguish the file with the same name and different path
-    if(filePath.isEmpty()){
+    if (filePath.isEmpty()) {
         // the untitled file will turn to a normal file after saving
         // so we need to remove the untitledID from the untitledIDSet
         myTabWidget->usingUntitledID.erase(untitledID);
     }
-    if(isSaveAs || filePath.isEmpty())
-    {
+    if (isSaveAs || filePath.isEmpty()) {
         changeFilePath(newFilePath);
     }
     setSaved();
@@ -250,7 +239,7 @@ bool QLionCodePage::saveFile(bool isSaveAs) {
 }
 
 void QLionCodePage::setUntitledID(int id) {
-    untitledID=id;
+    untitledID = id;
 }
 
 int QLionCodePage::getUntitledID() const {
@@ -259,17 +248,16 @@ int QLionCodePage::getUntitledID() const {
 
 void QLionCodePage::changeFilePath(const QString &newFilePath) {
     // things to do when the file path is changed
-    if(myTabWidget->distinguishFileName(newFilePath)){
+    if (myTabWidget->distinguishFileName(newFilePath)) {
         // distinguish the file name and set the tab text
-        myTabWidget->setTabText(getMyCurrentIndex(),newFilePath);
-    }
-    else{
-        QString fileName=QFileInfo(newFilePath).fileName();
-        myTabWidget->setTabText(getMyCurrentIndex(),fileName);
+        myTabWidget->setTabText(getMyCurrentIndex(), newFilePath);
+    } else {
+        QString fileName = QFileInfo(newFilePath).fileName();
+        myTabWidget->setTabText(getMyCurrentIndex(), fileName);
     }
     // update the file path map
     myTabWidget->usingFilePath.erase(filePath);
-    myTabWidget->usingFilePath[newFilePath]=getMyCurrentIndex();
+    myTabWidget->usingFilePath[newFilePath] = getMyCurrentIndex();
     filePath = newFilePath;
 }
 
@@ -320,56 +308,49 @@ void QLionCodePage::denoteCurrentLine() {
     cursor.movePosition(QTextCursor::StartOfLine);
     QString text = cursor.block().text();
     int i;
-    for(i=0;i<text.length();i++){
-        if(text[i]==' '||text[i]=='\t'){
+    for (i = 0; i < text.length(); i++) {
+        if (text[i] == ' ' || text[i] == '\t') {
             continue;
-        }
-        else if(text[i]=='/'){
-            if(i<text.length()-1){
-                if(text[i+1]=='/') {
+        } else if (text[i] == '/') {
+            if (i < text.length() - 1) {
+                if (text[i + 1] == '/') {
                     //it is a line with spaces and a double '/', remove the denotation here
                     cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, i);
                     cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 2);
                     cursor.removeSelectedText();
-                    if(positionInBlock<=i){
+                    if (positionInBlock <= i) {
                         // if the cursor is at the left of the denotation, move the cursor to the original position
                         cursor.setPosition(position);
-                    }
-                    else if(positionInBlock==i+1){
+                    } else if (positionInBlock == i + 1) {
                         // if the cursor is at the middle of the denotation, move the cursor to the original position with a offset
-                        cursor.setPosition(position-1);
-                    }
-                    else{
+                        cursor.setPosition(position - 1);
+                    } else {
                         // if the cursor is at the right of the denotation
-                        cursor.setPosition(position-2);
+                        cursor.setPosition(position - 2);
                     }
-                }
-                else{
+                } else {
                     //it is a line with spaces and a single '/', add a single '/' here
-                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, i+1);
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, i + 1);
                     cursor.insertText("/");
-                    if(positionInBlock<=i+1){
+                    if (positionInBlock <= i + 1) {
                         // if the cursor is at the right of the denotation, move the cursor to the original position
                         cursor.setPosition(position);
-                    }
-                    else{
+                    } else {
                         // if the cursor is at the left of the denotation, move the cursor to the original position with a offset
-                        cursor.setPosition(position+1);
+                        cursor.setPosition(position + 1);
                     }
                 }
-            }
-            else{
+            } else {
                 //it is a line with spaces and a single '/', add a single '/' to the end of the line
                 cursor.movePosition(QTextCursor::EndOfLine);
                 cursor.insertText("/");
                 cursor.setPosition(position);
             }
             break;
-        }
-        else{
+        } else {
             // not start with spaces and '/', denote at the start of the line
             cursor.insertText(R"(//)");
-            cursor.setPosition(position+2);
+            cursor.setPosition(position + 2);
             break;
         }
     }
@@ -377,6 +358,74 @@ void QLionCodePage::denoteCurrentLine() {
     setTextCursor(cursor);
 }
 
+void QLionCodePage::keyPressEvent(QKeyEvent *event) {
+
+    if (event->key() == Qt::Key_BraceLeft) {
+        closeParenthesis("{", "}");
+        return;
+    } else if (event->key() == Qt::Key_ParenLeft) {
+        closeParenthesis("(", ")");
+        return;
+    } else if (event->key() == Qt::Key_BracketLeft) {
+        closeParenthesis("[", "]");
+        return;
+    }
+    QPlainTextEdit::keyPressEvent(event);
+
+}
+
+void QLionCodePage::closeParenthesis(const QString &startStr, const QString &endStr) {
+    auto cursor = textCursor();
+
+    if (cursor.hasSelection()) {
+        auto start = cursor.selectionStart();
+        auto end = cursor.selectionEnd();
+        cursor.setPosition(start, cursor.MoveAnchor);
+        cursor.insertText(startStr);
+        cursor.setPosition(end + startStr.size(), cursor.MoveAnchor);
+        cursor.insertText(endStr);
+    } else if (startStr == "{") {
+        auto pos = cursor.position();
+        cursor.setPosition(pos, cursor.MoveAnchor);
+        cursor.insertText("{\n\t\n}");
+        cursor.setPosition(pos + 3);
+    } else {
+        auto pos = cursor.position();
+        cursor.setPosition(pos, cursor.MoveAnchor);
+        cursor.insertText(startStr + endStr);
+    }
+
+    setTextCursor(cursor);
+}
+
+void QLionCodePage::setThemeColor(bool isVaporwave) {
+    if (isVaporwave) {
+        themeColor.textColor = QColor(0, 0, 0);
+        themeColor.lineNumberAreaColor = QColor(245, 243, 235);
+        themeColor.lineNumberColor = QColor(96, 96, 96);
+        themeColor.currentLineNumberColor = QColor(32, 32, 32);
+        mFontFamily = "Fixedsys";
+        // clear extra selection
+        QList<QTextEdit::ExtraSelection> extraSelections;
+        setExtraSelections(extraSelections);
+        disconnect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+    } else {
+        themeColor.textColor = QColor(187, 187, 187);
+        themeColor.lineNumberAreaColor = QColor(49, 51, 53);
+        themeColor.lineNumberColor = QColor(96, 99, 102);
+        themeColor.currentLineNumberColor = QColor(164, 163, 163);
+        mFontFamily = "JetBrains Mono NL";
+        connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+    }
+    setStyleSheet("color:rgb(" + QString::number(themeColor.textColor.red()) + "," + QString::number(themeColor.textColor.green()) + "," +
+                  QString::number(themeColor.textColor.blue()) + ");");
+    qDebug() << "setStyleSheet";
+    setMyFont();
+    updateLineNumberAreaWidth();
+    mHighlighter->setThemeColor(isVaporwave);
+    mHighlighter->rehighlight();
+    this->isVaporwaveTheme = isVaporwave;
+}
 
 
 

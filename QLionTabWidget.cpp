@@ -10,7 +10,6 @@ QLionTabWidget::QLionTabWidget(QWidget *parent) : QTabWidget(parent) {
     setTabsClosable(true);
     setMovable(true);
     initConnections();
-
 }
 
 void QLionTabWidget::addNewTab() {
@@ -27,6 +26,7 @@ void QLionTabWidget::addNewTab() {
         setCurrentIndex(count() - 1);
         QLionCodePage *currentCodePage = getCurrentCodePage();
         currentCodePage->setParentTabWidget(this);
+        currentCodePage->setThemeColor(isVaporwaveTheme);
         currentCodePage->setUntitledID(newID);
     }
 }
@@ -82,7 +82,8 @@ void QLionTabWidget::addNewTab(const QString &text, const QString &filePath) {
         setCurrentIndex(count() - 1);
         auto *codePage = getCurrentCodePage();
         // do not forget to set the parentTabWidget
-        getCurrentCodePage()->setParentTabWidget(this);
+        codePage->setParentTabWidget(this);
+        codePage->setThemeColor(isVaporwaveTheme);
         codePage->setFilePath(filePath);
         codePage->setPlainText(text);
     }
@@ -287,7 +288,7 @@ void QLionTabWidget::setCurrentPageReadOnly(bool readOnly) {
 
 void QLionTabWidget::updateFindReplaceHighlight(int i) {
 //    qDebug() << "updateFindReplaceHighlight" << lastTabIndex<<"->"<<i;
-    if (lastTabIndex >=0&&lastTabIndex<count()) {
+    if (lastTabIndex >= 0 && lastTabIndex < count()) {
         clearFindReplaceState(lastTabIndex);
         mainWindow->triggerFindIfOnSearch();
     }
@@ -313,8 +314,8 @@ void QLionTabWidget::clearFindReplaceState(int i) {
 
 void QLionTabWidget::clearCurrentFindReplaceState() {
     //get the current index
-    int index=currentIndex();
-    if (index<0||index>=count()) {
+    int index = currentIndex();
+    if (index < 0 || index >= count()) {
         return;
     }
     clearFindReplaceState(index);
@@ -331,18 +332,29 @@ void QLionTabWidget::denoteCurrentTab() {
 }
 
 void QLionTabWidget::saveProjectFiles(QString projectPath) {
-    for(auto & iter : usingFilePath){
-        QLionCodePage *codePage=getCodePage(iter.second);
-        if(codePage==nullptr){
+    for (auto &iter: usingFilePath) {
+        QLionCodePage *codePage = getCodePage(iter.second);
+        if (codePage == nullptr) {
             continue;
         }
-        QString filePath=iter.first;
+        QString filePath = iter.first;
         //check the filePath is in the projectPath
-        if(!filePath.startsWith(projectPath)){
+        if (!filePath.startsWith(projectPath)) {
             continue;
         }
         //save the file
         codePage->saveFile(false);
+    }
+}
+
+void QLionTabWidget::switchTheme(bool isVaporwave) {
+    isVaporwaveTheme = isVaporwave;
+    for (int i = 0; i < count(); i++) {
+        QLionCodePage *codePage = getCodePage(i);
+        if (codePage == nullptr) {
+            continue;
+        }
+        codePage->setThemeColor(isVaporwave);
     }
 }
 

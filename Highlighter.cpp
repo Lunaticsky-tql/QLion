@@ -5,16 +5,16 @@
 #include <QFile>
 #include "Highlighter.h"
 
-Highlighter::Highlighter(QTextDocument *parent, const QString &fontFamily, int fontSize) : QSyntaxHighlighter(
-        parent) {
-    initBatchHighlightFormat();
+Highlighter::Highlighter(QTextDocument *parent,bool isVaporwaveTheme) : QSyntaxHighlighter(
+        parent){
+    setThemeColor(isVaporwaveTheme);
+    addKeywordsFormat();
 }
 
 void Highlighter::addVarFormat(const QString &text) {
     HighlightRule normalVarRole;
     normalVarRole.pattern = QRegularExpression("[a-zA-Z0-9_]+");
-    QColor color(169, 183, 198);
-    normalVarRole.format.setForeground(color);
+    normalVarRole.format.setForeground(themeColor.varColor);
     normalVarRole.format.setFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = normalVarRole.pattern.globalMatch(text);
     while (matchIterator.hasNext()) {
@@ -23,27 +23,35 @@ void Highlighter::addVarFormat(const QString &text) {
     }
 }
 
-void Highlighter::addNumberFormat() {
+
+void Highlighter::addNumberFormat(const QString &text) {
+    QVector<HighlightRule> numberHighlightRules;
+    QColor color = themeColor.numberColor;
     HighlightRule intRule;
     intRule.pattern = QRegularExpression(R"(\b[0-9]+\b)");
+    intRule.format.setForeground(color);
     HighlightRule hexIntRule;
     hexIntRule.pattern = QRegularExpression(R"(\b0[Xx][0-9a-fA-F]+\b)");
-    HighlightRule floatRule;
-//    floatRule.pattern = QRegularExpression(R"(([-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?[fL1L]?)|([-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?[fLlL]?))");
-    // a better float pattern
-    floatRule.pattern = QRegularExpression(R"(((([0-9]*[.][0-9]*([eE][+-]?[0-9]+)?)|([0-9]+[eE][+-]?[0-9]+))[fLlL]?))");
-    QColor color(104, 151, 187);
-    intRule.format.setForeground(color);
-    highlightRules.append(intRule);
     hexIntRule.format.setForeground(color);
-    highlightRules.append(hexIntRule);
+    HighlightRule floatRule;
+    floatRule.pattern = QRegularExpression(R"(((([0-9]*[.][0-9]*([eE][+-]?[0-9]+)?)|([0-9]+[eE][+-]?[0-9]+))[fLlL]?))");
     floatRule.format.setForeground(color);
-    highlightRules.append(floatRule);
+    numberHighlightRules.append(intRule);
+    numberHighlightRules.append(hexIntRule);
+    numberHighlightRules.append(floatRule);
+    for (auto &rule: numberHighlightRules) {
+        QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+        while (matchIterator.hasNext()) {
+            QRegularExpressionMatch match = matchIterator.next();
+            setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+        }
+    }
 }
+
 
 void Highlighter::addStringFormat(const QString &text) {
     QVector<HighlightRule> stringHighlightRules;
-    QColor color(106, 135, 89);
+    QColor color = themeColor.stringColor;
     HighlightRule rule1;
     //"xxx"
     rule1.pattern = QRegularExpression(R"("[^"]*")");
@@ -54,7 +62,7 @@ void Highlighter::addStringFormat(const QString &text) {
     rule2.pattern = QRegularExpression(R"('[^']*')");
     rule2.format.setForeground(color);
     stringHighlightRules.append(rule2);
-    for(auto &rule:stringHighlightRules){
+    for (auto &rule: stringHighlightRules) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();
@@ -63,11 +71,25 @@ void Highlighter::addStringFormat(const QString &text) {
     }
 }
 
+
+void Highlighter::addPunctuationFormat(const QString &text) {
+// ; and ,
+    HighlightRule rule;
+    rule.pattern = QRegularExpression(R"([,;])");
+    rule.format.setForeground(themeColor.punctuationColor);
+    rule.format.setFont(QFont(mFontFamily, mFontSize));
+    QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+    while (matchIterator.hasNext()) {
+        QRegularExpressionMatch match = matchIterator.next();
+        setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+    }
+}
+
+
 void Highlighter::addCommentFormat(const QString &text) {
     HighlightRule rule;
     rule.pattern = QRegularExpression(R"(//[^\n]*)");
-    QColor color(128, 128, 128);
-    rule.format.setForeground(color);
+    rule.format.setForeground(themeColor.commentColor);
     rule.format.setFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
     while (matchIterator.hasNext()) {
@@ -82,9 +104,8 @@ void Highlighter::addMultiLineCommentFormat(const QString &text) {
     setCurrentBlockState(0);
     QRegularExpression startExpression(R"(/\*)");
     QRegularExpression endExpression(R"(\*/)");
-    QColor color(128, 128, 128);
     QTextCharFormat multiLineCommentFormat;
-    multiLineCommentFormat.setForeground(color);
+    multiLineCommentFormat.setForeground(themeColor.commentColor);
     multiLineCommentFormat.setFont(QFont(mFontFamily, mFontSize));
     long long startIndex = 0;
     // that is, if the previous line is not a comment
@@ -112,13 +133,11 @@ void Highlighter::addVarMemberFormat(const QString &text) {
     HighlightRule varMemberRole;
     // we assume that the var member is like this: .varMember ('.' implies the var is a member of a class)
     varMemberRole.pattern = QRegularExpression(R"([.][a-zA-Z_][a-zA-Z0-9_]*)");
-    QColor VarMemberColor(147, 115, 165);
-    varMemberRole.format.setForeground(VarMemberColor);
+    varMemberRole.format.setForeground(themeColor.varMemberColor);
     varMemberRole.format.setFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = varMemberRole.pattern.globalMatch(text);
     QTextCharFormat plainFormat;
-    QColor plainColor(169, 183, 198);
-    plainFormat.setForeground(plainColor);
+    plainFormat.setForeground(themeColor.plainTextColor);
     plainFormat.setFont(QFont(mFontFamily, mFontSize));
     while (matchIterator.hasNext()) {
         QRegularExpressionMatch match = matchIterator.next();
@@ -132,15 +151,13 @@ void Highlighter::addVarMemberFormat(const QString &text) {
 void Highlighter::addIncludeFormat(const QString &text) {
     HighlightRule rule;
     rule.pattern = QRegularExpression(R"(#include\s*[<"][a-zA-Z0-9_./\\]*[>"])");
-    QColor stringColor(106, 135, 89);
-    QColor includeColor(255, 198, 109);
-    rule.format.setForeground(stringColor);
+    rule.format.setForeground(themeColor.stringColor);
     rule.format.setFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
     while (matchIterator.hasNext()) {
         QRegularExpressionMatch match = matchIterator.next();
         // set the "#include" to includeColor and others to stringColor
-        setFormat(match.capturedStart(), 8, includeColor);
+        setFormat(match.capturedStart(), 8, themeColor.includeColor);
         setFormat(match.capturedStart() + 8, match.capturedLength() - 8, rule.format);
     }
 }
@@ -148,7 +165,8 @@ void Highlighter::addIncludeFormat(const QString &text) {
 //notice: it was called line by line
 void Highlighter::highlightBlock(const QString &text) {
     addVarFormat(text);
-    for (HighlightRule &rule: highlightRules) {
+    addNumberFormat(text);
+    for (HighlightRule &rule: keywordRules) {
         rule.format.setFont(QFont(mFontFamily, mFontSize));
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
@@ -156,6 +174,8 @@ void Highlighter::highlightBlock(const QString &text) {
             setFormat(match.capturedStart(), match.capturedLength(), rule.format);
         }
     }
+    addPunctuationFormat(text);
+    addClassNameFormat(text);
     addFunctionFormat(text);
     addVarMemberFormat(text);
     addIncludeFormat(text);
@@ -172,17 +192,15 @@ void Highlighter::addKeywordsFormat() {
     QString keywords0Path = ":/resources/keywords/0.txt";
     QString keywords1Path = ":/resources/keywords/1.txt";
     QString keywords2Path = ":/resources/keywords/2.txt";
-    QString punctuatesPath = ":/resources/keywords/punctuations.txt";
     QStringList keywordsPathList;
     keywordsPathList.append(keywords0Path);
     keywordsPathList.append(keywords1Path);
     keywordsPathList.append(keywords2Path);
-    keywordsPathList.append(punctuatesPath);
 
     HighlightRule rule;
     QTextCharFormat keywordsFormat;
-    QColor color(204, 120, 48);
-    keywordsFormat.setForeground(color);
+    keywordsFormat.setForeground(themeColor.keywordsColor);
+    keywordsFormat.setFont(QFont(mFontFamily, mFontSize));
     rule.format = keywordsFormat;
     for (const auto &path: keywordsPathList) {
         QFile file(path);
@@ -200,7 +218,7 @@ void Highlighter::addKeywordsFormat() {
                         rule.pattern = QRegularExpression("\\b" + line + "\\b");
                     }
                 }
-                highlightRules.append(rule);
+                keywordRules.append(rule);
             }
             file.close();
         }
@@ -208,19 +226,26 @@ void Highlighter::addKeywordsFormat() {
 }
 
 
-void Highlighter::addClassNameFormat() {
+
+
+void Highlighter::addClassNameFormat(const QString & text){
     HighlightRule rule;
     rule.pattern = QRegularExpression(R"(\b[A-Z][a-zA-Z0-9_]*\b)");
-    QColor color(181, 182, 227);
-    rule.format.setForeground(color);
-    highlightRules.append(rule);
+    rule.format.setForeground(themeColor.classNameColor);
+    rule.format.setFont(QFont(mFontFamily, mFontSize));
+    QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+    while (matchIterator.hasNext()) {
+        QRegularExpressionMatch match = matchIterator.next();
+        setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+    }
 }
+
+
 
 void Highlighter::addFunctionFormat(const QString &text) {
     HighlightRule rule;
     rule.pattern = QRegularExpression(R"(\b[a-zA-Z0-9_]+\s*\()");
-    QColor color(255, 198, 109);
-    rule.format.setForeground(color);
+    rule.format.setForeground(themeColor.functionColor);
     rule.format.setFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
     while (matchIterator.hasNext()) {
@@ -232,14 +257,12 @@ void Highlighter::addFunctionFormat(const QString &text) {
 
 void Highlighter::highlightSearchText(const QString &text) {
 
-    if(searchedText.isEmpty()) {
+    if (searchedText.isEmpty()) {
         return;
     }
     HighlightRule rule;
     rule.pattern = QRegularExpression(searchedText);
-    // green background
-    QColor color(0, 255, 0, 100);
-    rule.format.setBackground(color);
+    rule.format.setBackground(themeColor.searchedTextBackgroundColor);
     rule.format.setFont(QFont(mFontFamily, mFontSize));
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
     while (matchIterator.hasNext()) {
@@ -250,16 +273,49 @@ void Highlighter::highlightSearchText(const QString &text) {
     }
 }
 
-
-
-void Highlighter::initBatchHighlightFormat() {
-    addNumberFormat();
-    addKeywordsFormat();
-    addClassNameFormat();
-}
-
 void Highlighter::setSearchText(const QString &keyWord) {
     searchedText = keyWord;
+
+}
+
+void Highlighter::setThemeColor(bool isVaporwave) {
+    if (isVaporwave) {
+        mFontFamily = "Fixedsys";
+        themeColor.plainTextColor = QColor(0, 0, 0);
+        themeColor.varColor = QColor(0, 0, 0);
+        themeColor.numberColor = QColor(0, 0, 0);
+        themeColor.stringColor = QColor(0, 0, 0);
+        themeColor.commentColor = QColor(0,128,0);
+        themeColor.varMemberColor = QColor(0, 0, 0);
+        themeColor.includeColor = QColor(8, 8, 255);
+        themeColor.keywordsColor = QColor(8, 8, 255);
+        themeColor.punctuationColor=QColor(0, 0, 0);
+        themeColor.classNameColor = QColor(8, 8, 255);
+        themeColor.functionColor = QColor(0, 0, 0);
+        themeColor.searchedTextBackgroundColor = QColor(23,255,240);
+
+    } else {
+        mFontFamily = "JetBrains Mono NL";
+        themeColor.plainTextColor = QColor(169, 183, 198);
+        themeColor.varColor = QColor(169, 183, 198);
+        themeColor.numberColor = QColor(104, 151, 187);
+        themeColor.stringColor = QColor(106, 135, 89);
+        themeColor.commentColor = QColor(128, 128, 128);
+        themeColor.varMemberColor = QColor(147, 115, 165);
+        themeColor.includeColor = QColor(255, 198, 109);
+        themeColor.keywordsColor = QColor(204, 120, 48);
+        themeColor.punctuationColor=QColor(204, 120, 48);
+        themeColor.classNameColor = QColor(181, 182, 227);
+        themeColor.functionColor = QColor(255, 198, 109);
+        themeColor.searchedTextBackgroundColor = QColor(50, 89, 61, 100);
+    }
+
+    for (auto &rule: keywordRules) {
+        QTextCharFormat format = rule.format;
+        format.setFont(QFont(mFontFamily, mFontSize));
+        format.setForeground(themeColor.keywordsColor);
+        rule.format = format;
+    }
 
 }
 

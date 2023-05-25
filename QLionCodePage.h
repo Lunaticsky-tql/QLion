@@ -41,6 +41,7 @@ public:
     void replaceCurrentTabSearchText(QString &qString, QString &qString1, int &i);
     void denoteCurrentLine();
     void clearSelection();
+    void setThemeColor(bool isVaporwave);
 private:
     LineNumberArea *lineNumberArea;
     QLionTabWidget *myTabWidget;
@@ -48,15 +49,25 @@ private:
     int lineNumberFontWidth=0;
     Highlighter * mHighlighter;
     bool unsaved;
+    QString mFontFamily="JetBrains Mono NL";
     int untitledID=-1;
+    struct ThemeColor{
+        QColor textColor=QColor(255, 255, 255);
+        QColor lineNumberAreaColor = QColor(49, 51, 53);
+        QColor lineNumberColor = QColor(96, 99, 102);
+        QColor currentLineNumberColor = QColor(164, 163, 163);
+    }themeColor;
     void initConnections();
 
-    void initFont();
+    void setMyFont();
     void initHighlighter();
     int getLineNumberAreaWidth();
     int getMyCurrentIndex();
     void setMyTabWidgetIcon(const QIcon &icon);
     void setSaved();
+    void closeParenthesis(const QString &startStr, const QString &endStr);
+    bool isVaporwaveTheme=false;
+
 
 
 private slots:
@@ -68,6 +79,7 @@ private slots:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 };
 
 class LineNumberArea:public QWidget{
