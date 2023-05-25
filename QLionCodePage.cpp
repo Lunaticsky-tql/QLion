@@ -31,7 +31,9 @@ void QLionCodePage::setMyFont() {
     font.setPointSize(12);
     this->setFont(font);
     lineNumberFontWidth = fontMetrics().horizontalAdvance(QChar('0'));
-
+    // set tab width looks like 4 spaces
+    QFontMetrics metrics(font);
+    setTabStopDistance(4 * metrics.horizontalAdvance(' '));
 }
 
 void QLionCodePage::initConnections() {
@@ -94,7 +96,7 @@ void QLionCodePage::highlightCurrentLine() {
 }
 
 void QLionCodePage::initHighlighter() {
-    mHighlighter = new Highlighter(this->document(),isVaporwaveTheme);
+    mHighlighter = new Highlighter(this->document(), isVaporwaveTheme);
 }
 
 int QLionCodePage::getLineNumberAreaWidth() {
@@ -369,8 +371,50 @@ void QLionCodePage::keyPressEvent(QKeyEvent *event) {
     } else if (event->key() == Qt::Key_BracketLeft) {
         closeParenthesis("[", "]");
         return;
+    } else if (event->key() == Qt::Key_BracketRight) {
+        // if the cursor is at the left of the ']', move the cursor to the right
+        if(checkGapClosing("]")){
+            return;
+        }
+    }
+    else if(event->key() == Qt::Key_ParenRight){
+        if(checkGapClosing(")")){
+            return;
+        }
+    }
+    // change tab to 4 spaces
+    if (event->key() == Qt::Key_Tab) {
+        auto cursor = textCursor();
+        if (cursor.hasSelection()) {
+            // insert 4 spaces at the start of each line
+            auto start = cursor.selectionStart();
+            auto end = cursor.selectionEnd();
+            cursor.setPosition(start, cursor.MoveAnchor);
+            int startBlock = cursor.blockNumber();
+            cursor.setPosition(end, cursor.MoveAnchor);
+            int endBlock = cursor.blockNumber();
+            cursor.setPosition(start, cursor.MoveAnchor);
+            cursor.movePosition(QTextCursor::StartOfLine);
+            cursor.insertText("    ");
+            for (int i = startBlock; i < endBlock; i++) {
+                cursor.movePosition(QTextCursor::NextBlock);
+                cursor.insertText("    ");
+            }
+            cursor.setPosition(end + 4 * (endBlock - startBlock + 1), cursor.MoveAnchor);
+            setTextCursor(cursor);
+        } else {
+            auto pos = cursor.position();
+            cursor.setPosition(pos, cursor.MoveAnchor);
+            cursor.insertText("    ");
+            cursor.setPosition(pos + 4);
+            setTextCursor(cursor);
+        }
+        return;
     }
     QPlainTextEdit::keyPressEvent(event);
+    // after insert \n, add spaces according to the previous line
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+        handleKeyEnterPressed();
 
 }
 
@@ -387,15 +431,33 @@ void QLionCodePage::closeParenthesis(const QString &startStr, const QString &end
     } else if (startStr == "{") {
         auto pos = cursor.position();
         cursor.setPosition(pos, cursor.MoveAnchor);
-        cursor.insertText("{\n\t\n}");
-        cursor.setPosition(pos + 3);
+        cursor.insertText("{\n");
+        int indentation = getIndentation(cursor);
+        cursor.insertText(QString(" ").repeated(indentation));
+        cursor.insertText("\n");
+        cursor.insertText(QString(" ").repeated(indentation - 4));
+        cursor.insertText("}");
+        cursor.setPosition(pos + 2 + indentation, cursor.MoveAnchor);
     } else {
         auto pos = cursor.position();
         cursor.setPosition(pos, cursor.MoveAnchor);
         cursor.insertText(startStr + endStr);
+        cursor.setPosition(pos + 1, cursor.MoveAnchor);
     }
 
     setTextCursor(cursor);
+}
+
+bool QLionCodePage::checkGapClosing(const QString &endstr){
+    auto cursor = textCursor();
+    auto blockText = cursor.block().text();
+    auto positionInBlock = cursor.positionInBlock();
+    if (positionInBlock < blockText.length() && blockText[positionInBlock] == endstr[0]) {
+        cursor.movePosition(QTextCursor::Right);
+        setTextCursor(cursor);
+        return true;
+    }
+    return false;
 }
 
 void QLionCodePage::setThemeColor(bool isVaporwave) {
@@ -417,14 +479,59 @@ void QLionCodePage::setThemeColor(bool isVaporwave) {
         mFontFamily = "JetBrains Mono NL";
         connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
     }
-    setStyleSheet("color:rgb(" + QString::number(themeColor.textColor.red()) + "," + QString::number(themeColor.textColor.green()) + "," +
+    setStyleSheet("color:rgb(" + QString::number(themeColor.textColor.red()) + "," +
+                  QString::number(themeColor.textColor.green()) + "," +
                   QString::number(themeColor.textColor.blue()) + ");");
-    qDebug() << "setStyleSheet";
     setMyFont();
     updateLineNumberAreaWidth();
     mHighlighter->setThemeColor(isVaporwave);
     mHighlighter->rehighlight();
     this->isVaporwaveTheme = isVaporwave;
+}
+
+int QLionCodePage::getIndentation(QTextCursor cursor) {
+    const auto prevLineText = cursor.block().previous().text();
+    int n = leadingSpaces(prevLineText);
+    if (isEndingBraceOrColon(prevLineText)) {
+        n += 4;
+    }
+//    qDebug() << n;
+    return n;
+}
+
+int QLionCodePage::leadingSpaces(const QString &str) {
+    int n = 0;
+    for (int i = 0; i < str.size(); i++) {
+        if (str[i] == '\t') {
+            // 4-1, because i already add 1 in the for loop
+            n += 3;
+        } else if (!str[i].isSpace()) {
+            return i + n;
+        }
+    }
+    return str.size() + n;
+}
+
+bool QLionCodePage::isEndingBraceOrColon(const QString &str) {
+    for (int i = str.size() - 1; i >= 0; i--) {
+        if (str[i] == ' ') {
+            continue;
+        } else if (str[i] == '{' || str[i] == ':') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    return false;
+}
+
+void QLionCodePage::handleKeyEnterPressed() {
+    auto cursor = textCursor();
+    int indentation = getIndentation(cursor);
+    cursor.insertText(QString(" ").repeated(indentation));
+    setTextCursor(cursor);
+
+
 }
 
 

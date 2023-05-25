@@ -67,6 +67,9 @@ private:
     void setSaved();
     void closeParenthesis(const QString &startStr, const QString &endStr);
     bool isVaporwaveTheme=false;
+    int getIndentation(QTextCursor cursor);
+    static int leadingSpaces(const QString& qString);
+    static bool isEndingBraceOrColon(const QString& qString);
 
 
 
@@ -75,11 +78,16 @@ private slots:
     void updateLineNumberArea(const QRect &, int dy);
     void updateLineNumberAreaWidth();
     void setUnsaved();
+    bool checkGapClosing(const QString &endstr);
+    void handleKeyEnterPressed();
 
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+
+
+
 };
 
 class LineNumberArea:public QWidget{
