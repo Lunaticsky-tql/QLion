@@ -351,30 +351,32 @@ void MainWindow::traverseDir(const QString &dirPath, QStringList &fileList) {
 }
 
 
-bool MainWindow::deleteDir(const QString &dirPath) {
-    bool result;
-    QDir dir(dirPath);
-    QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-    for (const auto &fileInfo: infoList) {
-        if (fileInfo.isDir()) {
-            deleteDir(fileInfo.filePath());
-        } else {
-            //delete the file
-            result = QFile::remove(fileInfo.filePath());
-            if (!result) {
-                QMessageBox::warning(this, "Delete File", "Delete file failed!");
-                return false;
-            }
-        }
-    }
-    //delete the dir
-    result = dir.rmdir(dirPath);
-    if (!result) {
-        QMessageBox::warning(this, "Delete Dir", "Delete dir failed!");
-        return false;
-    }
-    return true;
-}
+//bool MainWindow::deleteDir(const QString &dirPath) {
+//    bool result;
+//    QDir dir(dirPath);
+//    QFileInfoList infoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+//    for (const auto &fileInfo: infoList) {
+//        if (fileInfo.isDir()) {
+//            deleteDir(fileInfo.filePath());
+//        } else {
+//            //delete the file
+//            result = QFile::remove(fileInfo.filePath());
+//            if (!result) {
+//                QMessageBox::warning(this, "Delete File", "Delete file failed!");
+//                return false;
+//            }
+//        }
+//    }
+//    //delete the dir
+//    qDebug()<<dir.isEmpty();
+//    qDebug() << "delete dir:" << dirPath;
+//    result = dir.rmdir(dirPath);
+//    if (!result) {
+//        QMessageBox::warning(this, "Delete Dir", "Delete dir failed!");
+//        return false;
+//    }
+//    return true;
+//}
 
 void MainWindow::removeFile(const QString &removeFilePath, bool isDir) {
     if (isDir) {
@@ -387,7 +389,8 @@ void MainWindow::removeFile(const QString &removeFilePath, bool isDir) {
         }
         QStringList fileList;
         traverseDir(removeFilePath, fileList);
-        deleteDir(removeFilePath);
+//        deleteDir(removeFilePath);
+        dir.removeRecursively();
         for (const auto &filePath: fileList) {
             ui->tabWidget->closeTabByFilePath(filePath);
         }
@@ -453,12 +456,12 @@ void MainWindow::revealFileInOS(const QString &pathToReveal) {
 #elif defined(Q_OS_MAC)
     QStringList scriptArgs;
     scriptArgs << QLatin1String("-e")
-            << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
-            .arg(pathToReveal);
+               << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
+                       .arg(pathToReveal);
     QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
     scriptArgs.clear();
     scriptArgs << QLatin1String("-e")
-            << QLatin1String("tell application \"Finder\" to activate");
+               << QLatin1String("tell application \"Finder\" to activate");
     QProcess::execute("/usr/bin/osascript", scriptArgs);
 #else
     // we cannot select a file here, because no file browser really supports it...
