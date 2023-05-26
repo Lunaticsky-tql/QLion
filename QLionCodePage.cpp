@@ -373,15 +373,19 @@ void QLionCodePage::keyPressEvent(QKeyEvent *event) {
         return;
     } else if (event->key() == Qt::Key_BracketRight) {
         // if the cursor is at the left of the ']', move the cursor to the right
-        if(checkGapClosing("]")){
+        if (checkGapClosing("]")) {
+            return;
+        }
+    } else if (event->key() == Qt::Key_ParenRight) {
+        if (checkGapClosing(")")) {
+            return;
+        }
+    } else if (event->key() == Qt::Key_BraceRight) {
+        if (checkGapClosing("}")) {
             return;
         }
     }
-    else if(event->key() == Qt::Key_ParenRight){
-        if(checkGapClosing(")")){
-            return;
-        }
-    }
+
     // change tab to 4 spaces
     if (event->key() == Qt::Key_Tab) {
         auto cursor = textCursor();
@@ -429,15 +433,23 @@ void QLionCodePage::closeParenthesis(const QString &startStr, const QString &end
         cursor.setPosition(end + startStr.size(), cursor.MoveAnchor);
         cursor.insertText(endStr);
     } else if (startStr == "{") {
-        auto pos = cursor.position();
-        cursor.setPosition(pos, cursor.MoveAnchor);
-        cursor.insertText("{\n");
-        int indentation = getIndentation(cursor);
-        cursor.insertText(QString(" ").repeated(indentation));
-        cursor.insertText("\n");
-        cursor.insertText(QString(" ").repeated(indentation - 4));
-        cursor.insertText("}");
-        cursor.setPosition(pos + 2 + indentation, cursor.MoveAnchor);
+        if (checkCharacterBefore(")")) {
+            // only need to auto indent when the previous character is ')', which means it is a function
+            auto pos = cursor.position();
+            cursor.setPosition(pos, cursor.MoveAnchor);
+            cursor.insertText("{\n");
+            int indentation = getIndentation(cursor);
+            cursor.insertText(QString(" ").repeated(indentation));
+            cursor.insertText("\n");
+            cursor.insertText(QString(" ").repeated(indentation - 4));
+            cursor.insertText("}");
+            cursor.setPosition(pos + 2 + indentation, cursor.MoveAnchor);
+        } else {
+            auto pos = cursor.position();
+            cursor.setPosition(pos, cursor.MoveAnchor);
+            cursor.insertText(startStr + endStr);
+            cursor.setPosition(pos + 1, cursor.MoveAnchor);
+        }
     } else {
         auto pos = cursor.position();
         cursor.setPosition(pos, cursor.MoveAnchor);
@@ -448,7 +460,7 @@ void QLionCodePage::closeParenthesis(const QString &startStr, const QString &end
     setTextCursor(cursor);
 }
 
-bool QLionCodePage::checkGapClosing(const QString &endstr){
+bool QLionCodePage::checkGapClosing(const QString &endstr) {
     auto cursor = textCursor();
     auto blockText = cursor.block().text();
     auto positionInBlock = cursor.positionInBlock();
@@ -456,6 +468,22 @@ bool QLionCodePage::checkGapClosing(const QString &endstr){
         cursor.movePosition(QTextCursor::Right);
         setTextCursor(cursor);
         return true;
+    }
+    return false;
+}
+
+bool QLionCodePage::checkCharacterBefore(const QString &endstr) {
+    auto cursor = textCursor();
+    auto blockText = cursor.block().text();
+    auto positionInBlock = cursor.positionInBlock();
+    while (positionInBlock > 0) {
+        if (blockText[positionInBlock - 1] == endstr[0]) {
+            return true;
+        } else if (blockText[positionInBlock - 1] == ' ') {
+            positionInBlock--;
+        } else {
+            return false;
+        }
     }
     return false;
 }

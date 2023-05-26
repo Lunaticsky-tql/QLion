@@ -4,12 +4,12 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_RunConfig.h" resolved
 
-#include "runconfig.h"
-#include "ui_RunConfig.h"
+#include "runconfigwindow.h"
+#include "ui_RunConfigWindow.h"
 #include "mainwindow.h"
 
-RunConfig::RunConfig(QWidget *parent, RunConfigList *runConfig) :
-        QWidget(parent), ui(new Ui::RunConfig) {
+RunConfigWindow::RunConfigWindow(QWidget *parent, RunConfigList *runConfig) :
+        QWidget(parent), ui(new Ui::RunConfigWindow) {
     ui->setupUi(this);
     setWindowTitle("Run Configuration");
     setAttribute(Qt::WA_DeleteOnClose);
@@ -40,15 +40,15 @@ RunConfig::RunConfig(QWidget *parent, RunConfigList *runConfig) :
     show();
 }
 
-RunConfig::~RunConfig() {
+RunConfigWindow::~RunConfigWindow() {
     delete ui;
 }
 
-void RunConfig::setMainWindow(MainWindow *mainWindow) {
+void RunConfigWindow::setMainWindow(MainWindow *mainWindow) {
     this->mainWindow = mainWindow;
 }
 
-void RunConfig::updateUI() {
+void RunConfigWindow::updateUI() {
     ui->cmakePath->setText(runConfig->cmakePath);
     ui->generator->setText(runConfig->generator);
     ui->genPara->setText(runConfig->genPara.join(" "));

@@ -13,7 +13,7 @@
 #include "QLionCodePage.h"
 #include "FolderTreeView.h"
 #include "findreplaceview.h"
-#include "runconfig.h"
+#include "runconfigwindow.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -86,7 +86,7 @@ private:
     int totalFindCount{0};
     bool hasOpenedFolder{false};
     QString searchWord;
-    RunConfig *runConfig= nullptr;
+    RunConfigWindow *runConfig= nullptr;
     RunConfigList *runConfigList= nullptr;
     void saveProjectFiles();
 

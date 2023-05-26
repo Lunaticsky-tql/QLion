@@ -356,6 +356,9 @@
    <property name="text">
     <string>Vaporwave theme</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+Shift+V</string>
+   </property>
   </action>
  </widget>
  <customwidgets>

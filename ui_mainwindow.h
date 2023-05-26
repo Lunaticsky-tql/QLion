@@ -321,6 +321,9 @@ public:
 #endif // QT_CONFIG(shortcut)
         action_edit_configurations->setText(QCoreApplication::translate("MainWindow", "Edit Configurations...", nullptr));
         action_vaporwave_theme->setText(QCoreApplication::translate("MainWindow", "Vaporwave theme", nullptr));
+#if QT_CONFIG(shortcut)
+        action_vaporwave_theme->setShortcut(QCoreApplication::translate("MainWindow", "Alt+Shift+V", nullptr));
+#endif // QT_CONFIG(shortcut)
         menu_F->setTitle(QCoreApplication::translate("MainWindow", "File(&F)", nullptr));
         menu_E->setTitle(QCoreApplication::translate("MainWindow", "Edit(&E)", nullptr));
         menuRun_R->setTitle(QCoreApplication::translate("MainWindow", "Run(&R)", nullptr));

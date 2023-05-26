@@ -6,8 +6,8 @@
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_RUNCONFIG_H
-#define UI_RUNCONFIG_H
+#ifndef UI_RUNCONFIGWINDOW_H
+#define UI_RUNCONFIGWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_RunConfig
+class Ui_RunConfigWindow
 {
 public:
     QVBoxLayout *verticalLayout;
@@ -44,20 +44,19 @@ public:
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_4;
     QLineEdit *budPara;
-    QWidget *tab_2;
     QWidget *widget_5;
     QHBoxLayout *horizontalLayout_5;
     QPushButton *apply;
     QPushButton *cancel;
 
-    void setupUi(QWidget *RunConfig)
+    void setupUi(QWidget *RunConfigWindow)
     {
-        if (RunConfig->objectName().isEmpty())
-            RunConfig->setObjectName("RunConfigWindow");
-        RunConfig->resize(400, 300);
-        verticalLayout = new QVBoxLayout(RunConfig);
+        if (RunConfigWindow->objectName().isEmpty())
+            RunConfigWindow->setObjectName("RunConfigWindow");
+        RunConfigWindow->resize(400, 300);
+        verticalLayout = new QVBoxLayout(RunConfigWindow);
         verticalLayout->setObjectName("verticalLayout");
-        tabWidget = new QTabWidget(RunConfig);
+        tabWidget = new QTabWidget(RunConfigWindow);
         tabWidget->setObjectName("tabWidget");
         tab = new QWidget();
         tab->setObjectName("tab");
@@ -132,13 +131,10 @@ public:
         verticalLayout_2->addWidget(widget_4);
 
         tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName("tab_2");
-        tabWidget->addTab(tab_2, QString());
 
         verticalLayout->addWidget(tabWidget);
 
-        widget_5 = new QWidget(RunConfig);
+        widget_5 = new QWidget(RunConfigWindow);
         widget_5->setObjectName("widget_5");
         horizontalLayout_5 = new QHBoxLayout(widget_5);
         horizontalLayout_5->setObjectName("horizontalLayout_5");
@@ -159,17 +155,17 @@ public:
         label->setBuddy(cmakePath);
 #endif // QT_CONFIG(shortcut)
 
-        retranslateUi(RunConfig);
+        retranslateUi(RunConfigWindow);
 
         tabWidget->setCurrentIndex(0);
 
 
-        QMetaObject::connectSlotsByName(RunConfig);
+        QMetaObject::connectSlotsByName(RunConfigWindow);
     } // setupUi
 
-    void retranslateUi(QWidget *RunConfig)
+    void retranslateUi(QWidget *RunConfigWindow)
     {
-        RunConfig->setWindowTitle(QCoreApplication::translate("RunConfigWindow", "RunConfigWindow", nullptr));
+        RunConfigWindow->setWindowTitle(QCoreApplication::translate("RunConfigWindow", "RunConfigWindow", nullptr));
         label->setText(QCoreApplication::translate("RunConfigWindow", "CMake Path", nullptr));
         cmakePath->setPlaceholderText(QCoreApplication::translate("RunConfigWindow", "cmake", nullptr));
         label_2->setText(QCoreApplication::translate("RunConfigWindow", "Generator", nullptr));
@@ -179,7 +175,6 @@ public:
         label_4->setText(QCoreApplication::translate("RunConfigWindow", "Additional Building Parameter", nullptr));
         budPara->setPlaceholderText(QCoreApplication::translate("RunConfigWindow", "-j 10", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("RunConfigWindow", "Cmake", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("RunConfigWindow", "QMake", nullptr));
         apply->setText(QCoreApplication::translate("RunConfigWindow", "Apply", nullptr));
         cancel->setText(QCoreApplication::translate("RunConfigWindow", "Cancel", nullptr));
     } // retranslateUi
@@ -187,9 +182,9 @@ public:
 };
 
 namespace Ui {
-    class RunConfig: public Ui_RunConfig {};
+    class RunConfigWindow: public Ui_RunConfigWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_RUNCONFIG_H
+#endif // UI_RUNCONFIGWINDOW_H

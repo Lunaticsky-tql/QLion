@@ -711,7 +711,7 @@ void MainWindow::saveProjectFiles() {
 }
 
 void MainWindow::on_action_edit_configurations_triggered() {
-    runConfig = new RunConfig(this, runConfigList);
+    runConfig = new RunConfigWindow(this, runConfigList);
     runConfig->setMainWindow(this);
 }
 
@@ -758,9 +758,6 @@ void MainWindow::doTerminalRunFinished(int exitCode, RunStatus runStatus) {
         ui->terminal->setCommand(command, params, RunStatus::RUN);
         ui->terminal->runCommand();
     }
-//    else{
-//        // do nothing
-//    }
 }
 
 QString MainWindow::getCurrentProjectPath() {

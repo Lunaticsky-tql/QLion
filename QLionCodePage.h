@@ -70,6 +70,7 @@ private:
     int getIndentation(QTextCursor cursor);
     static int leadingSpaces(const QString& qString);
     static bool isEndingBraceOrColon(const QString& qString);
+    bool checkCharacterBefore(const QString &endstr);
 
 
 
@@ -85,7 +86,6 @@ private slots:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-
 
 
 };
