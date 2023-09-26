@@ -3,8 +3,11 @@ title: QLion代码编辑器
 categories: 作业
 tags:
   - C++
+abbrlink: 45065
 date: 2023-05-26 12:04:55
+
 ---
+
 # 高级语言程序设计实验报告
 
 南开大学 计算机学院 田佳业 2013599 1013班
@@ -46,13 +49,13 @@ Update:考试周临近，主播溜大了
 
 [BiliBili视频演示](https://www.bilibili.com/video/BV12m4y1b7SN)
 
-![image-20230526113432166](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120414661830_608_image-20230526113432166.png)
+![image-20230526113432166](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210624849799_291_20230526120414661830_608_image-20230526113432166.png)
 
 ## 项目结构
 
 
 
-![image-20230514204456321](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120417791162_622_20230515214325856307_437_image-20230514204456321.png)
+![image-20230514204456321](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210625984819_432_20230526120417791162_622_20230515214325856307_437_image-20230514204456321.png)
 
 ## 主要流程
 
@@ -76,7 +79,7 @@ Update:考试周临近，主播溜大了
 
 - 注意到VSCode新建若干个未与文件关联的标签页时，会选取当前可用的最小标签页。如下图所示新建标签页会命名为`Untitled-2`。在这个项目中也复现了这样的设计。
 
-  ![image-20230514201910114](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120422247570_581_20230515214327370668_329_image-20230514201910114.png)
+  ![image-20230514201910114](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210628831543_906_20230526120422247570_581_20230515214327370668_329_image-20230514201910114.png)
 
 第一点的实现可以逐个标签页进行遍历，也可以采用字典树等方式进行优化。在这个项目中采用了较容易实现的遍历方式。
 
@@ -202,7 +205,7 @@ void QLionCodePage::lineNumberAreaMousePressEvent(QMouseEvent *mEvent) {
 
 第二条的其他应用比如我们可以将头文件定义作为一条规则来匹配。CLion中高亮是这样:
 
-![image-20230514210950317](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120424273658_879_20230515214328373693_177_image-20230514210950317.png)
+![image-20230514210950317](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210629995825_889_20230526120424273658_879_20230515214328373693_177_image-20230514210950317.png)
 
 单独的尖括号包裹的字符串不会被高亮，只有与`#include`配合使用时才会高亮。这只有通过单一匹配规则和部分高亮实现:
 
@@ -264,7 +267,7 @@ void Highlighter::addMultiLineCommentFormat(const QString &text) {
 
 可以看到几乎还原了在真实代码编辑器中的显示效果。
 
-![image-20230514230623432](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120428544516_280_20230515214329527229_954_image-20230514230623432.png)
+![image-20230514230623432](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210630856348_646_20230526120428544516_280_20230515214329527229_954_image-20230514230623432.png)
 
 ### 菜单栏功能
 
@@ -272,7 +275,7 @@ void Highlighter::addMultiLineCommentFormat(const QString &text) {
 
 打开文件是文本编辑器的基本操作。需要判断文件是否有效，保存打开路径以便下次从这个目录再寻找文件，还要判断是否需要在标签栏上区分路径。得益于面向对象和封装的思想，`mainwindow`提供打开文件的接口后，除了通过菜单栏打开文件，后续通过文件目录树打开文件，通过拖拽打开文件等都可以直接调用接口，而不必再关心怎样区分标签栏路径这样的细节。
 
-![image-20230514220624197](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120431011874_864_20230515214330918451_552_image-20230514220624197.png)
+![image-20230514220624197](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210633016353_975_20230526120431011874_864_20230515214330918451_552_image-20230514220624197.png)
 
 #### 保存文件
 
@@ -300,7 +303,7 @@ void Highlighter::addMultiLineCommentFormat(const QString &text) {
 
 上述操作目录相关的操作需要对其下的文件进行递归操作，一开始只看到有`rmdir`这个接口，自己造了轮子结果演示的时候发现`build`目录本身删不掉。后续测试发现其他目录都是可以的。为什么呢？阅读[文档](https://doc.qt.io/qt-6/qdir.html#rmdir)发现删除目录需要目录非空。`build`看上去是空的，但是获取文件列表的时候隐藏文件获取不到。实际上它就不是空的：
 
-![image-20230515153815269](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120435138781_928_20230515214332155342_338_image-20230515153815269.png)
+![image-20230515153815269](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210636167250_523_20230526120435138781_928_20230515214332155342_338_image-20230515153815269.png)
 
 后来发现有[removeRecursively](https://doc.qt.io/qt-6/qdir.html#removeRecursively)，这个是可以正常工作的。还是得好好看文档。
 
@@ -308,7 +311,7 @@ void Highlighter::addMultiLineCommentFormat(const QString &text) {
 
 ### 查找替换
 
-![image-20230514231847964](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120441592831_476_20230515214333625979_193_image-20230514231847964.png)
+![image-20230514231847964](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210637293661_672_20230526120441592831_476_20230515214333625979_193_image-20230514231847964.png)
 
 首先比较坑的是需要处理好切换逻辑。可以使用`QActionLIst`完成互斥动作处理，不过由于只有两个动作，暂时直接在代码里写切换逻辑也不是不行。
 
@@ -401,13 +404,13 @@ void QLionCodePage::denoteCurrentLine() {
 
 Helloworld程序执行:
 
-![image-20230514234245615](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120443911766_742_20230515214335038890_263_image-20230514234245615.png)
+![image-20230514234245615](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210638486833_708_20230526120443911766_742_20230515214335038890_263_image-20230514234245615.png)
 
 同样的道理，我们甚至可以让它构建自己:
 
-![image-20230514234354199](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120448074383_533_20230515214336183959_219_image-20230514234354199.png)
+![image-20230514234354199](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210640024604_748_20230526120448074383_533_20230515214336183959_219_image-20230514234354199.png)
 
-![image-20230514234428154](https://raw.githubusercontent.com/Lunaticsky-tql/blog_article_resources/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230526120451711062_350_20230515214337928748_935_image-20230514234428154.png)
+![image-20230514234428154](https://raw.githubusercontent.com/Lunaticsky-tql/blog_articles/main/QLion%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8/20230828210641025934_695_20230526120451711062_350_20230515214337928748_935_image-20230514234428154.png)
 
 > 以下内容为5.26日更新
 
